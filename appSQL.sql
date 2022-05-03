@@ -2,7 +2,8 @@ CREATE DATABASE IF NOT EXISTS db;
 
     CREATE TABLE login (
         email VARCHAR(50) PRIMARY KEY,
-        password VARCHAR(50)
+        password VARCHAR(50),
+        admin BOOLEAN
     );
 
     CREATE TABLE account (
