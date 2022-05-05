@@ -33,6 +33,8 @@ app.use(sessions({
 //Replacing the database function by hardcoding password/username for testing session
 const myusername = 'user1';
 const mypassword = 'mypassword';
+
+
 var session;
 
 //routes
@@ -43,7 +45,7 @@ var session;
             res.send("Welcome User <a href=\'/logout'>click to logout</a>");
             
         } else 
-            res.sendFile('public/index.html', {root:__dirname});
+            res.sendFile('public/login/login.html', {root:__dirname});
     });
 
     //http://localhost:4000/user to create a session,
