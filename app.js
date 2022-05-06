@@ -42,18 +42,31 @@ app.use(sessions({
     //cookie-parser middleware
     app.use(cookieParser());
 
+<<<<<<< HEAD
     // app.use(express.static(path.join(__dirname, 'static')));
+=======
+
+>>>>>>> 3242f634bd6e5700ac06859bc8db2cc8154d50db
 
 //routes
     //http://localhost:8000/ to serve the HTML form to client, if logged in display log out link
     app.get('/', (request,response) => {
        
         if(request.session.loggedin) {
+<<<<<<< HEAD
             response.send("Welcome User <a href=\'/logout'>click to logout</a>"); //change this to be if user admin vs if user regular
+=======
+            response.send("Welcome User <a href=\'/logout'>click to logout</a>"); 
+>>>>>>> 3242f634bd6e5700ac06859bc8db2cc8154d50db
         } else 
             response.sendFile('/public/login/login.html', {root:__dirname});
     });
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 3242f634bd6e5700ac06859bc8db2cc8154d50db
 // http://localhost:8000/user
 app.post('/user', (request, response) => {
 	// Store the input fields
@@ -112,6 +125,7 @@ console.log(`Server running on port ${PORT}`)
 
 
 
+<<<<<<< HEAD
 // //routes
 //     //http://localhost:8000/ to serve the HTML form to client, if logged in display log out link
 //     app.get('/', (req,res) => {
@@ -146,5 +160,7 @@ console.log(`Server running on port ${PORT}`)
 
 
 
+=======
+>>>>>>> 3242f634bd6e5700ac06859bc8db2cc8154d50db
 
     
