@@ -14,15 +14,21 @@ body {
     text-align: center;
 }
 
-.header {
-    padding-left: 10%;
+
+h1 {
+  text-align: center;
+  font-size: 5vh;
+}
+
+.header{
     grid-column: 1;
     grid-row: 1;
     display: grid;
-    grid-template-columns: 10% 30% 60%;
+    grid-template-columns: 20% 60% 20%;
     grid-template-rows: 1fr;
     background-color: #FFBF69;
-
+    text-align: center;
+    padding-left: 10%;
 }
 
 .content {
