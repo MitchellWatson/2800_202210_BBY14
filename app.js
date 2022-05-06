@@ -81,13 +81,13 @@ app.post('/user', (request, response) => {
                    var isAdmin = JSON.stringify(results);
                    console.log(isAdmin);
                    if (isAdmin == `[{"admin":1}]`) {
-                      
-                   }
-                    response.end();
+                    
+                   } 
+                  
                 });
 
                 response.redirect('/public/user/user.html');
-                // response.send(`Welcome ${email} <a href=\'/logout'>click to logout</a>`)
+                
 			} else {
 				response.redirect('/public/register.html');
 			}			
