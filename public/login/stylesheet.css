@@ -9,40 +9,47 @@
 
 
 body {
-    background-color: steelblue;
-    color: #fff;
+    background-color: rgb(46, 196, 182);
+    color: rgb(78, 78, 78);
     font-family: 'Muli', sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh; /*vh = viewport height*/
-    overflow: hidden; /**hides the scrollbar default view*/
-    margin: 0;
-    
+    margin: 0% auto;
+    /* font-family: 'Quicksand', sans-serif; */
+}
+
+h1 {
+    margin: 1%;
+    font-size: 300%;
+    margin: 3%;
 }
 
 .container {
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgb(203, 243, 240);
     padding: 20px 40px;
-    border-radius: 5px;
+    border-radius: 10px;
+    margin: 50px;
 }
 
-.container h1 {
+.container h2 {
     text-align: center;
-    margin-bottom: 30px;
+    margin: 0 auto;
+    font-size: 200%;
 }
 
 .container a {
     text-decoration: none;
-    color: lightblue;
+    color: #00887a;
 }
 
 .btn {
     cursor: pointer;
     display: inline-block;
     width: 100%;
-    background: lightblue;
+    background-color: #2EC4B6;
     padding: 15px;
     font-family: inherit;
     font-size: 16px;
@@ -57,6 +64,7 @@ body {
 
 .btn:active {
     transform: scale(0.98);
+    background-color: #27bcad;
 }
 
 .text {
@@ -71,18 +79,23 @@ body {
 .form-control input {
     background-color: transparent;
     border: 0;
-    border-bottom: 2px #fff solid;
+    border-bottom: 2px rgb(207, 207, 207) solid;
     display: block;
     width: 100%;
     padding: 15px 0;
     font-size: 18px;
-    color: #fff;
+    color: rgb(78, 78, 78);
 }
 
 .form-control input:focus, .form-control input:valid {
     outline: 0;
-    border-bottom-color: lightblue;
+    border-bottom-color: rgb(0, 190, 184);
 }
+
+/* .form-control:hover {
+    background-color: #ededed;
+    border-radius: 15px;
+} */
 
 .form-control label {
     position: absolute;
@@ -99,6 +112,13 @@ body {
 
 .form-control input:focus + label span,
 .form-control input:valid + label span {
-    color: lightblue;
-    transform: translateY(-30px);
+    color: rgb(78, 78, 78);
+    transform: translateY(-35px);
+}
+
+.logo{
+    width: 300px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
