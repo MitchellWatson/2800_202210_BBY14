@@ -3,36 +3,36 @@
     <head> 
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="public/stylesheet.css" />
-        <title>Form Input Wave</title>
+        <link rel="stylesheet" href="./stylesheet.css" />
+        <title>Gabify</title>
     </head>
     <body> 
         <div class="container">
-            <h1>Please Login</h1>
+            <h1>Login</h1>
 
 
             <form action="/user" method="post">
 
                 <div class="form-control">
-                    <input type="text" name="username" id="username" required>
-                    <label>User Name</label>   
+                    <input type="email" name="email" id="email" required>
+                    <label>Enter Email</label>   
                 </div>
 
                 <div class="form-control">
                     <input type="password" name="password" id="password" required>
-                    <label>Password</label>
+                    <label>Enter Password</label>
                 </div>
 
                 <button class="btn">Login</button>
 
                 <p class="text">Don't have an account?
-                    <a href="#">Register</a>
+                    <a href="./register.html">Register</a>
                 </p>
 
             </form>
 
             
         </div>
-        <script src="public/login/script.js"></script>
+        <script src="./script.js"></script>
     </body>
 </html>
