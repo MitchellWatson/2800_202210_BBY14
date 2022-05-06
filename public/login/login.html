@@ -3,18 +3,23 @@
     <head> 
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="./stylesheet.css" />
+        <link rel="stylesheet" href="public/login/stylesheet.css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
         <title>Gabify</title>
     </head>
     <body> 
+        <img src="public/login/gabify.png">
+        <h1>Gabify</h1>
         <div class="container">
-            <h1>Login</h1>
+            <h2>Login</h2>
 
 
             <form action="/user" method="post">
 
                 <div class="form-control">
-                    <input type="email" name="email" id="email" required>
+                    <input type="text" name="email" id="email" required>
                     <label>Enter Email</label>   
                 </div>
 
@@ -33,6 +38,6 @@
 
             
         </div>
-        <script src="./script.js"></script>
+        <script src="public/login/script.js"></script>
     </body>
 </html>
