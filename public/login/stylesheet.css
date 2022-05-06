@@ -9,7 +9,7 @@
 
 
 body {
-    background-color: rgb(255, 255, 255);
+    background-color: rgb(46, 196, 182);
     color: rgb(78, 78, 78);
     font-family: 'Muli', sans-serif;
     display: flex;
@@ -17,9 +17,8 @@ body {
     align-items: center;
     justify-content: center;
     height: 100vh; /*vh = viewport height*/
-    overflow: hidden; /**hides the scrollbar default view*/
     margin: 0% auto;
-    font-family: 'Quicksand', sans-serif;
+    /* font-family: 'Quicksand', sans-serif; */
 }
 
 h1 {
@@ -29,9 +28,10 @@ h1 {
 }
 
 .container {
-    background-color: rgb(255, 255, 255);
+    background-color: rgb(203, 243, 240);
     padding: 20px 40px;
     border-radius: 10px;
+    margin: 50px;
 }
 
 .container h2 {
@@ -92,10 +92,10 @@ h1 {
     border-bottom-color: rgb(0, 190, 184);
 }
 
-.form-control:hover {
+/* .form-control:hover {
     background-color: #ededed;
     border-radius: 15px;
-}
+} */
 
 .form-control label {
     position: absolute;
@@ -116,3 +116,9 @@ h1 {
     transform: translateY(-35px);
 }
 
+.logo{
+    width: 300px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}

@@ -3,20 +3,21 @@
     <head> 
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="public/login/stylesheet.css" />
+        <!-- <link rel="stylesheet" href="public/login/stylesheet.css" /> -->
+        <link rel="stylesheet" href="./stylesheet.css" />
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
         <title>Gabify</title>
     </head>
     <body> 
-        <img src="public/login/gabify.png">
-        <h1>Gabify</h1>
+        <!-- <img src="public/login/gabify.png"> -->
+        <img class= "logo" src="./gabify.png">
         <div class="container">
             <h2>Login</h2>
 
-
-            <form action="/user" method="post">
+            <!-- <form action="/user" method="post"> -->
+            <form action="./user.html">
 
                 <div class="form-control">
                     <input type="text" name="email" id="email" required>
@@ -28,7 +29,7 @@
                     <label>Enter Password</label>
                 </div>
 
-                <button class="btn">Login</button>
+                <button class="btn" href="./user.html">Login</button>
 
                 <p class="text">Don't have an account?
                     <a href="./register.html">Register</a>
@@ -38,6 +39,7 @@
 
             
         </div>
-        <script src="public/login/script.js"></script>
+        <!-- <script src="public/login/script.js"></script> -->
+        <script src="./script.js"></script>
     </body>
 </html>
