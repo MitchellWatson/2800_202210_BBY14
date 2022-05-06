@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const sessions = require('express-session');
 const mysql = require('mysql');
 const path = require('path');
+const { redirect } = require('express/lib/response');
 
 
 //Initialization of express app
@@ -42,31 +43,18 @@ app.use(sessions({
     //cookie-parser middleware
     app.use(cookieParser());
 
-<<<<<<< HEAD
     // app.use(express.static(path.join(__dirname, 'static')));
-=======
-
->>>>>>> 3242f634bd6e5700ac06859bc8db2cc8154d50db
 
 //routes
     //http://localhost:8000/ to serve the HTML form to client, if logged in display log out link
     app.get('/', (request,response) => {
        
         if(request.session.loggedin) {
-<<<<<<< HEAD
-            response.send("Welcome User <a href=\'/logout'>click to logout</a>"); //change this to be if user admin vs if user regular
-=======
-            response.send("Welcome User <a href=\'/logout'>click to logout</a>"); 
->>>>>>> 3242f634bd6e5700ac06859bc8db2cc8154d50db
+            response.sendFile('/public/user/user.html', {root:__dirname}); //change this to be if user admin vs if user regular
         } else 
             response.sendFile('/public/login/login.html', {root:__dirname});
     });
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 3242f634bd6e5700ac06859bc8db2cc8154d50db
 // http://localhost:8000/user
 app.post('/user', (request, response) => {
 	// Store the input fields
@@ -82,11 +70,26 @@ app.post('/user', (request, response) => {
 			// If the account exists in DB
 			if (results.length > 0) {
 				// Authenticate the user/session
+
 				request.session.loggedin = true;
 				request.session.email = email;   
-                response.send(`Welcome ${email} <a href=\'/logout'>click to logout</a>`)
+
+                connection.query('SELECT admin FROM login WHERE email = ?', email, (error, results, fields) => {
+                   console.log(results);
+                   if (error) throw error;
+                   
+                   var isAdmin = JSON.stringify(results);
+                   console.log(isAdmin);
+                   if (isAdmin == `[{"admin":1}]`) {
+                      
+                   }
+                    response.end();
+                });
+
+                response.redirect('/public/user/user.html');
+                // response.send(`Welcome ${email} <a href=\'/logout'>click to logout</a>`)
 			} else {
-				response.send('Incorrect Username and/or Password!');
+				response.redirect('/public/register.html');
 			}			
 			response.end();
 		});
@@ -94,6 +97,10 @@ app.post('/user', (request, response) => {
 		response.send('Please enter Username and Password!');
 		response.end();
 	}
+});
+
+app.post('/login', (request, response) => {
+    response.redirect('/');
 });
 
 
@@ -111,56 +118,4 @@ app.get('/logout', (req,res) => {
 app.listen(PORT, () => 
 console.log(`Server running on port ${PORT}`)
 );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<<<<<<< HEAD
-// //routes
-//     //http://localhost:8000/ to serve the HTML form to client, if logged in display log out link
-//     app.get('/', (req,res) => {
-//         session=req.session;
-//         if(session.userid) {
-//             res.send("Welcome User <a href=\'/logout'>click to logout</a>"); //change this to be if user admin vs if user regular
-            
-//         } else 
-//             res.sendFile('public/login.html', {root:__dirname});
-//     });
-
-
-//             //http://localhost:4000/user to create a session,
-//         // if successful login user granted access and server will create a temp user session with a random string as session id and save that string into cookie
-//      
-
-    
-
-//     //http://localhost:8000/logout
-//         app.get('/logout', (req,res) => {
-//             req.session.destroy();
-//             res.redirect('/');
-//         });
-
-//     app.listen(PORT, () => 
-//         console.log(`Server running on port ${PORT}`)
-//     );
-
-
-
-
-
-
-
-=======
->>>>>>> 3242f634bd6e5700ac06859bc8db2cc8154d50db
-
     
