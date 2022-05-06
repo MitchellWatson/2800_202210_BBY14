@@ -42,29 +42,6 @@ app.use(sessions({
     //cookie-parser middleware
     app.use(cookieParser());
 
-    // app.use(express.static(path.join(__dirname, 'static')));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //routes
@@ -130,40 +107,6 @@ console.log(`Server running on port ${PORT}`)
 
 
 
-
-
-
-
-
-
-
-// //routes
-//     //http://localhost:8000/ to serve the HTML form to client, if logged in display log out link
-//     app.get('/', (req,res) => {
-//         session=req.session;
-//         if(session.userid) {
-//             res.send("Welcome User <a href=\'/logout'>click to logout</a>"); //change this to be if user admin vs if user regular
-            
-//         } else 
-//             res.sendFile('public/login.html', {root:__dirname});
-//     });
-
-
-//             //http://localhost:4000/user to create a session,
-//         // if successful login user granted access and server will create a temp user session with a random string as session id and save that string into cookie
-//      
-
-    
-
-//     //http://localhost:8000/logout
-//         app.get('/logout', (req,res) => {
-//             req.session.destroy();
-//             res.redirect('/');
-//         });
-
-//     app.listen(PORT, () => 
-//         console.log(`Server running on port ${PORT}`)
-//     );
 
 
 
