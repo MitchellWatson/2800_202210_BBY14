@@ -103,6 +103,10 @@ app.post('/login', (request, response) => {
     response.redirect('/');
 });
 
+app.post('/logout', (request, response) => {
+    response.redirect('/');
+});
+
 
 
 
