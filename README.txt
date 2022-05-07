@@ -7,3 +7,10 @@ Not complete:
 - Doesnt use sessions
 - Log/Landing refresh
 
+Ryan Chau A01038982 Set 1B
+
+Mitchell Watson A01236580 Set 2A
+
+Basillio Kim A01279339 Set 2A
+
+Jackie Ma A00889988 Set 1D
