@@ -1,4 +1,6 @@
 
+'use strict';
+
 //importing all the Node.js libraries from dependencies downloaded
 const express = require('express');
 const cookieParser = require("cookie-parser");
@@ -38,19 +40,19 @@ app.use(sessions({
     app.use(express.urlencoded({ extended: true}));
     //serving public file
     app.use(express.static(__dirname));
-
+    app.use(express.static("./"));
 //Set the cookie-parser
     //cookie-parser middleware
     app.use(cookieParser());
 
-    // app.use(express.static(path.join(__dirname, 'static')));
+
 
 //routes
     //http://localhost:8000/ to serve the HTML form to client, if logged in display log out link
     app.get('/', (request,response) => {
        
         if(request.session.loggedin) {
-            response.sendFile('/public/user/user.html', {root:__dirname}); //change this to be if user admin vs if user regular
+            response.sendFile('/user/user.html', {root:__dirname});
         } else 
             response.sendFile('/public/login/login.html', {root:__dirname});
     });
@@ -60,12 +62,12 @@ app.post('/user', (request, response) => {
 	// Store the input fields
 	let email = request.body.email;
 	let password = request.body.password;
-    
+
 
 	// Non empty fields
 	if (email && password) {
 		// Execute sql query
-		connection.query('SELECT * FROM login WHERE email = ? AND password = ?', [email, password], function(error, results, fields) {
+		connection.query('SELECT * FROM login WHERE email = ? AND password = ?', [email, password], function(error, results) {
 			if (error) throw error;
 			// If the account exists in DB
 			if (results.length > 0) {
@@ -74,20 +76,17 @@ app.post('/user', (request, response) => {
 				request.session.loggedin = true;
 				request.session.email = email;   
 
-                connection.query('SELECT admin FROM login WHERE email = ?', email, (error, results, fields) => {
-                   console.log(results);
+                connection.query('SELECT admin FROM login WHERE email = ?', email, (error, results) => {
+
                    if (error) throw error;
                    
                    var isAdmin = JSON.stringify(results);
-                   console.log(isAdmin);
+                   
                    if (isAdmin == `[{"admin":1}]`) {
-                    
+                    response.sendFile('/public/login/admin.html', {root:__dirname});
                    } 
-                  
                 });
-
-                response.redirect('/public/user/user.html');
-                
+                response.redirect('/public/user/user.html');    
 			} else {
 				response.redirect('/public/register.html');
 			}			
@@ -104,6 +103,7 @@ app.post('/login', (request, response) => {
 });
 
 app.post('/logout', (request, response) => {
+    request.session.destroy();
     response.redirect('/');
 });
 
