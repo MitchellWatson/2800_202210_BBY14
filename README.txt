@@ -11,3 +11,8 @@ Not Complete:
 - Content only for regular user
 - Doesnt use sessions
 - Log/Landing refresh
+
+Code Attribution:
+gabify.js - COMP 1537 assignment & Princeton
+login.js - COMP 1537 assignment
+skeleton.js - COMP 1537 assignment & COMP 1800 demo

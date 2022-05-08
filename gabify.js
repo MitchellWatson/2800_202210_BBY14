@@ -1,4 +1,5 @@
-// "use strict";
+// Code to do server side is adapted from a COMP 1537 assignment.
+"use strict";
 const express = require("express");
 const session = require("express-session");
 const fs = require("fs");
@@ -29,8 +30,8 @@ app.get("/", function (req, res) {
 });
 
 app.get("/profile", function (req, res) {
-    // Check if user properly authenticated and logged in
     if (req.session.loggedIn) {
+        // This block of code to do admin authentication is from Princeton.
         if (req.session.userType) {
             let profile = fs.readFileSync("./app/html/admin.html", "utf8");
             res.send(profile);
@@ -53,15 +54,10 @@ app.post("/login", function (req, res) {
         password: "",
         multipleStatements: "true"
     });
-
     connection.connect();
-    // Checks if user typed in matching email and password
+    // This block of code to do admin authentication is adapted Princeton's.
     const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
     connection.query(loginInfo, function (error, results, fields) {
-        /* If there is an error, alert user of error
-        *  If the length of results array is 0, then there was no matches in database
-        *  If no error, then it is valid login and save info for session
-        */
         if (error) {
             // change this to notify user of error
         } else if (results[1].length == 0) {

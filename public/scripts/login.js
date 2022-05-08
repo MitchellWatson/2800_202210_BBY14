@@ -1,12 +1,12 @@
-// "use strict";
+// Code to do client side is adapted from a COMP 1537 assignment.
+"use strict";
 ready(function () {
     console.log("Client script loaded.");
-  
+
     function ajaxGET(url, callback) {
       const xhr = new XMLHttpRequest();
       xhr.onload = function () {
         if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-          //console.log('responseText:' + xhr.responseText);
           callback(this.responseText);
   
         } else {
