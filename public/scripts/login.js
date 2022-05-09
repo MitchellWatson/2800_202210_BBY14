@@ -43,7 +43,7 @@ ready(function () {
         if (data) {
           let dataParsed = JSON.parse(data);
           if (dataParsed.status == "fail") {
-            document.getElementById("incorrect").innerHTML = dataParsed.message;
+            document.getElementById("incorrect").innerHTML = dataParsed.msg;
           } else {
             window.location.replace("/profile");
           }
