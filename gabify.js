@@ -34,26 +34,6 @@ app.get("/", function (req, res) {
     }
 });
 
-// app.get("/profile", function (req, res) {
-
-//     if (req.session.loggedIn ) {
-//         if (req.session.userType) {
-//             let profile = fs.readFileSync("./app/html/admin.html", "utf8");
-//             // let profileDOM = new JSDOM(profile);
-//             // let profileName = profileDOM.window.document.createElement("p");
-//             // profileName.setAttribute("class", "welcome");
-//             // let profileWelcome = profileDOM.window.document.querySelector("navPlaceholder");
-//             // profileWelcome.insertAdjacentElement("beforeend", profileName);
-//             res.send(profile);
-//         } else {
-//             let profile = fs.readFileSync("./app/html/profile.html", "utf8");
-//             res.send(profile);
-//         }
-//     } else {
-//         res.redirect("/");
-//     }
-// });
-
 
 
 
@@ -63,10 +43,22 @@ app.get("/profile", function (req, res) {
     if (req.session.loggedIn) {
         if (req.session.userType) {
             let profile = fs.readFileSync("./app/html/admin.html", "utf8");
-            res.send(profile);
+            let profileDOM = new JSDOM(profile);
+            let profileName = profileDOM.window.document.createElement("p");
+            profileName.setAttribute("class", "welcomeBack");
+            profileName.insertAdjacentText("beforeend", `Welcome back admin ${req.session.name}`);
+            let profileWelcome = profileDOM.window.document.querySelector("#welcome");
+            profileWelcome.insertAdjacentElement("beforeend", profileName);
+            res.send(profileDOM.serialize());
         } else {
             let profile = fs.readFileSync("./app/html/profile.html", "utf8");
-            res.send(profile);
+            let profileDOM = new JSDOM(profile);
+            let profileName = profileDOM.window.document.createElement("p");
+            profileName.setAttribute("class", "welcomeBack");
+            profileName.insertAdjacentText("beforeend", `Welcome back user ${req.session.name}`);
+            let profileWelcome = profileDOM.window.document.querySelector("#welcome");
+            profileWelcome.insertAdjacentElement("beforeend", profileName);
+            res.send(profileDOM.serialize());
         }
     } else {
         // not logged in - no session and no access, redirect to home!
