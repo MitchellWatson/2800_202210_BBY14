@@ -3,10 +3,18 @@ const express = require("express");
 const session = require("express-session");
 const fs = require("fs");
 const app = express();
-const mysql = require("mysql2/promise");
+// const mysql = require("mysql2/promise");
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 
+//connection
+const mysql = require("mysql2");
+const connection = mysql.createConnection({
+    host: "127.0.0.1",
+    user: "root",
+    password: "password",
+    multipleStatements: "true"
+    });
 
 
 app.use(express.json());
@@ -35,15 +43,19 @@ app.get("/", function (req, res) {
 });
 
 
-
-
-
 app.get("/profile", function (req, res) {
     // Check if user properly authenticated and logged in
     if (req.session.loggedIn) {
         if (req.session.userType) {
             let profile = fs.readFileSync("./app/html/admin.html", "utf8");
             let profileDOM = new JSDOM(profile);
+
+            let headerDOC = fs.readFileSync("./app/html/nav.html", "utf8");
+            let headerDOM = new JSDOM(headerDOC)
+
+            profileDOM.window.document.querySelector("#header").innerHTML 
+                = headerDOM.window.document.querySelector("#header").innerHTML;
+
             let profileName = profileDOM.window.document.createElement("p");
             profileName.setAttribute("class", "welcomeBack");
             profileName.insertAdjacentText("beforeend", `Welcome back admin ${req.session.name}`);
@@ -53,6 +65,13 @@ app.get("/profile", function (req, res) {
         } else {
             let profile = fs.readFileSync("./app/html/profile.html", "utf8");
             let profileDOM = new JSDOM(profile);
+
+            let headerDOC = fs.readFileSync("./app/html/nav.html", "utf8");
+            let headerDOM = new JSDOM(headerDOC)
+
+            profileDOM.window.document.querySelector("#header").innerHTML 
+                = headerDOM.window.document.querySelector("#header").innerHTML;
+
             let profileName = profileDOM.window.document.createElement("p");
             profileName.setAttribute("class", "welcomeBack");
             profileName.insertAdjacentText("beforeend", `Welcome back user ${req.session.name}`);
@@ -66,15 +85,11 @@ app.get("/profile", function (req, res) {
     }
 });
 
+
+
 app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
-    const mysql = require("mysql2");
-    const connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: "password",
-        multipleStatements: "true"
-    });
+    
 
     connection.connect();
     // Checks if user typed in matching email and password
@@ -118,6 +133,42 @@ app.get("/logout", function (req, res) {
     }
 });
 
+app.get("/redirectToUsers", function (req, res) {
+    if (req.session.loggedIn) {
+        if(req.session.userType) {
+            connection.connect();
+            let doc = fs.readFileSync("./app/html/userProfiles.html", "utf8");
+            let adminDoc = new JSDOM(doc);
+
+            let cardDoc = fs.readFileSync("./app/html/profileCards.html", "utf8");
+            let cardDOM = new JSDOM(cardDoc);
+
+            const getUsers = `USE comp2800; SELECT * FROM bby_users;`;
+            let numUsers;
+            
+            connection.query(getUsers, function (error, results, fields) {
+               numUsers = results; 
+               
+            });
+
+
+            for(let x = 0; x < numUsers; x++) {
+                adminDoc.window.document.querySelector("#main").innerHTML 
+                    += cardDOM.window.document.querySelector(".card").innerHTML;
+            }
+
+            res.send(adminDoc.serialize());
+        }
+    } else {
+        let redirect = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(redirect);
+    }
+    connection.end();
+});
+
 let port = 8000;
 app.listen(port, function () {
 });
+
+
+module.exports = connection;
