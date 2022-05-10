@@ -82,7 +82,7 @@ app.post("/login", function (req, res) {
     const connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         multipleStatements: "true"
     });
 
