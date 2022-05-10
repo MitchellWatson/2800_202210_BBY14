@@ -6,5 +6,22 @@
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
     "nodemon": "^2.0.16"
-  }
+  },
+  "name": "2800_202210_bby14",
+  "description": "[Basillio Kim], [A01279339], [2A]\r [Jackie Ma], [A00889988], [1D],\r [Mitchell Watson], [A01236580], [2A]\r [Ryan Chau], [A01038982], [1B],",
+  "version": "1.0.0",
+  "main": "gabify.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MitchellWatson/2800_202210_BBY14.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MitchellWatson/2800_202210_BBY14/issues"
+  },
+  "homepage": "https://github.com/MitchellWatson/2800_202210_BBY14#readme"
 }
