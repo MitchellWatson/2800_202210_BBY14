@@ -34,7 +34,17 @@ app.get("/", function (req, res) {
     }
 });
 
-
+app.get("/game", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/game.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+        res.send(profileDOM.serialize());
+    } 
+     else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
 
 
 
@@ -46,7 +56,7 @@ app.get("/profile", function (req, res) {
             let profileDOM = new JSDOM(profile);
             let profileName = profileDOM.window.document.createElement("p");
             profileName.setAttribute("class", "welcomeBack");
-            profileName.insertAdjacentText("beforeend", `Welcome back admin ${req.session.name}`);
+            profileName.insertAdjacentText("beforeend", `Welcome back, ${req.session.name}`);
             let profileWelcome = profileDOM.window.document.querySelector("#welcome");
             profileWelcome.insertAdjacentElement("beforeend", profileName);
             res.send(profileDOM.serialize());
@@ -55,7 +65,7 @@ app.get("/profile", function (req, res) {
             let profileDOM = new JSDOM(profile);
             let profileName = profileDOM.window.document.createElement("p");
             profileName.setAttribute("class", "welcomeBack");
-            profileName.insertAdjacentText("beforeend", `Welcome back user ${req.session.name}`);
+            profileName.insertAdjacentText("beforeend", `Welcome back, ${req.session.name}`);
             let profileWelcome = profileDOM.window.document.querySelector("#welcome");
             profileWelcome.insertAdjacentElement("beforeend", profileName);
             res.send(profileDOM.serialize());
@@ -72,7 +82,7 @@ app.post("/login", function (req, res) {
     const connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "password",
+        password: "passwordSQL",
         multipleStatements: "true"
     });
 
