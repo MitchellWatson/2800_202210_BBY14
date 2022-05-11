@@ -34,6 +34,20 @@ app.get("/", function (req, res) {
     }
 });
 
+app.get("/game", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/game.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+        res.send(profileDOM.serialize());
+    } 
+     else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
+
+
+
 app.get("/profile", function (req, res) {
     
     // global.document = new JSDOM('/profile').window.document;
@@ -43,10 +57,22 @@ app.get("/profile", function (req, res) {
     if (req.session.loggedIn ) {
         if (req.session.userType) {
             let profile = fs.readFileSync("./app/html/admin.html", "utf8");
-            res.send(profile);
+            let profileDOM = new JSDOM(profile);
+            let profileName = profileDOM.window.document.createElement("p");
+            profileName.setAttribute("class", "welcomeBack");
+            profileName.insertAdjacentText("beforeend", `Welcome back, ${req.session.name}`);
+            let profileWelcome = profileDOM.window.document.querySelector("#welcome");
+            profileWelcome.insertAdjacentElement("beforeend", profileName);
+            res.send(profileDOM.serialize());
         } else {
             let profile = fs.readFileSync("./app/html/profile.html", "utf8");
-            res.send(profile);
+            let profileDOM = new JSDOM(profile);
+            let profileName = profileDOM.window.document.createElement("p");
+            profileName.setAttribute("class", "welcomeBack");
+            profileName.insertAdjacentText("beforeend", `Welcome back, ${req.session.name}`);
+            let profileWelcome = profileDOM.window.document.querySelector("#welcome");
+            profileWelcome.insertAdjacentElement("beforeend", profileName);
+            res.send(profileDOM.serialize());
         }
     } else {
         res.redirect("/");
