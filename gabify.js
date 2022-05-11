@@ -35,13 +35,14 @@ const conn = mysql.createConnection({
 
 
 app.get("/", function (req, res) {
-    if (req.session.loggedIn) {
-        res.redirect("/profile");
-    } 
-     else {
-        let doc = fs.readFileSync("./app/html/login.html", "utf8");
-        res.send(doc);
-    }
+    // if (req.session.loggedIn) {
+    //     res.redirect("/profile");
+    // } 
+    //  else {
+    //     let doc = fs.readFileSync("./app/html/login.html", "utf8");
+    //     res.send(doc);
+    // }
+    res.redirect("/profile");
 });
 
 app.get("/profile", function (req, res) {
