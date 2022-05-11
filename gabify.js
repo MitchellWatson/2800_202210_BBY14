@@ -165,9 +165,10 @@ app.get("/logout", function (req, res) {
 
 // });
 
-let port = 8000;
-app.listen(port, function () {
-});
+// let port = 8000;
+// app.listen(port, function () {
+// });
 
+app.listen(process.env.PORT || 3000);
 
 module.exports = connection;
