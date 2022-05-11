@@ -3,18 +3,10 @@ const express = require("express");
 const session = require("express-session");
 const fs = require("fs");
 const app = express();
-// const mysql = require("mysql2/promise");
+const mysql = require("mysql2/promise");
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 
-//connection
-const mysql = require("mysql2");
-const connection = mysql.createConnection({
-    host: "127.0.0.1",
-    user: "root",
-    password: "password",
-    multipleStatements: "true"
-    });
 
 
 app.use(express.json());
@@ -32,6 +24,16 @@ app.use(session({
     })
 );
 
+const conn = mysql.createConnection({
+    host: "@us-cdbr-east-05.cleardb.net",
+    user: "b86e6aaba404f8",
+    password: "0429aa8b",
+    //change this to COMP2800
+    database: "heroku_6b142d243b13f04"
+    // multipleStatements: "true"
+});
+
+
 app.get("/", function (req, res) {
     if (req.session.loggedIn) {
         res.redirect("/profile");
@@ -42,81 +44,75 @@ app.get("/", function (req, res) {
     }
 });
 
-
 app.get("/profile", function (req, res) {
-    // Check if user properly authenticated and logged in
-    if (req.session.loggedIn) {
+    
+    // global.document = new JSDOM('/profile').window.document;
+ 
+    // const x = document.getElementById("test").innerHTML;
+    // x.innerHTML = `Welcome back ${req.session.userFirstName}`;
+    if (req.session.loggedIn ) {
         if (req.session.userType) {
             let profile = fs.readFileSync("./app/html/admin.html", "utf8");
-            let profileDOM = new JSDOM(profile);
-
-            let headerDOC = fs.readFileSync("./app/html/nav.html", "utf8");
-            let headerDOM = new JSDOM(headerDOC)
-
-            profileDOM.window.document.querySelector("#header").innerHTML 
-                = headerDOM.window.document.querySelector("#header").innerHTML;
-
-            let profileName = profileDOM.window.document.createElement("p");
-            profileName.setAttribute("class", "welcomeBack");
-            profileName.insertAdjacentText("beforeend", `Welcome back admin ${req.session.name}`);
-            let profileWelcome = profileDOM.window.document.querySelector("#welcome");
-            profileWelcome.insertAdjacentElement("beforeend", profileName);
-            res.send(profileDOM.serialize());
+            res.send(profile);
         } else {
             let profile = fs.readFileSync("./app/html/profile.html", "utf8");
-            let profileDOM = new JSDOM(profile);
-
-            let headerDOC = fs.readFileSync("./app/html/nav.html", "utf8");
-            let headerDOM = new JSDOM(headerDOC)
-
-            profileDOM.window.document.querySelector("#header").innerHTML 
-                = headerDOM.window.document.querySelector("#header").innerHTML;
-
-            let profileName = profileDOM.window.document.createElement("p");
-            profileName.setAttribute("class", "welcomeBack");
-            profileName.insertAdjacentText("beforeend", `Welcome back user ${req.session.name}`);
-            let profileWelcome = profileDOM.window.document.querySelector("#welcome");
-            profileWelcome.insertAdjacentElement("beforeend", profileName);
-            res.send(profileDOM.serialize());
+            res.send(profile);
         }
     } else {
-        // not logged in - no session and no access, redirect to home!
         res.redirect("/");
     }
 });
 
 
 
-app.post("/login", function (req, res) {
-    res.setHeader("Content-Type", "application/json");
-    
+mysql://b86e6aaba404f8:0429aa8b@us-cdbr-east-05.cleardb.net/heroku_6b142d243b13f04?reconnect=true
 
-    connection.connect();
-    // Checks if user typed in matching email and password
-    const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
-    connection.query(loginInfo, function (error, results, fields) {
-        /* If there is an error, alert user of error
-        *  If the length of results array is 0, then there was no matches in database
-        *  If no error, then it is valid login and save info for session
-        */
-        if (error) {
-            // change this to notify user of error
-        } else if (results[1].length == 0) {
-            res.send({ status: "fail", msg: "Incorrect email or password" });
-        } else {
-            let validUserInfo = results[1][0];
-            req.session.loggedIn = true;
-            req.session.email = validUserInfo.email;
-            req.session.name = validUserInfo.first_name;
-            req.session.identity = validUserInfo.ID;
-            req.session.userType = validUserInfo.is_admin;
-            req.session.save(function (err) {
-                // session saved. for analytics we could record this in db
-            })
-            res.send({ status: "success", msg: "Logged in." });
-        }
-    })
-    connection.end();
+
+app.post("/login", async (req, res) => {
+    res.setHeader("Content-Type", "application/json");
+
+    
+  let username = req.body.email;
+  let password = req.body.password;
+
+
+    const connection = await mysql.createConnection({
+        host: "@us-cdbr-east-05.cleardb.net",
+        user: "b86e6aaba404f8",
+        password: "0429aa8b",
+        //change this to COMP2800
+        database: "heroku_6b142d243b13f04"
+        // multipleStatements: "true"
+    });
+
+let [results, fields] = await connection.query("SELECT * FROM bby14_users WHERE email = ? AND password = ?", [username, password]);
+
+
+if (results.length === 0) {
+    res.send({ "status": "fail", "message": "Incorrect username or password" });
+  } else {
+
+    let user = results[0];
+
+    let userId = user.ID;
+    let userFirstName = user.first_name;
+    let userLastName = user.last_name;
+    let userEmail = user.email;
+    let userPass = user.password;
+    let isAdmin = user.is_admin;
+
+    req.session.loggedIn = true;
+
+    req.session.username = userId;
+    req.session.firstName = userFirstName;
+    req.session.lastName = userLastName;
+    req.session.email = userEmail;
+    req.session.password = userPass;
+    req.session.usertype = isAdmin;
+
+
+    res.send({ status: "success", message: "Logged in" });
+  }
 });
 
 app.get("/logout", function (req, res) {
@@ -133,42 +129,5 @@ app.get("/logout", function (req, res) {
     }
 });
 
-app.get("/redirectToUsers", function (req, res) {
-    if (req.session.loggedIn) {
-        if(req.session.userType) {
-            connection.connect();
-            let doc = fs.readFileSync("./app/html/userProfiles.html", "utf8");
-            let adminDoc = new JSDOM(doc);
-
-            let cardDoc = fs.readFileSync("./app/html/profileCards.html", "utf8");
-            let cardDOM = new JSDOM(cardDoc);
-
-            const getUsers = `USE comp2800; SELECT * FROM bby_users;`;
-            let numUsers;
-            
-            connection.query(getUsers, function (error, results, fields) {
-               numUsers = results; 
-               
-            });
-
-
-            for(let x = 0; x < numUsers; x++) {
-                adminDoc.window.document.querySelector("#main").innerHTML 
-                    += cardDOM.window.document.querySelector(".card").innerHTML;
-            }
-
-            res.send(adminDoc.serialize());
-        }
-    } else {
-        let redirect = fs.readFileSync("./app/html/login.html", "utf8");
-        res.send(redirect);
-    }
-    connection.end();
-});
-
 let port = 8000;
-app.listen(port, function () {
-});
-
-
-module.exports = connection;
+app.listen(process.env.PORT || 3000);
