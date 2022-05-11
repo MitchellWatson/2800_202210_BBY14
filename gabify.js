@@ -133,37 +133,37 @@ app.get("/logout", function (req, res) {
     }
 });
 
-app.get("/redirectToUsers", function (req, res) {
-    if (req.session.loggedIn) {
-        if(req.session.userType) {
-            connection.connect();
-             const getUsers = `USE comp2800; SELECT * FROM bby_users;`;
-            let doc = fs.readFileSync("./app/html/userProfiles.html", "utf8");
-            let adminDoc = new JSDOM(doc);
+// app.get("/redirectToUsers", function (req, res) {
+//     if (req.session.loggedIn) {
+//         if(req.session.userType) {
+//             connection.connect();
+//              const getUsers = `USE comp2800; SELECT * FROM bby_users;`;
+//             let doc = fs.readFileSync("./app/html/userProfiles.html", "utf8");
+//             let adminDoc = new JSDOM(doc);
 
-            let cardDoc = fs.readFileSync("./app/html/profileCards.html", "utf8");
-            let cardDOM = new JSDOM(cardDoc);
+//             let cardDoc = fs.readFileSync("./app/html/profileCards.html", "utf8");
+//             let cardDOM = new JSDOM(cardDoc);
 
            
-            let numUsers = 9;
+//             let numUsers = 9;
 
 
-            for(let x = 0; x < numUsers; x++) {
-                // adminDoc.window.document.querySelector("#main").innerHTML 
-                //     += cardDOM.window.document.querySelector(".card").innerHTML;
-                let usersList = adminDoc.window.document.querySelector("#main").innerHTML;
-                let userCards = cardDOM.window.document.querySelector(".card").innerHTML;
-               usersList.insertAdjacentElement("beforeend", userCards);
-            }
+//             for(let x = 0; x < numUsers; x++) {
+//                 // adminDoc.window.document.querySelector("#main").innerHTML 
+//                 //     += cardDOM.window.document.querySelector(".card").innerHTML;
+//                 let usersList = adminDoc.window.document.querySelector("#main").innerHTML;
+//                 let userCards = cardDOM.window.document.querySelector(".card").innerHTML;
+//                usersList.insertAdjacentElement("beforeend", userCards);
+//             }
 
-            res.send(adminDoc.serialize());
-        }
-    } else {
-        let redirect = fs.readFileSync("./app/html/login.html", "utf8");
-        res.send(redirect);
-    }
+//             res.send(adminDoc.serialize());
+//         }
+//     } else {
+//         let redirect = fs.readFileSync("./app/html/login.html", "utf8");
+//         res.send(redirect);
+//     }
 
-});
+// });
 
 let port = 8000;
 app.listen(port, function () {
