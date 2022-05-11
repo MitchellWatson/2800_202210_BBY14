@@ -24,25 +24,14 @@ app.use(session({
     })
 );
 
-const conn = mysql.createConnection({
-    host: "@us-cdbr-east-05.cleardb.net",
-    user: "b86e6aaba404f8",
-    password: "0429aa8b",
-    //change this to COMP2800
-    database: "heroku_6b142d243b13f04"
-    // multipleStatements: "true"
-});
-
-
 app.get("/", function (req, res) {
-    // if (req.session.loggedIn) {
-    //     res.redirect("/profile");
-    // } 
-    //  else {
-    //     let doc = fs.readFileSync("./app/html/login.html", "utf8");
-    //     res.send(doc);
-    // }
-    res.redirect("/profile");
+    if (req.session.loggedIn) {
+        res.redirect("/profile");
+    } 
+     else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
 });
 
 app.get("/profile", function (req, res) {
@@ -66,7 +55,7 @@ app.get("/profile", function (req, res) {
 
 
 
-mysql://b86e6aaba404f8:0429aa8b@us-cdbr-east-05.cleardb.net/heroku_6b142d243b13f04?reconnect=true
+
 
 
 app.post("/login", async (req, res) => {
@@ -78,12 +67,12 @@ app.post("/login", async (req, res) => {
 
 
     const connection = await mysql.createConnection({
-        host: "@us-cdbr-east-05.cleardb.net",
-        user: "b86e6aaba404f8",
-        password: "0429aa8b",
+        host: "127.0.0.1",
+        user: "root",
+        password: "password",
         //change this to COMP2800
-        database: "heroku_6b142d243b13f04"
-        // multipleStatements: "true"
+        database: "comp2800",
+        multipleStatements: "true"
     });
 
 let [results, fields] = await connection.query("SELECT * FROM bby14_users WHERE email = ? AND password = ?", [username, password]);
@@ -131,4 +120,5 @@ app.get("/logout", function (req, res) {
 });
 
 let port = 8000;
-app.listen(process.env.PORT || 3000);
+app.listen(port, function () {
+});
