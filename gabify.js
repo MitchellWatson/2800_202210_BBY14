@@ -36,6 +36,14 @@ app.get("/game", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/game.html", "utf8");
         let profileDOM = new JSDOM(profile);
+
+        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+        let navBarDOM = new JSDOM(navBar);
+        let string = `Game`;
+        let t = navBarDOM.window.document.createTextNode(string);
+        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+
+        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
         res.send(profileDOM.serialize());
     } 
      else {
@@ -44,6 +52,45 @@ app.get("/game", function (req, res) {
     }
 });
 
+app.get("/friendFinder", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/friendFinder.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+
+        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+        let navBarDOM = new JSDOM(navBar);
+        let string = `Friend Finder`;
+        let t = navBarDOM.window.document.createTextNode(string);
+        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+
+        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+        res.send(profileDOM.serialize());
+    } 
+     else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
+
+app.get("/user", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/userProfiles.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+
+        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+        let navBarDOM = new JSDOM(navBar);
+        let string = `Profile`;
+        let t = navBarDOM.window.document.createTextNode(string);
+        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+
+        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+        res.send(profileDOM.serialize());
+    } 
+     else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
 
 
 app.get("/profile", function (req, res) {
@@ -70,7 +117,7 @@ app.get("/profile", function (req, res) {
 
             let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
             let navBarDOM = new JSDOM(navBar);
-            let string = `Welcome back, ${req.session.name}`;
+            let string = `Home`;
 
             let t = navBarDOM.window.document.createTextNode(string);
             navBarDOM.window.document.querySelector("#welcome").appendChild(t);
@@ -94,7 +141,7 @@ app.post("/login", function (req, res) {
     const connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "password",
+        password: "passwordSQL",
         multipleStatements: "true"
     });
 
