@@ -44,8 +44,6 @@ app.get("/game", function (req, res) {
 
 
 app.get("/profile", function (req, res) {
-    
-        // This block of code to do admin authentication is from Princeton.
     if (req.session.loggedIn ) {
         if (req.session.userType) {
             let profile = fs.readFileSync("./app/html/admin.html", "utf8");
@@ -76,49 +74,42 @@ app.get("/profile", function (req, res) {
 
 
 
-app.post("/login", async (req, res) => {
+app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
-
-    
-  let username = req.body.email;
-  let password = req.body.password;
-
-
-    const connection = await mysql.createConnection({
+    const mysql = require("mysql2");
+    const connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
         password: "",
         multipleStatements: "true"
     });
 
-let [results, fields] = await connection.query("SELECT * FROM bby14_users WHERE email = ? AND password = ?", [username, password]);
-
-
-if (results.length === 0) {
-    res.send({ "status": "fail", "message": "Incorrect username or password" });
-  } else {
-
-    let user = results[0];
-
-    let userId = user.ID;
-    let userFirstName = user.first_name;
-    let userLastName = user.last_name;
-    let userEmail = user.email;
-    let userPass = user.password;
-    let isAdmin = user.is_admin;
-
-    req.session.loggedIn = true;
-
-    req.session.username = userId;
-    req.session.firstName = userFirstName;
-    req.session.lastName = userLastName;
-    req.session.email = userEmail;
-    req.session.password = userPass;
-    req.session.usertype = isAdmin;
-
-
-    res.send({ status: "success", message: "Logged in" });
-  }
+    connection.connect();
+    // Checks if user typed in matching email and password
+    const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
+    connection.query(loginInfo, function (error, results, fields) {
+        /* If there is an error, alert user of error
+        *  If the length of results array is 0, then there was no matches in database
+        *  If no error, then it is valid login and save info for session
+        */
+        if (error) {
+            // change this to notify user of error
+        } else if (results[1].length == 0) {
+            res.send({ status: "fail", msg: "Incorrect email or password" });
+        } else {
+            let validUserInfo = results[1][0];
+            req.session.loggedIn = true;
+            req.session.email = validUserInfo.email;
+            req.session.name = validUserInfo.first_name;
+            req.session.identity = validUserInfo.ID;
+            req.session.userType = validUserInfo.is_admin;
+            req.session.save(function (err) {
+                // session saved. for analytics we could record this in db
+            })
+            res.send({ status: "success", msg: "Logged in." });
+        }
+    })
+    connection.end();
 });
 
 app.get("/logout", function (req, res) {
@@ -133,7 +124,37 @@ app.get("/logout", function (req, res) {
     }
 });
 
-// /For Milestone hand-ins:
+app.get("/redirectToUsers", function (req, res) {
+    if (req.session.loggedIn) {
+        if(req.session.userType) {
+            connection.connect();
+             const getUsers = `USE comp2800; SELECT * FROM bby_users;`;
+            let doc = fs.readFileSync("./app/html/userProfiles.html", "utf8");
+            let adminDoc = new JSDOM(doc);
+
+            let cardDoc = fs.readFileSync("./app/html/profileCards.html", "utf8");
+            let cardDOM = new JSDOM(cardDoc);
+
+           
+            let numUsers = 9;
+
+
+            for(let x = 0; x < numUsers; x++) {
+                adminDoc.window.document.querySelector("#main").innerHTML 
+                    += cardDOM.window.document.querySelector(".card").innerHTML;
+            //     let usersList = adminDoc.window.document.querySelector("#main").innerHTML;
+            //     let userCards = cardDOM.window.document.querySelector(".card").innerHTML;
+            //    usersList.insertAdjacentElement("beforeend", userCards);
+            }
+            res.send(adminDoc.serialize());
+        }
+    } else {
+        let redirect = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(redirect);
+    }
+});
+
+// //For Milestone hand-ins:
 // let port = 8000;
 // app.listen(port, function () {
 // });
