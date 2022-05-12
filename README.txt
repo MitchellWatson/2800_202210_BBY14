@@ -4,15 +4,4 @@
 [Mitchell Watson], [A01236580], [2A]
 [Ryan Chau], [A01038982], [1B],
 
-Milestone #1 Assignment is 80% complete.
-
-Not Complete:
-- Don't show user names in profile page
-- Content only for regular user
-- Doesnt use sessions
-- Log/Landing refresh
-
-Code Attribution:
-gabify.js - COMP 1537 assignment & Princeton
-login.js - COMP 1537 assignment
-skeleton.js - COMP 1537 assignment & COMP 1800 demo
+Milestone #1 Assignment is 100% complete.

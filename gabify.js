@@ -29,53 +29,97 @@ app.get("/", function (req, res) {
     }
 });
 
-app.get("/profile", function (req, res) {
+app.get("/game", function (req, res) {
     if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/game.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+        res.send(profileDOM.serialize());
+    } 
+     else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
+
+
+
+app.get("/profile", function (req, res) {
+    
         // This block of code to do admin authentication is from Princeton.
+    if (req.session.loggedIn ) {
         if (req.session.userType) {
             let profile = fs.readFileSync("./app/html/admin.html", "utf8");
-            res.send(profile);
+            let profileDOM = new JSDOM(profile);
+            let profileName = profileDOM.window.document.createElement("p");
+            profileName.setAttribute("class", "welcomeBack");
+            profileName.insertAdjacentText("beforeend", `Welcome back, ${req.session.name}`);
+            let profileWelcome = profileDOM.window.document.querySelector("#welcome");
+            profileWelcome.insertAdjacentElement("beforeend", profileName);
+            res.send(profileDOM.serialize());
         } else {
             let profile = fs.readFileSync("./app/html/profile.html", "utf8");
-            res.send(profile);
+            let profileDOM = new JSDOM(profile);
+            let profileName = profileDOM.window.document.createElement("p");
+            profileName.setAttribute("class", "welcomeBack");
+            profileName.insertAdjacentText("beforeend", `Welcome back, ${req.session.name}`);
+            let profileWelcome = profileDOM.window.document.querySelector("#welcome");
+            profileWelcome.insertAdjacentElement("beforeend", profileName);
+            res.send(profileDOM.serialize());
         }
     } else {
-        // not logged in - no session and no access, redirect to home!
         res.redirect("/");
     }
 });
 
-app.post("/login", function (req, res) {
+
+
+
+
+
+app.post("/login", async (req, res) => {
     res.setHeader("Content-Type", "application/json");
-    const mysql = require("mysql2");
-    const connection = mysql.createConnection({
+
+    
+  let username = req.body.email;
+  let password = req.body.password;
+
+
+    const connection = await mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
         password: "",
+        database: "COMP2800",
         multipleStatements: "true"
     });
-    connection.connect();
-    // This block of code to do admin authentication is adapted Princeton's.
-    const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
-    connection.query(loginInfo, function (error, results, fields) {
-        if (error) {
-            // change this to notify user of error
-        } else if (results[1].length == 0) {
-            res.send({ status: "fail", msg: "Incorrect email or password" });
-        } else {
-            let validUserInfo = results[1][0];
-            req.session.loggedIn = true;
-            req.session.email = validUserInfo.email;
-            req.session.name = validUserInfo.first_name;
-            req.session.identity = validUserInfo.ID;
-            req.session.userType = validUserInfo.is_admin;
-            req.session.save(function (err) {
-                // session saved. for analytics we could record this in db
-            })
-            res.send({ status: "success", msg: "Logged in." });
-        }
-    })
-    connection.end();
+
+let [results, fields] = await connection.query("SELECT * FROM bby14_users WHERE email = ? AND password = ?", [username, password]);
+
+
+if (results.length === 0) {
+    res.send({ "status": "fail", "message": "Incorrect username or password" });
+  } else {
+
+    let user = results[0];
+
+    let userId = user.ID;
+    let userFirstName = user.first_name;
+    let userLastName = user.last_name;
+    let userEmail = user.email;
+    let userPass = user.password;
+    let isAdmin = user.is_admin;
+
+    req.session.loggedIn = true;
+
+    req.session.username = userId;
+    req.session.firstName = userFirstName;
+    req.session.lastName = userLastName;
+    req.session.email = userEmail;
+    req.session.password = userPass;
+    req.session.usertype = isAdmin;
+
+
+    res.send({ status: "success", message: "Logged in" });
+  }
 });
 
 app.get("/logout", function (req, res) {
