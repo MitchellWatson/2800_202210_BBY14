@@ -53,7 +53,7 @@ ready(function () {
             window.location.replace("/profile");
           }
         }
-      }, queryString );
+      }, queryString);
     });
   });
   
