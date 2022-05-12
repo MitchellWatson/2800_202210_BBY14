@@ -51,22 +51,31 @@ app.get("/profile", function (req, res) {
   
     if (req.session.loggedIn ) {
         if (req.session.userType) {
+            
             let profile = fs.readFileSync("./app/html/admin.html", "utf8");
             let profileDOM = new JSDOM(profile);
-            let profileName = profileDOM.window.document.createElement("p");
-            profileName.setAttribute("class", "welcomeBack");
-            profileName.insertAdjacentText("beforeend", `Welcome back, ${req.session.name}`);
-            let profileWelcome = profileDOM.window.document.querySelector("#header");
-            profileWelcome.insertAdjacentElement("beforeend", profileName);
+
+            let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+            let navBarDOM = new JSDOM(navBar);
+            let string = `Admin`;
+            let t = navBarDOM.window.document.createTextNode(string);
+            navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+
+            profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
             res.send(profileDOM.serialize());
+
         } else {
             let profile = fs.readFileSync("./app/html/profile.html", "utf8");
             let profileDOM = new JSDOM(profile);
-            let profileName = profileDOM.window.document.createElement("p");
-            profileName.setAttribute("class", "welcomeBack");
-            profileName.insertAdjacentText("beforeend", `Welcome back, ${req.session.name}`);
-            let profileWelcome = profileDOM.window.document.querySelector("#header");
-            profileWelcome.insertAdjacentElement("beforeend", profileName);
+
+            let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+            let navBarDOM = new JSDOM(navBar);
+            let string = `Welcome back, ${req.session.name}`;
+
+            let t = navBarDOM.window.document.createTextNode(string);
+            navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+
+            profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
             res.send(profileDOM.serialize());
         }
     } else {
