@@ -11,7 +11,6 @@
   "description": "[Basillio Kim], [A01279339], [2A]\r [Jackie Ma], [A00889988], [1D],\r [Mitchell Watson], [A01236580], [2A]\r [Ryan Chau], [A01038982], [1B],",
   "version": "1.0.0",
   "main": "gabify.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node gabify.js"
