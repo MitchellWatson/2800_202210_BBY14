@@ -133,7 +133,10 @@ app.get("/logout", function (req, res) {
     }
 });
 
-let port = 8000;
-app.listen(port, function () {
-    console.log("Listening on port " + port + "!");
-});
+// /For Milestone hand-ins:
+// let port = 8000;
+// app.listen(port, function () {
+// });
+
+//For Heroku deployment
+app.listen(process.env.PORT || 3000);
