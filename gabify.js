@@ -95,9 +95,8 @@ app.post("/login", async (req, res) => {
     const connection = await mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "password",
-        //change this to COMP2800
-        database: "comp2800",
+        password: "",
+        database: "COMP2800",
         multipleStatements: "true"
     });
 
