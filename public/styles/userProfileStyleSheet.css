@@ -16,41 +16,15 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh; /*vh = viewport height*/
-    overflow: hidden; /**hides the scrollbar default view*/
+    height: 100%;
     margin: 0;
     
 }
 
-.user-form {
-    width: 100%;
-    max-width: 700px;
-}
-
-.user-form input {
-    width: 100%;
-    display: block;
-    background-color: rgb(46, 196, 182);
-    border: none;
-    border-radius: 10px;
-    color:rgb(18, 17, 17);
-    padding: 1rem;
-    margin-bottom: 2rem;
-    font-family: inherit;
-    font-size: 1rem;
-    box-shadow: 0 5px 10px rgba(154, 160, 185, 0.05), 0 15px 40px rgba(0, 0, 0, 0.1); 
-}
-
-.user-form input::placeholder {
-    color: rgb(18, 17, 17);
-}
-
-.user-form input:focus {
-    outline: none;
-}
 
 .card {
     max-width: 100%;
+    max-height: 70%;
     background-color: rgb(203, 243, 240);
     border-radius: 20px;
     box-shadow: 0 5px 10px rgba(154, 160, 185, 0.05), 0 15px 40px rgba(0, 0, 0, 0.1);
@@ -96,7 +70,7 @@ body {
     margin-left: 0.5rem;
 }
 
-.repo {
+.option {
     text-decoration: none;
     color: #fff;
     background-color: #212a72;
