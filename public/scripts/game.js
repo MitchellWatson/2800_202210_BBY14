@@ -24,7 +24,7 @@ function startGame() {
   score = 0;
   num.innerHTML = "Score: " + score
   start.classList.add('hidden')
-  shuffle = questions.sort(() => Math.random() - 0.75)
+  shuffle = questions.sort(() => Math.random() - 0.5)
   index = 0
   question.classList.remove('hidden')
   setNextQuestion()
@@ -62,7 +62,6 @@ function selectAnswer(e) {
   const selectedButton = e.target
   const correct = selectedButton.dataset.correct
   if (correct && increment) {
-      increment = false;
       score += 10
       num.innerHTML = "Score: " + score
       result.innerHTML = "Correct!"

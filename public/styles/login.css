@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600&display=swap');
 
 /* Universal Selector applies a box sizing to set it to board a box so that if we add any padding/border to element, width doesnt change */
 * {
@@ -6,7 +6,7 @@
 }
 
 body {
-    background-color: rgb(46, 196, 182);
+    background-color: rgb(234, 234, 234);
     color: rgb(78, 78, 78);
     font-family: 'Muli', sans-serif;
     display: flex;
@@ -23,7 +23,7 @@ h2 {
 }
 
 .card {
-    background-color: rgb(203, 243, 240);
+    background-color: rgb(255, 255, 255);
     padding: 20px 40px;
     border-radius: 10px;
     margin: 50px;
@@ -45,14 +45,12 @@ h2 {
 
 .card a {
     text-decoration: none;
-    color: #00887a;
+    color: blue;
 }
 
 #submit {
     cursor: pointer;
-    display: inline-block;
-    width: 100%;
-    background-color: #2EC4B6;
+    background-color: rgb(139, 211, 255);
     padding: 7px;
     font-family: inherit;
     font-size: 16px;
@@ -66,11 +64,11 @@ h2 {
 
 #submit:active {
     transform: scale(0.98);
-    background-color: #27bcad;
+    background-color: #7abaff;
 }
 
 .logo {
-    width: 250px;
+    width: 30vh;
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -78,14 +76,19 @@ h2 {
     top: 5%;
 }
 
+#login {
+justify-content: center;}
+
 input {
     width: 250px;
     padding: 0.5em;
-    margin: 0;
+    margin: 1vh;
     display: inline-block;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 2vh;
 }
 
 form > div {

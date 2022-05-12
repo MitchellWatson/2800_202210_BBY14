@@ -36,9 +36,6 @@ body {
     font-size: 120%;
 }
 
-#status {
-}
-
 #answers {
     display: grid;
     grid-row: 1;
