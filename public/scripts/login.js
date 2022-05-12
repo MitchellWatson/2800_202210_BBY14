@@ -1,6 +1,8 @@
-// "use strict";
+// Code to do client side is adapted from a COMP 1537 assignment.
+"use strict";
 ready(function () {
-  
+    console.log("Client script loaded.");
+
     function ajaxGET(url, callback) {
       const xhr = new XMLHttpRequest();
       xhr.onload = function () {
@@ -8,6 +10,7 @@ ready(function () {
           callback(this.responseText);
   
         } else {
+          console.log(this.status);
         }
       }
       xhr.open("GET", url);
@@ -18,13 +21,14 @@ ready(function () {
       let params = typeof data == 'string' ? data : Object.keys(data).map(
         function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(data[k]) }
       ).join('&');
-      
+      console.log("params in ajaxPOST", params);
   
       const xhr = new XMLHttpRequest();
       xhr.onload = function () {
         if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
           callback(this.responseText);
         } else {
+          console.log(this.status);
         }
       }
       xhr.open("POST", url);
@@ -42,8 +46,9 @@ ready(function () {
       ajaxPOST("/login", function (data) {
         if (data) {
           let dataParsed = JSON.parse(data);
+          console.log(dataParsed);
           if (dataParsed.status == "fail") {
-            document.getElementById("incorrect").innerHTML = dataParsed.message;
+            document.getElementById("errorMsg").innerHTML = dataParsed.msg;
           } else {
             window.location.replace("/profile");
           }
@@ -55,8 +60,10 @@ ready(function () {
   function ready(callback) {
     if (document.readyState != "loading") {
       callback();
+      console.log("ready state is 'complete'");
     } else {
       document.addEventListener("DOMContentLoaded", callback);
+      console.log("Listener was invoked");
     }
   }
   
