@@ -9,7 +9,7 @@ body {
     background-color: rgb(224, 224, 224);
 }
 
-.header {
+#header {
     display: grid;
     grid-column: 1;
     grid-row: 1;
