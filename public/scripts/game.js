@@ -1,4 +1,4 @@
-
+"use strict";
 const num = document.getElementById('score')
 const result = document.getElementById('status')
 
