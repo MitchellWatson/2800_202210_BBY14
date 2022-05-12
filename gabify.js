@@ -6,6 +6,9 @@ const fs = require("fs");
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const mysql = require('mysql2/promise');
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
 
 app.use("/html", express.static("./app/html"));
 app.use("/images", express.static("./public/images"));
@@ -44,6 +47,8 @@ app.get("/game", function (req, res) {
 
 
 app.get("/profile", function (req, res) {
+    
+  
     if (req.session.loggedIn ) {
         if (req.session.userType) {
             let profile = fs.readFileSync("./app/html/admin.html", "utf8");
@@ -51,7 +56,7 @@ app.get("/profile", function (req, res) {
             let profileName = profileDOM.window.document.createElement("p");
             profileName.setAttribute("class", "welcomeBack");
             profileName.insertAdjacentText("beforeend", `Welcome back, ${req.session.name}`);
-            let profileWelcome = profileDOM.window.document.querySelector("#welcome");
+            let profileWelcome = profileDOM.window.document.querySelector("#header");
             profileWelcome.insertAdjacentElement("beforeend", profileName);
             res.send(profileDOM.serialize());
         } else {
@@ -60,7 +65,7 @@ app.get("/profile", function (req, res) {
             let profileName = profileDOM.window.document.createElement("p");
             profileName.setAttribute("class", "welcomeBack");
             profileName.insertAdjacentText("beforeend", `Welcome back, ${req.session.name}`);
-            let profileWelcome = profileDOM.window.document.querySelector("#welcome");
+            let profileWelcome = profileDOM.window.document.querySelector("#header");
             profileWelcome.insertAdjacentElement("beforeend", profileName);
             res.send(profileDOM.serialize());
         }
@@ -80,7 +85,7 @@ app.post("/login", function (req, res) {
     const connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "password",
         multipleStatements: "true"
     });
 
