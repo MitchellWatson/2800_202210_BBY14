@@ -113,9 +113,9 @@ app.get("/user", function (req, res) {
     }
 });
 
-app.get("/profile", function (req, res) {
+app.get("/userProfiles", function (req, res) {
     if (req.session.loggedIn) {
-        let profile = fs.readFileSync("./app/html/profile.html", "utf8");
+        let profile = fs.readFileSync("./app/html/userProfiles.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
@@ -125,9 +125,6 @@ app.get("/profile", function (req, res) {
         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
 
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-        
-        
-        
         
         res.send(profileDOM.serialize());
     } 
@@ -188,13 +185,6 @@ app.get("/main", function (req, res) {
 
 app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
-    const mysql = require("mysql2");
-    // const connection = mysql.createConnection({
-    //     host: "127.0.0.1",
-    //     user: "root",
-    //     password: "password",
-    //     multipleStatements: "true"
-    // });
 
     connection.connect();
     // Checks if user typed in matching email and password
@@ -207,7 +197,7 @@ app.post("/login", function (req, res) {
         if (error) {
             // change this to notify user of error
         } else if (results[1].length == 0) {
-            res.send({ status: "fail", msg: "Incorrect email or password" });
+            res.send({ status: "fail", msg: "Incorrect email or password!" });
         } else {
             let validUserInfo = results[1][0];
             req.session.loggedIn = true;
@@ -288,7 +278,7 @@ const upload = multer({ storage: storage });
 
 
 
-
+app.get()
 
 
 

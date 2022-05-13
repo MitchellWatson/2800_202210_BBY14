@@ -60,7 +60,6 @@ body {
     bottom: 0;
     position: fixed;
     background-color: rgb(255, 255, 255);
-    padding-top: 1%;
     border: 2px rgb(255, 255, 255) solid;
     border-radius: 5px;
     font-size: 3vh;
@@ -94,7 +93,7 @@ body {
 .content {
     display: grid;
     grid-column: 1;
-    grid-row: 2;
+    grid-row: 2/4;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     grid-gap: 1em;
@@ -108,7 +107,6 @@ body {
     width: 100%;
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
-    height: 60vh;
 }
 
 .card span {
@@ -159,5 +157,8 @@ a {
         margin: 0.5em;
         height: 100%;
         margin: 2em;
+    }
+    .card{
+        height: 85%;
     }
 }

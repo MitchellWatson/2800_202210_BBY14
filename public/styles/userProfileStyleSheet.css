@@ -158,26 +158,34 @@ input {
 }
 
 .user-info {
-    grid-row: 2;
+    grid-row: 2/4;
     display: grid;
-    grid-template-rows: 30% 40% 30%;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    justify-content: center;
+    align-items: center;
 }
 
 .user-info .picture {
-    grid-row: 1;
+    grid-row: 1/2;
 }
 
 .user-info .form {
-    grid-row: 2;
+    grid-row: 2/4;
 }
 
 .user-info .options {
-    grid-row: 3;
+    grid-row: 4/5;
+    margin: auto;
+
 }
 
-#footerPlaceholder {
-    grid-row: 3;
+.imageselector{
+    grid-row: 5/6;
 }
+
+/* #footerPlaceholder {
+    grid-row: 3;
+} */
 
 @media only screen and (min-width: 1025px) {
     .content {
