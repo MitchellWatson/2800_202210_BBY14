@@ -169,10 +169,7 @@ app.post("/login", function (req, res) {
         host: "127.0.0.1",
         user: "root",
         password: "",
-<<<<<<< HEAD
         database: "comp2800",
-=======
->>>>>>> 9a2910d (changed /profile to /main)
         multipleStatements: "true"
     });
 
@@ -288,7 +285,6 @@ app.get('/', function (req, res) {
 
 //     connection.connect();
 
-<<<<<<< HEAD
 
 //     const profilePic = `USE comp2800; SELECT imageID FROM userphotos WHERE userID = '${req.session.identity}';`;
 
@@ -308,24 +304,6 @@ app.get('/', function (req, res) {
     
 // });
 
-=======
-    const profilePic = `USE comp2800; SELECT imageID FROM userphotos WHERE userID = '${req.session.identity}';`;
-
-    connection.query(profilePic, function(error, results, fields) {
-        if (error) {
-        } 
-        else if (results[1].length == 0) {
-            res.send({ status: "fail", msg: "Incorrect email or password" });
-        } else {
-        }
-    })
-
-    for(let i = 0; i < req.files.length; i++) {
-        req.files[i].filename = req.files[i].originalname;
-    }
-
-});
->>>>>>> 9a2910d (changed /profile to /main)
 // end of upload-app.js
 
 // //For Milestone hand-ins:
