@@ -115,6 +115,8 @@ app.get("/user", function (req, res) {
 
 app.get("/userProfiles", function (req, res) {
     if (req.session.loggedIn) {
+
+        
         let profile = fs.readFileSync("./app/html/userProfiles.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
@@ -137,6 +139,59 @@ app.get("/userProfiles", function (req, res) {
         res.send(doc);
     }
 });
+
+app.post('/updateUser', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+  
+    let connection = mysql.createConnection({
+        host: "127.0.0.1",
+        user: "root",
+        password: "passwordSQL",
+        database: "comp2800",
+        multipleStatements: "true"
+    });
+    connection.connect();
+    connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ? WHERE ID = ?',
+      [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.session.identity],
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+        }
+        res.send({
+          status: "success",
+          msg: "Recorded updated."
+        });
+  
+      });
+
+      const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
+      connection.query(loginInfo, function (error, results, fields) {
+          /* If there is an error, alert user of error
+          *  If the length of results array is 0, then there was no matches in database
+          *  If no error, then it is valid login and save info for session
+          */
+          if (error) {
+              // change this to notify user of error
+          } else if (results[1].length == 0) {
+              res.send({ status: "fail", msg: "Incorrect email or password!" });
+          } else {
+              let validUserInfo = results[1][0];
+              req.session.loggedIn = true;
+              req.session.email = validUserInfo.email;
+              req.session.first_name = validUserInfo.first_name;
+              req.session.last_name = validUserInfo.last_name;
+              req.session.password = validUserInfo.password;
+              req.session.identity = validUserInfo.ID;
+              req.session.userType = validUserInfo.is_admin;
+  
+              req.session.save(function (err) {
+                  // session saved. for analytics we could record this in db
+              })
+          }
+      })
+    connection.end();
+  
+  });
 
 app.get("/main", function (req, res) {
     
@@ -173,16 +228,6 @@ app.get("/main", function (req, res) {
         res.redirect("/");
     }
 });
-
-
-
-
-
-
-
-
-
-
 
 
 

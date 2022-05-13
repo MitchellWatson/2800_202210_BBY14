@@ -45,7 +45,7 @@ body {
 
 #welcome {
     font-family: 'Quicksand', sans-serif;
-    font-size: 7vw;
+    font-size: 4vh;
     margin: 0;
     align-items: center;
 }
@@ -154,6 +154,10 @@ input {
     box-sizing: border-box;
     font-family: 'Quicksand', sans-serif;
     font-size: 2vh;
+}
+
+.form-control {
+    border: 2px solid rgb(92, 165, 255);
 }
 
 .user-info {
