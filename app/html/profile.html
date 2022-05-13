@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="/styles/profile.css">
-    <link rel="stylesheet" href="/styles/userCRUD.css">
     <link rel="stylesheet" href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
@@ -63,9 +62,7 @@
     <div id="container">
 
         <div class="card">
-            <div id="img">
-                
-            </div>
+            <div id="img"> </div>
         
             <div class="user-info">
         
@@ -87,13 +84,14 @@
         </div>
 
 
-        <form id="upload-images-form">
+        <form id="upload-images-form" action="/" method="post">
             <input id="image-upload" type="file" value="Upload Image" accept="image/png, image/gif, image/jpeg"
                 multiple="multiple" />
-            <input id="submit" type="submit" value="Submit" />
+            <input id="submit" type="submit" value="Upload" />
         </form>
-
         
+       
+
     </div>
 
     <div id="footerPlaceholder"></div>

@@ -6,9 +6,14 @@ const fs = require("fs");
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2');
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
+
+const bodyparser = require('body-parser');
+const path = require('path');
+const { connect } = require("http2");
+const multer = require('multer');
 
 app.use("/html", express.static("./app/html"));
 app.use("/images", express.static("./public/images"));
@@ -22,6 +27,22 @@ app.use(session(
         saveUninitialized: true
     })
 );
+
+// body-parser middleware use
+app.use(bodyparser.json())
+app.use(bodyparser.urlencoded({
+    extended: true
+}))
+
+
+const connection = mysql.createConnection({
+        host: "127.0.0.1",
+        user: "root",
+        password: "password",
+        database: "comp2800",
+        multipleStatements: "true"
+    });
+
 
 app.get("/", function (req, res) {
     if (req.session.loggedIn) {
@@ -168,12 +189,12 @@ app.get("/main", function (req, res) {
 app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
     const mysql = require("mysql2");
-    const connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: "password",
-        multipleStatements: "true"
-    });
+    // const connection = mysql.createConnection({
+    //     host: "127.0.0.1",
+    //     user: "root",
+    //     password: "password",
+    //     multipleStatements: "true"
+    // });
 
     connection.connect();
     // Checks if user typed in matching email and password
@@ -194,13 +215,14 @@ app.post("/login", function (req, res) {
             req.session.name = validUserInfo.first_name;
             req.session.identity = validUserInfo.ID;
             req.session.userType = validUserInfo.is_admin;
+
             req.session.save(function (err) {
                 // session saved. for analytics we could record this in db
             })
             res.send({ status: "success", msg: "Logged in." });
         }
     })
-    connection.end();
+  
 });
 
 app.get("/logout", function (req, res) {
@@ -250,7 +272,7 @@ app.get("/redirectToUsers", function (req, res) {
 // Code to upload an image.
 // Adapted from Mutler and COMP 2537 example.
 // start of upload-app.js
-const multer = require("multer");
+
 const storage = multer.diskStorage({
     destination: function (req, file, callback) {
         callback(null, "./app/avatar/")
@@ -265,6 +287,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 
+
+
+
+
+
+
+
 //do we need this??
 app.get('/', function (req, res) {
     let doc = fs.readFileSync('./app/html/index.html', "utf8");
@@ -276,36 +305,49 @@ app.get('/', function (req, res) {
 
 app.post('/upload-images', upload.array("files"), function (req, res) {
 
-    res.setHeader("Content-Type", "application/json");
-    const mysql = require("mysql2");
-    const connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: "password",
-        multipleStatements: "true"
-    });
-
-    connection.connect();
-
-
-    const profilePic = `USE comp2800; SELECT imageID FROM userphotos WHERE userID = '${req.session.identity}';`;
-
-    connection.query(profilePic, function(error, results, fields) {
-        if (error) {
-        } 
-        else if (results[1].length == 0) {
-            res.send({ status: "fail", msg: "Incorrect email or password" });
-        } else 
-    })
-
-
     for(let i = 0; i < req.files.length; i++) {
         req.files[i].filename = req.files[i].originalname;
     }
 
-    
+    connection.connect();
+    if (!req.files[0].filename) {
+        console.log("No file upload");
+    } else {
+        
+        let imgsrc = "avatar_" + req.session.identity + "." + req.files[0].originalname.split(".").pop();
+        let updateData = `DELETE FROM userphotos WHERE userID = ${req.session.identity}; INSERT INTO userphotos (userID, imageID) VALUES (?, ?);`
+        
+        console.log(imgsrc);
+        connection.query(updateData, [req.session.identity, imgsrc], function(err, result) {
+          
+            if (err) throw err
+            console.log("file uploaded")
+        })
+    }
+
 });
+
+
+
 // end of upload-app.js
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
 
 // //For Milestone hand-ins:
 // let port = 8000;
@@ -314,3 +356,7 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
 
 //For Heroku deployment
 app.listen(process.env.PORT || 3000);
+
+
+
+
