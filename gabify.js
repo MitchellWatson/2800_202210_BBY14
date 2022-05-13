@@ -38,7 +38,7 @@ app.use(bodyparser.urlencoded({
 const connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "password",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -123,9 +123,13 @@ app.get("/userProfiles", function (req, res) {
         let string = `Profile`;
         let t = navBarDOM.window.document.createTextNode(string);
         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+        profileDOM.window.document.querySelector("#emailInput").setAttribute('value', req.session.email);
+        profileDOM.window.document.querySelector("#passwordInput").setAttribute('value', req.session.password);
+        profileDOM.window.document.querySelector("#firstNameInput").setAttribute('value', req.session.first_name);
+        profileDOM.window.document.querySelector("#lastNameInput").setAttribute('value', req.session.last_name);
+
 
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-        
         res.send(profileDOM.serialize());
     } 
      else {
@@ -133,7 +137,6 @@ app.get("/userProfiles", function (req, res) {
         res.send(doc);
     }
 });
-
 
 app.get("/main", function (req, res) {
     
@@ -202,7 +205,9 @@ app.post("/login", function (req, res) {
             let validUserInfo = results[1][0];
             req.session.loggedIn = true;
             req.session.email = validUserInfo.email;
-            req.session.name = validUserInfo.first_name;
+            req.session.first_name = validUserInfo.first_name;
+            req.session.last_name = validUserInfo.last_name;
+            req.session.password = validUserInfo.password;
             req.session.identity = validUserInfo.ID;
             req.session.userType = validUserInfo.is_admin;
 
@@ -275,11 +280,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-
-
-
-app.get()
-
 
 
 
