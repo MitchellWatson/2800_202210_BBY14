@@ -170,29 +170,27 @@ input {
 }
 
 .picture > img {
-    width: 80%;
+    width: 50%;
     border-radius: 50%;
 }
 
-.user-info .picture {
-    grid-row: 1/2;
+.picture {
+    grid-row: 1;
 }
 
-.user-info .form {
-    grid-row: 2/4;
+.options {
+    grid-row: 3;
 }
 
-.user-info .options {
-    grid-row: 4/5;
-    margin: auto;
-
-}
-
-.imageselector {
-    grid-row: 5/6;
+.imageSelector {
+    grid-row: 4;
+    padding-top: 1em;
+    padding-bottom: 5em;
 }
 
 .form {
+    grid-row: 2;
+    padding-top: 1em;
     display: grid;
     grid-template-columns: 30% 70%;
     grid-template-rows: repeat(4, 1fr);
@@ -259,5 +257,17 @@ input {
     #image-upload,
     #submit2 {
         width: auto;
+    }
+
+    .picture > img {
+        width: 10%;
+    }
+
+    .picture {
+        padding-top: 2em;
+    }
+
+    .form {
+        grid-template-columns: 50% 50%;
     }
 }

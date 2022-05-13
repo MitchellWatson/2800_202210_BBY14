@@ -39,7 +39,7 @@ app.use(bodyparser.urlencoded({
 const connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
