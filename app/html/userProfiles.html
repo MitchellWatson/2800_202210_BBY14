@@ -40,16 +40,18 @@
 
         </div>
         <div class="imageselector">
-                <form id="upload-images-form">
-                  <input id="image-upload" type="file" value="Upload Image" accept="image/png, image/gif, image/jpeg" multiple="multiple"/>
-                  <input id="submit" type="submit" value="Submit"/>
-                </form>
+            <form id="upload-images-form" action="/" method="post">
+                <input id="image-upload" type="file" value="Upload Image" accept="image/png, image/gif, image/jpeg"
+                    multiple="multiple" />
+                <input id="submit2" type="submit" value="Upload" />
+            </form>
         </div>
     </div>
     <div id="footerPlaceholder"></div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="/scripts/skeleton.js"></script>
     <script src="/scripts/profile.js"></script>
+    <script src="/scripts/upload.js"></script>
 </body>
 
 </html>
