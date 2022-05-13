@@ -132,23 +132,27 @@ app.get("/profile", function (req, res) {
 
 
 
-
+// host: "127.0.0.1",
+// user: "root",
+// password: "",
+// database: "comp2800",
+// multipleStatements: "true"
 
 
 app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
     const mysql = require("mysql2");
     const connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: "",
-        database: "comp2800",
+        host: "us-cdbr-east-05.cleardb.net",
+        user: "b959a83957277c",
+        password: "5e9f74c2",
+        database: "heroku_2e384c4e07a3778",
         multipleStatements: "true"
     });
 
     connection.connect();
     // Checks if user typed in matching email and password
-    const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
+    const loginInfo = `USE heroku_2e384c4e07a3778; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
     connection.query(loginInfo, function (error, results, fields) {
         /* If there is an error, alert user of error
         *  If the length of results array is 0, then there was no matches in database
@@ -190,7 +194,7 @@ app.get("/redirectToUsers", function (req, res) {
     if (req.session.loggedIn) {
         if(req.session.userType) {
             connection.connect();
-             const getUsers = `USE comp2800; SELECT * FROM bby_users;`;
+             const getUsers = `USE heroku_2e384c4e07a3778; SELECT * FROM bby_users;`;
             let doc = fs.readFileSync("./app/html/userProfiles.html", "utf8");
             let adminDoc = new JSDOM(doc);
 
