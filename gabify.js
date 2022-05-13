@@ -38,7 +38,7 @@ app.use(bodyparser.urlencoded({
 const connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "password",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -157,8 +157,8 @@ app.post('/create', function (req, res) {
         multipleStatements: "true"
     });
     connection.connect();
-    connection.query('INSERT INTO bby14_users VALUES (?, ? , ?, ?, ?, ?)',
-      [req.body.ID, req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.is_admin],
+    connection.query('INSERT INTO bby14_users VALUES (?, ?, ?, ?, ?, ?)',
+      [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, req.body.is_admin],
       function (error, results, fields) {
         if (error) {
           console.log(error);
