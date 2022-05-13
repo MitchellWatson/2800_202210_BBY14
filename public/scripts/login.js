@@ -50,7 +50,7 @@ ready(function () {
           if (dataParsed.status == "fail") {
             document.getElementById("incorrect").innerHTML = dataParsed.msg;
           } else {
-            window.location.replace("/profile");
+            window.location.replace("/main");
           }
         }
       }, queryString  );

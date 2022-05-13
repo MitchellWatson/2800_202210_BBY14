@@ -25,7 +25,7 @@ app.use(session(
 
 app.get("/", function (req, res) {
     if (req.session.loggedIn) {
-        res.redirect("/profile");
+        res.redirect("/main");
     } else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
@@ -92,10 +92,33 @@ app.get("/user", function (req, res) {
     }
 });
 
-
 app.get("/profile", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/profile.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+
+        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+        let navBarDOM = new JSDOM(navBar);
+        let string = `Profile`;
+        let t = navBarDOM.window.document.createTextNode(string);
+        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+
+        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+        
+        
+        
+        
+        res.send(profileDOM.serialize());
+    } 
+     else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
+
+
+app.get("/main", function (req, res) {
     
-  
     if (req.session.loggedIn ) {
         if (req.session.userType) {
             
@@ -112,7 +135,7 @@ app.get("/profile", function (req, res) {
             res.send(profileDOM.serialize());
 
         } else {
-            let profile = fs.readFileSync("./app/html/profile.html", "utf8");
+            let profile = fs.readFileSync("./app/html/main.html", "utf8");
             let profileDOM = new JSDOM(profile);
 
             let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
@@ -135,13 +158,20 @@ app.get("/profile", function (req, res) {
 
 
 
+
+
+
+
+
+
+
 app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
     const mysql = require("mysql2");
     const connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "password",
         multipleStatements: "true"
     });
 
@@ -185,11 +215,13 @@ app.get("/logout", function (req, res) {
     }
 });
 
+
 app.get("/redirectToUsers", function (req, res) {
     if (req.session.loggedIn) {
         if(req.session.userType) {
             connection.connect();
              const getUsers = `USE comp2800; SELECT * FROM bby_users;`;
+             //change this
             let doc = fs.readFileSync("./app/html/userProfiles.html", "utf8");
             let adminDoc = new JSDOM(doc);
 
@@ -214,6 +246,66 @@ app.get("/redirectToUsers", function (req, res) {
         res.send(redirect);
     }
 });
+
+// Code to upload an image.
+// Adapted from Mutler and COMP 2537 example.
+// start of upload-app.js
+const multer = require("multer");
+const storage = multer.diskStorage({
+    destination: function (req, file, callback) {
+        callback(null, "./app/avatar/")
+    },
+    filename: function(req, file, callback) {
+        // callback(null, "avatar_" + file.originalname.split('/').pop().trim());
+        const sessionID = "" + req.session.identity;
+        callback(null, "avatar_" + sessionID + "." + file.originalname.split(".").pop());
+    }
+});
+
+const upload = multer({ storage: storage });
+
+
+//do we need this??
+app.get('/', function (req, res) {
+    let doc = fs.readFileSync('./app/html/index.html', "utf8");
+    res.send(doc);
+
+});
+
+
+
+app.post('/upload-images', upload.array("files"), function (req, res) {
+
+    res.setHeader("Content-Type", "application/json");
+    const mysql = require("mysql2");
+    const connection = mysql.createConnection({
+        host: "127.0.0.1",
+        user: "root",
+        password: "password",
+        multipleStatements: "true"
+    });
+
+    connection.connect();
+
+
+    const profilePic = `USE comp2800; SELECT imageID FROM userphotos WHERE userID = '${req.session.identity}';`;
+
+    connection.query(profilePic, function(error, results, fields) {
+        if (error) {
+        } 
+        else if (results[1].length == 0) {
+            res.send({ status: "fail", msg: "Incorrect email or password" });
+        } else 
+    })
+
+
+    for(let i = 0; i < req.files.length; i++) {
+        req.files[i].filename = req.files[i].originalname;
+    }
+
+    
+});
+// end of upload-app.js
 
 // //For Milestone hand-ins:
 // let port = 8000;

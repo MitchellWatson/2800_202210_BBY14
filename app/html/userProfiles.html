@@ -7,28 +7,28 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
         <title>Gabify</title>
-        <link rel="stylesheet" href="/styles/profile.css">
+        <link rel="stylesheet" href="/styles/userProfileStyleSheet.css">
         <link rel="stylesheet" href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
     <body>
         <div id="header"></div>
 
-        <div class="card">
-            <div>
-            <img src="https://randomuser.me/api/portraits/men/30.jpg" alt="" class="avatar">
-            </div>
-
             <div class="user-info">
+                <div class="picture">
+                    <img src="./public/images/placeholder.jpg">
+                </div>
 
-                <h2>john doe</h2>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus, illum.</p>
-
-                <ul>
-                    <li>300<strong>Followers</strong></li>
-                    <li>100<strong>Following</strong></li>
-                    <li>30<strong>Repos</strong></li>
-                </ul>
+                <div class="form">
+                    <label>Name</label>
+                    <input type="text" id="nameInput" class="form-control">
+                  <br>
+                    <label>Email</label>
+                    <input type="text" id="emailInput" class="form-control" placeholder="email@address.com">
+                  <br>
+                    <label>Phone</label>
+                    <input type="text" id="passwordInput" class="form-control" placeholder="e.g. 555-555-5555">
+                  </div>
 
                 <div id="options">
                     <a href="#" class="option">Edit</a>
