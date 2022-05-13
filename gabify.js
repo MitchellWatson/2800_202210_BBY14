@@ -92,29 +92,26 @@ app.get("/user", function (req, res) {
     }
 });
 
-app.get("/profile", function (req, res) {
-    if (req.session.loggedIn) {
-        let profile = fs.readFileSync("./app/html/userProfiles.html", "utf8");
-        let profileDOM = new JSDOM(profile);
+// app.get("/main", function (req, res) {
+//     if (req.session.loggedIn) {
+//         let profile = fs.readFileSync("./app/html/main.html", "utf8");
+//         let profileDOM = new JSDOM(profile);
 
-        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-        let navBarDOM = new JSDOM(navBar);
-        let string = `Profile`;
-        let t = navBarDOM.window.document.createTextNode(string);
-        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+//         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+//         let navBarDOM = new JSDOM(navBar);
+//         let string = `Profile`;
+//         let t = navBarDOM.window.document.createTextNode(string);
+//         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
 
-        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+//         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
         
-        
-        
-        
-        res.send(profileDOM.serialize());
-    } 
-     else {
-        let doc = fs.readFileSync("./app/html/login.html", "utf8");
-        res.send(doc);
-    }
-});
+//         res.send(profileDOM.serialize());
+//     } 
+//      else {
+//         let doc = fs.readFileSync("./app/html/login.html", "utf8");
+//         res.send(doc);
+//     }
+// });
 
 
 app.get("/main", function (req, res) {
@@ -172,7 +169,10 @@ app.post("/login", function (req, res) {
         host: "127.0.0.1",
         user: "root",
         password: "",
+<<<<<<< HEAD
         database: "comp2800",
+=======
+>>>>>>> 9a2910d (changed /profile to /main)
         multipleStatements: "true"
     });
 
@@ -187,7 +187,7 @@ app.post("/login", function (req, res) {
         if (error) {
             // change this to notify user of error
         } else if (results[1].length == 0) {
-            res.send({ status: "fail", msg: "Incorrect email or password" });
+            res.send({ status: "fail", msg: "Incorrect email or password!" });
         } else {
             let validUserInfo = results[1][0];
             req.session.loggedIn = true;
@@ -288,6 +288,7 @@ app.get('/', function (req, res) {
 
 //     connection.connect();
 
+<<<<<<< HEAD
 
 //     const profilePic = `USE comp2800; SELECT imageID FROM userphotos WHERE userID = '${req.session.identity}';`;
 
@@ -307,6 +308,24 @@ app.get('/', function (req, res) {
     
 // });
 
+=======
+    const profilePic = `USE comp2800; SELECT imageID FROM userphotos WHERE userID = '${req.session.identity}';`;
+
+    connection.query(profilePic, function(error, results, fields) {
+        if (error) {
+        } 
+        else if (results[1].length == 0) {
+            res.send({ status: "fail", msg: "Incorrect email or password" });
+        } else {
+        }
+    })
+
+    for(let i = 0; i < req.files.length; i++) {
+        req.files[i].filename = req.files[i].originalname;
+    }
+
+});
+>>>>>>> 9a2910d (changed /profile to /main)
 // end of upload-app.js
 
 // //For Milestone hand-ins:
