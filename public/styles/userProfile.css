@@ -186,9 +186,47 @@ input {
     grid-row: 5/6;
 }
 
-/* #footerPlaceholder {
+.form{
+    display: grid;
+    grid-template-columns: 30% 70%;
+    grid-template-rows: repeat(4, 1fr);
+    justify-content: center;
+    align-items: center;
+}
+
+#f1{
+    grid-row: 1;
+    grid-column: 1;
+}
+#f2{
+    grid-row: 2;
+    grid-column: 1;
+}
+#f3{
     grid-row: 3;
-} */
+    grid-column: 1;
+}
+#f4{
+    grid-row: 4;
+    grid-column: 1;
+}
+
+#firstNameInput{
+    grid-row: 1;
+    grid-column: 2;
+}
+#lastNameInput{
+    grid-row: 2;
+    grid-column: 2;
+}
+#emailInput{
+    grid-row: 3;
+    grid-column: 2;
+}
+#passwordInput{
+    grid-row: 4;
+    grid-column: 2;
+}
 
 @media only screen and (min-width: 1025px) {
     .content {
