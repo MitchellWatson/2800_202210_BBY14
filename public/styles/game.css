@@ -46,7 +46,7 @@ body {
 
 #welcome {
     font-family: 'Quicksand', sans-serif;
-    font-size: 3vh;
+    font-size: 7vw;
     margin: 0;
     align-items: center;
 }
@@ -61,10 +61,19 @@ body {
     bottom: 0;
     position: fixed;
     background-color: rgb(255, 255, 255);
-    padding-top: 1%;
     border: 2px rgb(255, 255, 255) solid;
     border-radius: 5px;
-    font-size: 3vh;
+    font-size: 2.5vh;
+}
+
+.option {
+    background-color: rgb(22, 154, 255);
+    border: 2px none;
+    border-radius: 5px;
+    color: rgb(235, 235, 235);
+    padding: 10px;
+    font-size: 150%;
+    margin: 1vh;
 }
 
 .footer span {
@@ -73,7 +82,7 @@ body {
 
 .footer a {
     color: rgb(58, 58, 255);
-    padding: 5%;
+    padding: 3%;
 }
 
 .footer a:hover {
@@ -90,7 +99,6 @@ body {
     grid-template-rows: 1fr 1fr;
     grid-gap: 1em;
     margin: 0.5em;
-    padding-top: 2vh;
 }
 
 .card {
@@ -99,7 +107,7 @@ body {
     width: 100%;
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
-    height: 30vh;
+    height: 35vh;
 }
 
 .card span {
