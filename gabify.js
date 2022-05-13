@@ -94,7 +94,7 @@ app.get("/user", function (req, res) {
 
 app.get("/profile", function (req, res) {
     if (req.session.loggedIn) {
-        let profile = fs.readFileSync("./app/html/profile.html", "utf8");
+        let profile = fs.readFileSync("./app/html/userProfiles.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
@@ -171,7 +171,8 @@ app.post("/login", function (req, res) {
     const connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "password",
+        password: "",
+        database: "comp2800",
         multipleStatements: "true"
     });
 
@@ -274,37 +275,38 @@ app.get('/', function (req, res) {
 
 
 
-app.post('/upload-images', upload.array("files"), function (req, res) {
+// app.post('/upload-images', upload.array("files"), function (req, res) {
 
-    res.setHeader("Content-Type", "application/json");
-    const mysql = require("mysql2");
-    const connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: "password",
-        multipleStatements: "true"
-    });
+//     res.setHeader("Content-Type", "application/json");
+//     const mysql = require("mysql2");
+//     const connection = mysql.createConnection({
+//         host: "127.0.0.1",
+//         user: "root",
+//         password: "password",
+//         multipleStatements: "true"
+//     });
 
-    connection.connect();
-
-
-    const profilePic = `USE comp2800; SELECT imageID FROM userphotos WHERE userID = '${req.session.identity}';`;
-
-    connection.query(profilePic, function(error, results, fields) {
-        if (error) {
-        } 
-        else if (results[1].length == 0) {
-            res.send({ status: "fail", msg: "Incorrect email or password" });
-        } else 
-    })
+//     connection.connect();
 
 
-    for(let i = 0; i < req.files.length; i++) {
-        req.files[i].filename = req.files[i].originalname;
-    }
+//     const profilePic = `USE comp2800; SELECT imageID FROM userphotos WHERE userID = '${req.session.identity}';`;
+
+//     connection.query(profilePic, function(error, results, fields) {
+//         if (error) {
+//         } 
+//         else if (results[1].length == 0) {
+//             res.send({ status: "fail", msg: "Incorrect email or password" });
+//         } else 
+//     })
+
+
+//     for(let i = 0; i < req.files.length; i++) {
+//         req.files[i].filename = req.files[i].originalname;
+//     }
 
     
-});
+// });
+
 // end of upload-app.js
 
 // //For Milestone hand-ins:
