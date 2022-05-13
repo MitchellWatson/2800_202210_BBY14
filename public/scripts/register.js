@@ -34,9 +34,12 @@ document.getElementById("submit").addEventListener("click", function (e) {
     let password = document.getElementById("passwordInput");
     let first = document.getElementById("firstNameInput");
     let last = document.getElementById("lastNameInput");
+    let admin = document.getElementById("adminInput");
+    let ID = document.getElementById("IDInput");
+
     console.log(last);
-    let queryString = "email=" + email.value + "&password=" + password.value + "&first_name=" + first.value + "&last_name=" + last.value;
-    ajaxPOST("/updateUser", function (data) {
+    let queryString = "email=" + email.value + "&password=" + password.value + "&first_name=" + first.value + "&last_name=" + last.value + "&is_admin=" + admin.value; + "&ID=" + ID.value;
+    ajaxPOST("/create", function (data) {
         if (data) {
             let dataParsed = JSON.parse(data);
 
@@ -44,7 +47,7 @@ document.getElementById("submit").addEventListener("click", function (e) {
                 document.getElementById("errorMsg").innerHTML = dataParsed.msg;
             } else {
                 localStorage.setItem("email", email.value);
-                window.location.replace("/userProfiles");
+                window.location.replace("/admin-users");
             }
         }
 
