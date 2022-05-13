@@ -152,7 +152,7 @@ app.post('/create', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -179,7 +179,7 @@ app.post('/updateUser', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -216,89 +216,70 @@ app.post('/updateUser', function (req, res) {
               req.session.password = validUserInfo.password;
               req.session.identity = validUserInfo.ID;
               req.session.userType = validUserInfo.is_admin;
-  
+
               req.session.save(function (err) {
                   // session saved. for analytics we could record this in db
               })
           }
       })
     connection.end();
-  
-  });
 
-  app.get("/admin-users", function (req, res) {
+});
+
+app.get("/admin-users", function (req, res) {
     if (req.session) {
-      let profile = fs.readFileSync("./app/html/adminUsers.html", "utf8");
-      let profileDOM = new JSDOM(profile);
-  
-      const mysql = require("mysql2");
-  
-      const connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: "",
-        database: "comp2800",
-        multipleStatements: "true"
-      });
-      connection.connect();
-  
-      connection.query(
-        "SELECT * FROM bby14_users",
-        function (error, results, fields) {
-          if (error) {
-            console.log(error);
-          }
-  
-          const usersProfiles = profileDOM.window.document.createElement("table");
-  
-          let users;
-  
-          usersProfiles.innerHTML =
-            "<tr>" +
-            "<th>" +
-            "ID" +
-            "</th>" +
-            "<th>" +
-            "First Name" +
-            "</th>" +
-            "<th>" +
-            "Last Name" +
-            "</th>" +
-            "<th>" +
-            "E-mail" +
-            "</th>" +
-            "<th>" +
-            "Administrator" +
-            "</th>" +
-            "<th>" +
-            "</tr>";
-          for (let i = 0; i < results.length; i++) {
-            users =
-              "<td>" +
-              results[i].ID +
-              "</td>" +
-              "<td>" +
-              results[i].first_name +
-              "</td>" +
-              "<td>" +
-              results[i].last_name +
-              "</td>" +
-              "<td>" +
-              results[i].email +
-              "</td>" +
-              "<td>" +
-              results[i].is_admin +
-              "</td>";
-              usersProfiles.innerHTML += users;
-          }
-          let create = "<td><a href='/register'><button class='option'> Create </button></a></td>";
+        let profile = fs.readFileSync("./app/html/adminUsers.html", "utf8");
+        let profileDOM = new JSDOM(profile);
 
-          usersProfiles.innerHTML += create;
+        const mysql = require("mysql2");
 
-  
-          profileDOM.window.document
-            .getElementById("user_table")
-            .appendChild(usersProfiles);
+        const connection = mysql.createConnection({
+            host: "127.0.0.1",
+            user: "root",
+            password: "passwordSQL",
+            database: "comp2800",
+            multipleStatements: "true"
+        });
+        connection.connect();
+
+        connection.query(
+            "SELECT * FROM bby14_users",
+            function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }
+
+                const usersProfiles = profileDOM.window.document.createElement("div");
+                const createButton = profileDOM.window.document.createElement("div");
+                let create = "<a href='/register'><button class='option'>Create User</button></a>";
+                profileDOM.window.document.getElementById("create").appendChild(createButton);
+
+                usersProfiles.innerHTML += create;
+                let users;
+                
+                for (let i = 0; i < results.length; i++) {
+                    users =
+                        '<div class="card">' +
+                        '<div class="can">' +
+                        '<p style="text-decoration: underline;">ID</p>' +
+                        '<p>' + results[i].ID + '</p>' +
+                        '<p style="text-decoration: underline;">Email</p>' +
+                        '<p>' + results[i].email + '</p>' +
+                        '<p style="text-decoration: underline;">First Name</p>' +
+                        '<p>' + results[i].first_name + '</p>' +
+                        '<p style="text-decoration: underline;">Last Name</p>' +
+                        '<p>' + results[i].last_name + '</p>' +
+                        '<p style="text-decoration: underline;">Password</p>' +
+                        '<p>' + results[i].password + '</p>' +
+                        '<p style="text-decoration: underline;">Admin</p>' +
+                        '<p>' + results[i].is_admin + '</p>' +
+                        '</div>' +
+                        '</div>';
+                        usersProfiles.innerHTML += users;
+                }
+
+
+            profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
 
             let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
             let navBarDOM = new JSDOM(navBar);
@@ -307,10 +288,8 @@ app.post('/updateUser', function (req, res) {
             navBarDOM.window.document.querySelector("#welcome").appendChild(t);
 
             profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-  
-          res.set("Server", "candy");
-          res.set("X-Powered-By", "candy");
-          res.send(profileDOM.serialize());
+
+            res.send(profileDOM.serialize());
         }
       );
     }
