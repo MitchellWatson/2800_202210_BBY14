@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600&display=swap');
+
 body {
     display: grid;
     height: 80vh;
@@ -168,6 +169,11 @@ input {
     align-items: center;
 }
 
+.picture > img {
+    width: 80%;
+    border-radius: 50%;
+}
+
 .user-info .picture {
     grid-row: 1/2;
 }
@@ -182,11 +188,11 @@ input {
 
 }
 
-.imageselector{
+.imageselector {
     grid-row: 5/6;
 }
 
-.form{
+.form {
     display: grid;
     grid-template-columns: 30% 70%;
     grid-template-rows: repeat(4, 1fr);
@@ -194,38 +200,49 @@ input {
     align-items: center;
 }
 
-#f1{
+#f1 {
     grid-row: 1;
     grid-column: 1;
 }
-#f2{
+
+#f2 {
     grid-row: 2;
     grid-column: 1;
 }
-#f3{
+
+#f3 {
     grid-row: 3;
     grid-column: 1;
 }
-#f4{
+
+#f4 {
     grid-row: 4;
     grid-column: 1;
 }
 
-#firstNameInput{
+#firstNameInput {
     grid-row: 1;
     grid-column: 2;
 }
-#lastNameInput{
+
+#lastNameInput {
     grid-row: 2;
     grid-column: 2;
 }
-#emailInput{
+
+#emailInput {
     grid-row: 3;
     grid-column: 2;
 }
-#passwordInput{
+
+#passwordInput {
     grid-row: 4;
     grid-column: 2;
+}
+
+#image-upload,
+#submit2 {
+    width: 80%;
 }
 
 @media only screen and (min-width: 1025px) {
@@ -237,5 +254,10 @@ input {
         margin: 0.5em;
         height: 100%;
         margin: 2em;
+    }
+
+    #image-upload,
+    #submit2 {
+        width: auto;
     }
 }
