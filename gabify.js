@@ -16,6 +16,7 @@ const { connect } = require("http2");
 const multer = require('multer');
 
 app.use("/html", express.static("./app/html"));
+app.use("/avatar", express.static("./app/avatar"));
 app.use("/images", express.static("./public/images"));
 app.use("/styles", express.static("./public/styles"));
 app.use("/scripts", express.static("./public/scripts"));
@@ -38,7 +39,7 @@ app.use(bodyparser.urlencoded({
 const connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
