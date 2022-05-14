@@ -1,10 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600&display=swap');
-
 body {
     display: grid;
     height: 80vh;
-    grid-template-columns: 1fr;
-    grid-template-rows: 15% 70% 15%;
+    /* grid-template-columns: 1fr;
+    grid-template-rows: 15% 10% 60% 15%; */
     text-align: center;
     font-family: 'Quicksand', sans-serif;
     background-color: rgb(224, 224, 224);
@@ -54,7 +53,7 @@ body {
 .footer {
     display: grid;
     grid-column: 1;
-    grid-row: 4;
+    grid-row: 3;
     grid-template-columns: 1fr 1fr;
     left: 0;
     right: 0;
@@ -95,10 +94,11 @@ body {
     display: grid;
     grid-column: 1;
     grid-row: 2;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr;
     grid-gap: 1em;
     margin: 0.5em;
+    padding-top: 6vh;
+    padding-bottom: 10vh;
 }
 
 .card {
@@ -107,8 +107,18 @@ body {
     width: 100%;
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
-    height: 35vh;
+    height: 47vh;
+    text-align: left;
+    margin-bottom: 2vh;
 }
+
+.card p {
+    margin: 0;
+    padding-left: 3vw;
+    padding-top: 1vw;
+    font-size: 4vmin;
+}
+
 
 .card span {
     position: relative;
@@ -121,10 +131,8 @@ body {
 }
 
 .can {
-    padding: 2px 16px;
     border-radius: 10px;
     position: relative;
-    top: 15%;
     font-size: 6.5vmin;
 }
 
@@ -145,55 +153,8 @@ a {
     color: black;
 }
 
-
-#score {
-    background-color: rgb(34, 159, 255);
-    padding: 0px auto;
-    justify-content: center;
-    border: 2px transparent;
-    border-radius: 5px;
-    padding: 2%;
-    color: white;
-    margin: 2%;
-    font-size: 120%;
-}
-
-#answers {
-    display: grid;
-    grid-row: 1;
-    grid-template-columns: repeat(2, auto);
-    margin: 1%;
-}
-
-.btn {
-    background-color: rgb(22, 154, 255);
-    border: 2px none;
-    border-radius: 5px;
-    color: rgb(235, 235, 235);
-    padding: 10px;
-    font-size: 150%;
-    margin: 1vh;
-}
-
-.btn.success {
-    background-color: rgb(0, 206, 38);
-}
-
-.btn.incorrect {
-    background-color: #ff3e29;
-
-}
-
-.btn:hover {
-    background-color: rgb(79, 179, 255);
-}
-
-.hidden {
-    display: none;
-}
-
-#container {
-    grid-row: 2;
+#footerPlaceholder {
+    grid-row: 3;
 }
 
 @media only screen and (min-width: 1025px) {
@@ -205,5 +166,8 @@ a {
         margin: 0.5em;
         height: 100%;
         margin: 2em;
+    }
+    .card{
+        height: 85%;
     }
 }

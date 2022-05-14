@@ -1,26 +1,13 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600&display=swap');
- 
-/* Universal Selector applies a box sizing to set it to board a box so that if we add any padding/border to element, width doesnt change */
-* {
-    box-sizing: border-box; 
-}
-
-
-
 body {
-    background-color: rgb(247, 247, 247);
-    color: rgb(18, 17, 17);
+    display: grid;
+    height: 80vh;
+    grid-template-columns: 1fr;
+    grid-template-rows: 15% 70% 15%;
+    text-align: center;
     font-family: 'Quicksand', sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    margin: 0;
-    
+    background-color: rgb(224, 224, 224);
 }
-
 
 #header {
     display: grid;
@@ -58,7 +45,7 @@ body {
 
 #welcome {
     font-family: 'Quicksand', sans-serif;
-    font-size: 3vh;
+    font-size: 4vh;
     margin: 0;
     align-items: center;
 }
@@ -73,10 +60,19 @@ body {
     bottom: 0;
     position: fixed;
     background-color: rgb(255, 255, 255);
-    padding-top: 1%;
     border: 2px rgb(255, 255, 255) solid;
     border-radius: 5px;
-    font-size: 3vh;
+    font-size: 2.5vh;
+}
+
+.option {
+    background-color: rgb(22, 154, 255);
+    border: 2px none;
+    border-radius: 5px;
+    color: rgb(235, 235, 235);
+    padding: 10px;
+    font-size: 150%;
+    margin: 1vh;
 }
 
 .footer span {
@@ -85,7 +81,7 @@ body {
 
 .footer a {
     color: rgb(58, 58, 255);
-    padding: 5%;
+    padding: 3%;
 }
 
 .footer a:hover {
@@ -102,7 +98,6 @@ body {
     grid-template-rows: 1fr 1fr;
     grid-gap: 1em;
     margin: 0.5em;
-    padding-top: 2vh;
 }
 
 .card {
@@ -111,7 +106,7 @@ body {
     width: 100%;
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
-    height: 30vh;
+    height: 35vh;
 }
 
 .card span {
@@ -149,53 +144,21 @@ a {
     color: black;
 }
 
-.user-info {
-    color: rgb(18, 17, 17);
-    margin-left: 2rem;
+#footerPlaceholder {
+    grid-row: 3;
 }
 
-.user-info h2 {
-    margin-top: 0;
-}
-
-.user-info ul {
-    list-style-type: none;
-    display: flex;
-    justify-content: space-between;
-    padding: 0;
-    max-width: 400px;
-}
-
-
-.user-info ul li {
-    display: flex;
-    align-items: center;
-}
-
-.user-info ul li strong {
-    font-size: 0.9rem;
-    margin-left: 0.5rem;
-}
-
-.option {
-    text-decoration: none;
-    color: #fff;
-    background-color: #212a72;
-    font-size: 0.7rem;
-    padding: 0.25rem 0.5rem;
-    margin-right: 0.5rem;
-    margin-bottom: 0.5rem;
-    display: inline-block;
-}
-
-@media(max-width: 500px) {
-    .card {
-        flex-direction: column;
-        align-items: center;
-
+@media only screen and (min-width: 1025px) {
+    .content {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 1fr;
+        grid-gap: 1em;
+        margin: 0.5em;
+        height: 100%;
+        margin: 2em;
     }
-
-    .user-form {
-        max-width: 400px;
+    .card{
+        height: 85%;
     }
 }
