@@ -475,7 +475,7 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
         connection.query(updateData, [req.session.identity, imgsrc], function(err, result) {
           
             if (err) throw err
-            console.log("file uploaded ")
+            console.log("file uploaded")
         })
     }
 
