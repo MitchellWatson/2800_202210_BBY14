@@ -139,6 +139,7 @@ app.get("/userProfiles", function (req, res) {
 
 
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+
         res.send(profileDOM.serialize());
     } 
      else {
@@ -153,7 +154,7 @@ app.post('/create', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -180,7 +181,7 @@ app.post('/updateUser', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -237,7 +238,7 @@ app.get("/admin-users", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "passwordSQL",
+            password: "",
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -351,6 +352,7 @@ app.post("/login", function (req, res) {
             res.send({ status: "fail", msg: "Incorrect email or password!" });
         } else {
             let validUserInfo = results[1][0];
+            
             req.session.loggedIn = true;
             req.session.email = validUserInfo.email;
             req.session.first_name = validUserInfo.first_name;
@@ -358,7 +360,6 @@ app.post("/login", function (req, res) {
             req.session.password = validUserInfo.password;
             req.session.identity = validUserInfo.ID;
             req.session.userType = validUserInfo.is_admin;
-
             req.session.save(function (err) {
                 // session saved. for analytics we could record this in db
             })
@@ -421,9 +422,10 @@ const storage = multer.diskStorage({
         callback(null, "./app/avatar/")
     },
     filename: function(req, file, callback) {
-        // callback(null, "avatar_" + file.originalname.split('/').pop().trim());
+        // // callback(null, "avatar_" + file.originalname.split('/').pop().trim());
         const sessionID = "" + req.session.identity;
-        callback(null, "avatar_" + sessionID + "." + file.originalname.split(".").pop());
+        // callback(null, "avatar_" + sessionID + "." + file.originalname.split(".").pop());
+        callback(null, "avatar_" + sessionID + ".jpg");
     }
 });
 
