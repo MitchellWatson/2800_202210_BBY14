@@ -4,4 +4,6 @@
 [Mitchell Watson], [A01236580], [2A]
 [Ryan Chau], [A01038982], [1B],
 
-Milestone #1 Assignment is 100% complete.
+Milestone #2 Assignment is 92% complete.
+
+Image upload and admin delete functions are not working.
