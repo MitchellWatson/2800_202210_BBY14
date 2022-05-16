@@ -16,6 +16,7 @@ const { connect } = require("http2");
 const multer = require('multer');
 
 app.use("/html", express.static("./app/html"));
+app.use("/avatar", express.static("./app/avatar"));
 app.use("/images", express.static("./public/images"));
 app.use("/styles", express.static("./public/styles"));
 app.use("/scripts", express.static("./public/scripts"));
@@ -52,6 +53,12 @@ app.get("/", function (req, res) {
         res.send(doc);
     }
 });
+
+app.get("/register", function (req, res) {
+        let doc = fs.readFileSync("./app/html/register.html", "utf8");
+        res.send(doc);
+    }
+);
 
 app.get("/game", function (req, res) {
     if (req.session.loggedIn) {
@@ -132,6 +139,12 @@ app.get("/userProfiles", function (req, res) {
 
 
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+
+        var profPic = profileDOM.window.document.querySelector("#pic");
+        profPic.src = "/avatar/avatar_"+req.session.identity+ "." +req.files[0].originalname.split(".").pop();
+
+        
+
         res.send(profileDOM.serialize());
     } 
      else {
@@ -140,13 +153,40 @@ app.get("/userProfiles", function (req, res) {
     }
 });
 
+app.post('/create', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+  
+    let connection = mysql.createConnection({
+        host: "127.0.0.1",
+        user: "root",
+        password: "password",
+        database: "comp2800",
+        multipleStatements: "true"
+    });
+    connection.connect();
+    connection.query('INSERT INTO bby14_users VALUES (?, ?, ?, ?, ?, ?)',
+      [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, req.body.is_admin],
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+        }
+        res.send({
+          status: "success",
+          msg: "Recorded updated."
+        });
+  
+      });
+    connection.end();
+  
+  });
+
 app.post('/updateUser', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "password",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -192,6 +232,96 @@ app.post('/updateUser', function (req, res) {
     connection.end();
   
   });
+
+  app.get("/admin-users", function (req, res) {
+    if (req.session) {
+      let profile = fs.readFileSync("./app/html/adminUsers.html", "utf8");
+      let profileDOM = new JSDOM(profile);
+  
+      const mysql = require("mysql2");
+  
+      const connection = mysql.createConnection({
+        host: "127.0.0.1",
+        user: "root",
+        password: "password",
+        database: "comp2800",
+        multipleStatements: "true"
+      });
+      connection.connect();
+  
+      connection.query(
+        "SELECT * FROM bby14_users",
+        function (error, results, fields) {
+          if (error) {
+            console.log(error);
+          }
+  
+          const usersProfiles = profileDOM.window.document.createElement("table");
+  
+          let users;
+  
+          usersProfiles.innerHTML =
+            "<tr>" +
+            "<th>" +
+            "ID" +
+            "</th>" +
+            "<th>" +
+            "First Name" +
+            "</th>" +
+            "<th>" +
+            "Last Name" +
+            "</th>" +
+            "<th>" +
+            "E-mail" +
+            "</th>" +
+            "<th>" +
+            "Administrator" +
+            "</th>" +
+            "<th>" +
+            "</tr>";
+          for (let i = 0; i < results.length; i++) {
+            users =
+              "<td>" +
+              results[i].ID +
+              "</td>" +
+              "<td>" +
+              results[i].first_name +
+              "</td>" +
+              "<td>" +
+              results[i].last_name +
+              "</td>" +
+              "<td>" +
+              results[i].email +
+              "</td>" +
+              "<td>" +
+              results[i].is_admin +
+              "</td>";
+              usersProfiles.innerHTML += users;
+          }
+          let create = "<td><a href='/register'><button class='option'> Create </button></a></td>";
+
+          usersProfiles.innerHTML += create;
+
+  
+          profileDOM.window.document
+            .getElementById("user_table")
+            .appendChild(usersProfiles);
+
+            let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+            let navBarDOM = new JSDOM(navBar);
+            let string = `Users`;
+            let t = navBarDOM.window.document.createTextNode(string);
+            navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+
+            profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+  
+          res.set("Server", "candy");
+          res.set("X-Powered-By", "candy");
+          res.send(profileDOM.serialize());
+        }
+      );
+    }
+  })
 
 app.get("/main", function (req, res) {
     

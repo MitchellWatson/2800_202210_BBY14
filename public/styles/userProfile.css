@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600&display=swap');
+
 body {
     display: grid;
     height: 80vh;
@@ -168,27 +169,79 @@ input {
     align-items: center;
 }
 
-.user-info .picture {
-    grid-row: 1/2;
+.picture > img {
+    width: 50%;
+    border-radius: 50%;
 }
 
-.user-info .form {
-    grid-row: 2/4;
+.picture {
+    grid-row: 1;
 }
 
-.user-info .options {
-    grid-row: 4/5;
-    margin: auto;
-
-}
-
-.imageselector{
-    grid-row: 5/6;
-}
-
-/* #footerPlaceholder {
+.options {
     grid-row: 3;
-} */
+}
+
+.imageSelector {
+    grid-row: 4;
+    padding-top: 1em;
+    padding-bottom: 5em;
+}
+
+.form {
+    grid-row: 2;
+    padding-top: 1em;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: repeat(4, 1fr);
+    justify-content: center;
+    align-items: center;
+}
+
+#f1 {
+    grid-row: 1;
+    grid-column: 1;
+}
+
+#f2 {
+    grid-row: 2;
+    grid-column: 1;
+}
+
+#f3 {
+    grid-row: 3;
+    grid-column: 1;
+}
+
+#f4 {
+    grid-row: 4;
+    grid-column: 1;
+}
+
+#firstNameInput {
+    grid-row: 1;
+    grid-column: 2;
+}
+
+#lastNameInput {
+    grid-row: 2;
+    grid-column: 2;
+}
+
+#emailInput {
+    grid-row: 3;
+    grid-column: 2;
+}
+
+#passwordInput {
+    grid-row: 4;
+    grid-column: 2;
+}
+
+#image-upload,
+#submit2 {
+    width: 80%;
+}
 
 @media only screen and (min-width: 1025px) {
     .content {
@@ -199,5 +252,22 @@ input {
         margin: 0.5em;
         height: 100%;
         margin: 2em;
+    }
+
+    #image-upload,
+    #submit2 {
+        width: auto;
+    }
+
+    .picture > img {
+        width: 10%;
+    }
+
+    .picture {
+        padding-top: 2em;
+    }
+
+    .form {
+        grid-template-columns: auto auto;
     }
 }
