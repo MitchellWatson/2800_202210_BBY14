@@ -37,11 +37,11 @@ app.use(bodyparser.urlencoded({
 
 
 const connection = mysql.createConnection({
-    host: "127.0.0.1",
-    user: "root",
-    password: "passwordSQL",
-    database: "comp2800",
-    multipleStatements: "true"
+        host: "127.0.0.1",
+        user: "root",
+        password: "passwordSQL",
+        database: "comp2800",
+        multipleStatements: "true"
     });
 
 
@@ -139,7 +139,6 @@ app.get("/userProfiles", function (req, res) {
 
 
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-
         res.send(profileDOM.serialize());
     } 
      else {
@@ -199,7 +198,7 @@ app.post('/updateUser', function (req, res) {
   
       });
 
-      const loginInfo = `USE heroku_2e384c4e07a3778; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
+      const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
       connection.query(loginInfo, function (error, results, fields) {
           /* If there is an error, alert user of error
           *  If the length of results array is 0, then there was no matches in database
@@ -335,27 +334,12 @@ app.get("/main", function (req, res) {
 
 
 
-// host: "127.0.0.1",
-// user: "root",
-// password: "",
-// database: "comp2800",
-// multipleStatements: "true"
-
-
 app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
-    const mysql = require("mysql2");
-    const connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: "passwordSQL",
-        database: "comp2800",
-        multipleStatements: "true"
-    });
 
     connection.connect();
     // Checks if user typed in matching email and password
-    const loginInfo = `USE heroku_2e384c4e07a3778; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
+    const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
     connection.query(loginInfo, function (error, results, fields) {
         /* If there is an error, alert user of error
         *  If the length of results array is 0, then there was no matches in database
@@ -367,7 +351,6 @@ app.post("/login", function (req, res) {
             res.send({ status: "fail", msg: "Incorrect email or password!" });
         } else {
             let validUserInfo = results[1][0];
-            
             req.session.loggedIn = true;
             req.session.email = validUserInfo.email;
             req.session.first_name = validUserInfo.first_name;
@@ -375,6 +358,7 @@ app.post("/login", function (req, res) {
             req.session.password = validUserInfo.password;
             req.session.identity = validUserInfo.ID;
             req.session.userType = validUserInfo.is_admin;
+
             req.session.save(function (err) {
                 // session saved. for analytics we could record this in db
             })
@@ -401,7 +385,8 @@ app.get("/redirectToUsers", function (req, res) {
     if (req.session.loggedIn) {
         if(req.session.userType) {
             connection.connect();
-             const getUsers = `USE heroku_2e384c4e07a3778; SELECT * FROM bby_users;`;
+             const getUsers = `USE comp2800; SELECT * FROM bby_users;`;
+             //change this
             let doc = fs.readFileSync("./app/html/userProfiles.html", "utf8");
             let adminDoc = new JSDOM(doc);
 
@@ -436,10 +421,9 @@ const storage = multer.diskStorage({
         callback(null, "./app/avatar/")
     },
     filename: function(req, file, callback) {
-        // // callback(null, "avatar_" + file.originalname.split('/').pop().trim());
+        // callback(null, "avatar_" + file.originalname.split('/').pop().trim());
         const sessionID = "" + req.session.identity;
-        // callback(null, "avatar_" + sessionID + "." + file.originalname.split(".").pop());
-        callback(null, "avatar_" + sessionID + ".jpg");
+        callback(null, "avatar_" + sessionID + "." + file.originalname.split(".").pop());
     }
 });
 
@@ -510,7 +494,6 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
 
 //For Heroku deployment
 app.listen(process.env.PORT || 3000);
-
 
 
 
