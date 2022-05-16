@@ -148,8 +148,8 @@ app.get("/userProfiles", function (req, res) {
 
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
 
-        var profPic = profileDOM.window.document.querySelector("#pic");
-        profPic.src = "/avatar/avatar_"+req.session.identity+ "." +req.files[0].originalname.split(".").pop();
+        var profPic = profileDOM.window.document.querySelector("#avatar");
+        profPic.src = ("" ? "/avatar/placeholder.jpg" : "/avatar/avatar_"+req.session.identity+ ".jpg");
         res.send(profileDOM.serialize());
     } 
      else {
@@ -447,11 +447,11 @@ app.get("/main", function (req, res) {
 app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
     const mysql = require("mysql2");
-    const connection = mysql.createConnection({
-        host: "us-cdbr-east-05.cleardb.net",
-        user: "b959a83957277c",
-        password: "5e9f74c2",
-        database: "heroku_2e384c4e07a3778",
+    let connection = mysql.createConnection({
+        host: "127.0.0.1",
+        user: "root",
+        password: "password",
+        database: "comp2800",
         multipleStatements: "true"
     });
 
