@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <title>Gabify</title>
+    <link rel="stylesheet" href="/styles/userProfile.css">
+    <link rel="stylesheet"
+        href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+
+<body>
+    <div id="header"></div>
+
+    <div class="user-info">
+
+        <div class="picture">
+            <img id="avatar" src="/avatar/placeholder.jpg">
+        </div>
+
+        <div class="form">
+            <label id="f1">First Name</label>
+            <input type="text" id="firstNameInput" class="form-control" placeholder="Bob">
+            <br>
+            <label id="f2">Last Name</label>
+            <input type="text" id="lastNameInput" class="form-control" placeholder="Smith">
+            <br>
+            <label id="f3">Email</label>
+            <input type="text" id="emailInput" class="form-control" placeholder="email@address.com">
+            <br>
+            <label id="f4">Password</label>
+            <input type="text" id="passwordInput" class="form-control" placeholder="e.g. 555-555-5555">
+        </div>
+
+        <div id="options">
+            <a href="#" id="submit" class="option">Save</a>
+        </div>
+
+        <div class="imageSelector">
+            <form id="upload-images-form" action="/" method="post">
+                <input id="image-upload" type="file" value="Upload Image" accept="image/png, image/gif, image/jpeg"
+                    multiple="multiple" />
+                <input id="submit2" type="submit" class="option" value="Upload" />
+            </form>
+        </div>
+
+    </div>
+    <div id="footerPlaceholder"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/scripts/skeleton.js"></script>
+    <script src="/scripts/userProfile.js"></script>
+    <script src="/scripts/upload.js"></script>
+</body>
+
+</html>
