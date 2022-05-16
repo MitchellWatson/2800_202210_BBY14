@@ -37,10 +37,10 @@ app.use(bodyparser.urlencoded({
 
 
 const connection = mysql.createConnection({
-    host: "us-cdbr-east-05.cleardb.net",
-    user: "b959a83957277c",
-    password: "5e9f74c2",
-    database: "heroku_2e384c4e07a3778",
+    host: "127.0.0.1",
+    user: "root",
+    password: "passwordSQL",
+    database: "comp2800",
     multipleStatements: "true"
     });
 
@@ -152,10 +152,10 @@ app.post('/create', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
     let connection = mysql.createConnection({
-        host: "us-cdbr-east-05.cleardb.net",
-        user: "b959a83957277c",
-        password: "5e9f74c2",
-        database: "heroku_2e384c4e07a3778",
+        host: "127.0.0.1",
+        user: "root",
+        password: "passwordSQL",
+        database: "comp2800",
         multipleStatements: "true"
     });
     connection.connect();
@@ -179,10 +179,10 @@ app.post('/updateUser', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
     let connection = mysql.createConnection({
-        host: "us-cdbr-east-05.cleardb.net",
-        user: "b959a83957277c",
-        password: "5e9f74c2",
-        database: "heroku_2e384c4e07a3778",
+        host: "127.0.0.1",
+        user: "root",
+        password: "passwordSQL",
+        database: "comp2800",
         multipleStatements: "true"
     });
     connection.connect();
@@ -236,10 +236,10 @@ app.get("/admin-users", function (req, res) {
         const mysql = require("mysql2");
 
         const connection = mysql.createConnection({
-            host: "us-cdbr-east-05.cleardb.net",
-            user: "b959a83957277c",
-            password: "5e9f74c2",
-            database: "heroku_2e384c4e07a3778",
+            host: "127.0.0.1",
+            user: "root",
+            password: "passwordSQL",
+            database: "comp2800",
             multipleStatements: "true"
         });
         connection.connect();
@@ -346,10 +346,10 @@ app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
     const mysql = require("mysql2");
     const connection = mysql.createConnection({
-        host: "us-cdbr-east-05.cleardb.net",
-        user: "b959a83957277c",
-        password: "5e9f74c2",
-        database: "heroku_2e384c4e07a3778",
+        host: "127.0.0.1",
+        user: "root",
+        password: "passwordSQL",
+        database: "comp2800",
         multipleStatements: "true"
     });
 
