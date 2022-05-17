@@ -511,10 +511,8 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
 //For Heroku deployment
 // app.listen(process.env.PORT || 3000);
 
-const host = '0.0.0.0';
-const port = process.env.PORT || 3000;
-app.listen(port, host, function() {
-    console.log("Server started.......");
+app.listen(process.env.PORT || 3000, function(){
+    console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
   });
 
 
