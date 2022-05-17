@@ -6,7 +6,7 @@ const fs = require("fs");
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 
@@ -14,6 +14,7 @@ const bodyparser = require('body-parser');
 const path = require('path');
 const { connect } = require("http2");
 const multer = require('multer');
+const Connection = require("mysql/lib/Connection");
 
 app.use("/html", express.static("./app/html"));
 app.use("/avatar", express.static("./app/avatar"));
@@ -177,7 +178,7 @@ app.get("/userProfiles", function (req, res) {
     }
 });
 
-app.post('/create', function (req, res) {
+app.post('/create', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
 
 // const heroku_connection = mysql.createConnection({
@@ -188,7 +189,7 @@ app.post('/create', function (req, res) {
 //     multipleStatements: "true"
 //     });
 
-    const database = mysql.createConnection({
+    const database = await mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
         password: password,
@@ -196,22 +197,23 @@ app.post('/create', function (req, res) {
         multipleStatements: "true"
         });
 
-    database.connect();
-    database.query(`USE ${sqlDB}; INSERT INTO bby14_users VALUES (?, ?, ?, ?, ?, ?)`,
-      [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, req.body.is_admin],
-      function (error, results, fields) {
-        if (error) {
-          console.log(error);
-        }
-        res.send({
-          status: "success",
-          msg: "Recorded updated."
-        });
-  
-      });
-   database.end();
-  
+
+    let [results, fields] = await database.query(`USE ${sqlDB}; SELECT * FROM bby14_users WHERE email = '?';`);
+
+    if (results.length === 0) {
+
+    let insertionQuery = `USE ${sqlDB}; INSERT INTO bby14_users VALUES (?, '?', '?', '?', '?', ?);`;
+
+    await database.query(insertionQuery, [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, req.body.is_admin]);
+    
+    res.send({ status: "success", msg: "Recorded updated." });
+} else {
+    res.send({ "status": "fail", "message": "Invalid email"});
+}
   });
+
+
+
 
 app.post('/updateUser', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
@@ -280,6 +282,8 @@ app.get("/admin-users", function (req, res) {
     if (req.session) {
         let profile = fs.readFileSync("./app/html/adminUsers.html", "utf8");
         let profileDOM = new JSDOM(profile);
+
+        const mysql = require("mysql2");
 
         // const heroku_connection = mysql.createConnection({
 //     host: "us-cdbr-east-05.cleardb.net",
@@ -354,7 +358,7 @@ app.get("/admin-users", function (req, res) {
     }
   })
 
-app.get("/main", function (req, res) {
+app.get("/main", async (req, res) => {
     
     if (req.session.loggedIn ) {
         if (req.session.userType) {
@@ -391,69 +395,66 @@ app.get("/main", function (req, res) {
 });
 
 
-app.post("/login", function (req, res) {
+
+
+
+
+
+
+app.post("/login", async function (req, res) {
     res.setHeader("Content-Type", "application/json");
-
-  // const heroku_connection = mysql.createConnection({
-//     host: "us-cdbr-east-05.cleardb.net",
-//     user: "b959a83957277c",
-//     password: "5e9f74c2",
-//     database: "heroku_2e384c4e07a3778",
-//     multipleStatements: "true"
-//     });
-
-const database = mysql.createConnection({
-    host: "127.0.0.1",
-    user: "root",
-    password: password,
-    database: "comp2800",
-    multipleStatements: "true"
-    });
-    
-    database.connect();
-    // Checks if user typed in matching email and password
-    const loginInfo = `USE ${sqlDB}; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
-    database.query(loginInfo, function (error, results, fields) {
-        /* If there is an error, alert user of error
-        *  If the length of results array is 0, then there was no matches in database
-        *  If no error, then it is valid login and save info for session
-        */
-        if (error) {
-            // change this to notify user of error
-        } else if (results[1].length == 0) {
-            res.send({ status: "fail", msg: "Incorrect email or password!" });
-        } else {
-            let validUserInfo = results[1][0];
-            
-            req.session.loggedIn = true;
-            req.session.email = validUserInfo.email;
-            req.session.first_name = validUserInfo.first_name;
-            req.session.last_name = validUserInfo.last_name;
-            req.session.password = validUserInfo.password;
-            req.session.identity = validUserInfo.ID;
-            req.session.userType = validUserInfo.is_admin;
-            req.session.save(function (err) {
-                // session saved. for analytics we could record this in db
-            })
-            res.send({ status: "success", msg: "Logged in." });
-        }
-    })
-    database.end();
   
-});
+    const mysql = require("mysql2/promise");
+    const connection = await mysql.createConnection({
+      host: "127.0.0.1",
+      user: "root",
+      password: "password",
+      database: "comp2800",
+    });
+    connection.connect();
+    const [rows, fields] = await connection.execute(
+      `SELECT * FROM bby14_users WHERE email = "${req.body.email}" AND password = "${req.body.password}"`
+    );
+  
+    if (rows.length > 0) {
+     
 
-app.get("/logout", function (req, res) {
-    if (req.session) {
-        req.session.destroy(function (error) {
-            if (error) {
-                res.status(400).send("Cannot log out")
-            } else {
-                
-                res.redirect("/");
-            }
-        });
+            req.session.email = rows[0].email;
+            req.session.first_name = rows[0].first_name;
+            req.session.last_name = rows[0].last_name;
+            req.session.password = rows[0].password;
+            req.session.identity = rows[0].ID;
+            req.session.userType = rows[0].is_admin;
+            req.session.loggedIn = true;
+
+      req.session.save(function (err) {});
+ 
+      connection.end();
+  
+      res.send({
+        status: "success",
+        msg: "Logged in.",
+      });
+  
+      
+    } else {
+      res.send({
+        status: "fail",
+        msg: "User account not found.",
+      });
     }
-});
+  });
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Code to upload an image.
