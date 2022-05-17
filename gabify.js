@@ -37,11 +37,11 @@ app.use(bodyparser.urlencoded({
 
 
 const connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: "passwordSQL",
-        database: "comp2800",
-        multipleStatements: "true"
+    host: "us-cdbr-east-05.cleardb.net",
+    user: "b959a83957277c",
+    password: "5e9f74c2",
+    database: "heroku_2e384c4e07a3778",
+    multipleStatements: "true"
     });
 
 
@@ -139,6 +139,7 @@ app.get("/userProfiles", function (req, res) {
 
 
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+
         res.send(profileDOM.serialize());
     } 
      else {
@@ -227,8 +228,69 @@ app.post('/updateUser', function (req, res) {
 
 });
 
+app.post('/updateAdmin', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+  
+    let connection = mysql.createConnection({
+        host: "127.0.0.1",
+        user: "root",
+        password: "passwordSQL",
+        database: "comp2800",
+        multipleStatements: "true"
+    });
+    connection.connect();
+    connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, is_admin = ? WHERE ID = ?',
+      [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.is_admin, req.body.id],
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+        }
+        res.send({
+          status: "success",
+          msg: "Recorded updated."
+        });
+  
+      });
+    connection.end();
+
+});
+
+app.post('/deleteAdmin', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+  
+    let connection = mysql.createConnection({
+        host: "127.0.0.1",
+        user: "root",
+        password: "passwordSQL",
+        database: "comp2800",
+        multipleStatements: "true"
+    });
+    connection.connect();
+    connection.query('DELETE FROM bby14_users WHERE ID = ?',
+      [req.body.id],
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+        }
+        res.send({
+          status: "success",
+          msg: "Recorded updated."
+        });
+  
+      });
+    //   console.log(req.body.id);
+    //   console.log(req.session.identity);
+    // if ((""+ req.session.identity).localeCompare(req.body.id + "") == 0) {
+    //     req.session.loggedIn == false;
+    //     console.log("worked");
+    // }
+    // console.log(req.session.loggedIn);
+    connection.end();
+
+});
+
 app.get("/admin-users", function (req, res) {
-    if (req.session) {
+    if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/adminUsers.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
@@ -264,16 +326,20 @@ app.get("/admin-users", function (req, res) {
                         '<div class="can">' +
                         '<p style="text-decoration: underline;">ID</p>' +
                         '<p>' + results[i].ID + '</p>' +
-                        '<p style="text-decoration: underline;">Email</p>' +
-                        '<p>' + results[i].email + '</p>' +
                         '<p style="text-decoration: underline;">First Name</p>' +
-                        '<p>' + results[i].first_name + '</p>' +
+                        '<input type="text" id="firstNameInput' + results[i].ID + '" placeholder="e.g. John" value="' + results[i].first_name + '"></input>' +
                         '<p style="text-decoration: underline;">Last Name</p>' +
-                        '<p>' + results[i].last_name + '</p>' +
+                        '<input type="text" id="lastNameInput' + results[i].ID + '" placeholder="e.g. Smith" value="' + results[i].last_name + '"></input>' +
+                        '<p style="text-decoration: underline;">Email</p>' +
+                        '<input type="text" id="emailInput' + results[i].ID + '" placeholder="e.g. bob@gmail.com" value="' + results[i].email + '"></input>' +
                         '<p style="text-decoration: underline;">Password</p>' +
-                        '<p>' + results[i].password + '</p>' +
+                        '<input type="text" id="passwordInput' + results[i].ID + '" placeholder="" value="' + results[i].password + '"></input>' +
                         '<p style="text-decoration: underline;">Admin</p>' +
-                        '<p>' + results[i].is_admin + '</p>' +
+                        '<input type="number" id="adminInput' + results[i].ID + '" placeholder="0 for user/1 for admin" min="0" max="1" value="' + results[i].is_admin + '"></input>' +
+                        '</div>' +
+                        '<div id="options">' +
+                        '<a target="' + results[i].ID + '" class="option submit">Save</a>' +
+                        '<a target="' + results[i].ID + '" class="option delete">Delete</a>' +
                         '</div>' +
                         '</div>';
                         usersProfiles.innerHTML += users;
@@ -293,6 +359,9 @@ app.get("/admin-users", function (req, res) {
             res.send(profileDOM.serialize());
         }
       );
+    } else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
     }
   })
 
@@ -334,8 +403,23 @@ app.get("/main", function (req, res) {
 
 
 
+// host: "127.0.0.1",
+// user: "root",
+// password: "",
+// database: "comp2800",
+// multipleStatements: "true"
+
+
 app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
+    const mysql = require("mysql2");
+    const connection = mysql.createConnection({
+        host: "127.0.0.1",
+        user: "root",
+        password: "passwordSQL",
+        database: "comp2800",
+        multipleStatements: "true"
+    });
 
     connection.connect();
     // Checks if user typed in matching email and password
@@ -351,6 +435,7 @@ app.post("/login", function (req, res) {
             res.send({ status: "fail", msg: "Incorrect email or password!" });
         } else {
             let validUserInfo = results[1][0];
+            
             req.session.loggedIn = true;
             req.session.email = validUserInfo.email;
             req.session.first_name = validUserInfo.first_name;
@@ -358,7 +443,6 @@ app.post("/login", function (req, res) {
             req.session.password = validUserInfo.password;
             req.session.identity = validUserInfo.ID;
             req.session.userType = validUserInfo.is_admin;
-
             req.session.save(function (err) {
                 // session saved. for analytics we could record this in db
             })
@@ -386,7 +470,6 @@ app.get("/redirectToUsers", function (req, res) {
         if(req.session.userType) {
             connection.connect();
              const getUsers = `USE comp2800; SELECT * FROM bby_users;`;
-             //change this
             let doc = fs.readFileSync("./app/html/userProfiles.html", "utf8");
             let adminDoc = new JSDOM(doc);
 
@@ -421,9 +504,10 @@ const storage = multer.diskStorage({
         callback(null, "./app/avatar/")
     },
     filename: function(req, file, callback) {
-        // callback(null, "avatar_" + file.originalname.split('/').pop().trim());
+        // // callback(null, "avatar_" + file.originalname.split('/').pop().trim());
         const sessionID = "" + req.session.identity;
-        callback(null, "avatar_" + sessionID + "." + file.originalname.split(".").pop());
+        // callback(null, "avatar_" + sessionID + "." + file.originalname.split(".").pop());
+        callback(null, "avatar_" + sessionID + ".jpg");
     }
 });
 

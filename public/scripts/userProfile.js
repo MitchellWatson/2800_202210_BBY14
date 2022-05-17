@@ -27,8 +27,6 @@ function ajaxPOST(url, callback, data) {
 
 document.getElementById("submit").addEventListener("click", function (e) {
     
-    
-    
     e.preventDefault();
     let email = document.getElementById("emailInput");
     let password = document.getElementById("passwordInput");
