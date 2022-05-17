@@ -1,1 +1,1 @@
-web: start
+web: node gabify.js
