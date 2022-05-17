@@ -44,33 +44,26 @@ const password = 'password';
 
 
 
-// const heroku_connection = mysql.createConnection({
-//     host: "us-cdbr-east-05.cleardb.net",
-//     user: "b959a83957277c",
-//     password: "5e9f74c2",
-//     database: "heroku_2e384c4e07a3778",
-//     multipleStatements: "true"
-//     });
-
-//change this to "heroku_2e384c4e07a3778" for heroku
-const sqlDB = "comp2800";
-
 const database = mysql.createConnection({
-    host: "127.0.0.1",
-    user: "root",
-    password: password,
-    database: "comp2800",
+    host: "us-cdbr-east-05.cleardb.net",
+    user: "b959a83957277c",
+    password: "5e9f74c2",
+    database: "heroku_2e384c4e07a3778",
     multipleStatements: "true"
     });
 
+//switch for heroku and milestones
+// const sqlDB = "comp2800";
+const sqlDB = "heroku_2e384c4e07a3778";
 
-// if (is_heroku) {
-//     var database = mysql.createConnection(heroku_connection);
-// } else {
-//     var database = mysql.createConnection(local_connection);
-// }
+// const database = mysql.createConnection({
+//     host: "127.0.0.1",
+//     user: "root",
+//     password: password,
+//     database: "comp2800",
+//     multipleStatements: "true"
+//     });
 
-// const database = mysql.createConnection(local_connection);
 
 app.get("/", function (req, res) {
     if (req.session.loggedIn) {
@@ -181,21 +174,21 @@ app.get("/userProfiles", function (req, res) {
 app.post('/create', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
 
-// const heroku_connection = mysql.createConnection({
-//     host: "us-cdbr-east-05.cleardb.net",
-//     user: "b959a83957277c",
-//     password: "5e9f74c2",
-//     database: "heroku_2e384c4e07a3778",
-//     multipleStatements: "true"
-//     });
+const hdatabase = mysql.createConnection({
+    host: "us-cdbr-east-05.cleardb.net",
+    user: "b959a83957277c",
+    password: "5e9f74c2",
+    database: "heroku_2e384c4e07a3778",
+    multipleStatements: "true"
+    });
 
-    const database = await mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
-        multipleStatements: "true"
-        });
+    // const database = await mysql.createConnection({
+    //     host: "127.0.0.1",
+    //     user: "root",
+    //     password: password,
+    //     database: "comp2800",
+    //     multipleStatements: "true"
+    //     });
 
 
     let [results, fields] = await database.query(`USE ${sqlDB}; SELECT * FROM bby14_users WHERE email = '?';`);
@@ -218,21 +211,21 @@ app.post('/create', async (req, res) => {
 app.post('/updateUser', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
-  // const heroku_connection = mysql.createConnection({
-//     host: "us-cdbr-east-05.cleardb.net",
-//     user: "b959a83957277c",
-//     password: "5e9f74c2",
-//     database: "heroku_2e384c4e07a3778",
-//     multipleStatements: "true"
-//     });
-
-const database = mysql.createConnection({
-    host: "127.0.0.1",
-    user: "root",
-    password: password,
-    database: "comp2800",
+  const database = mysql.createConnection({
+    host: "us-cdbr-east-05.cleardb.net",
+    user: "b959a83957277c",
+    password: "5e9f74c2",
+    database: "heroku_2e384c4e07a3778",
     multipleStatements: "true"
     });
+
+// const database = mysql.createConnection({
+//     host: "127.0.0.1",
+//     user: "root",
+//     password: password,
+//     database: "comp2800",
+//     multipleStatements: "true"
+//     });
 
   
     database.connect();
@@ -285,21 +278,24 @@ app.get("/admin-users", function (req, res) {
 
         const mysql = require("mysql2");
 
-        // const heroku_connection = mysql.createConnection({
-//     host: "us-cdbr-east-05.cleardb.net",
-//     user: "b959a83957277c",
-//     password: "5e9f74c2",
-//     database: "heroku_2e384c4e07a3778",
-//     multipleStatements: "true"
-//     });
 
-    const database = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
-        multipleStatements: "true"
-        });
+
+    // const database = mysql.createConnection({
+    //     host: "127.0.0.1",
+    //     user: "root",
+    //     password: password,
+    //     database: "comp2800",
+    //     multipleStatements: "true"
+    //     });
+
+
+        const database = mysql.createConnection({
+            host: "us-cdbr-east-05.cleardb.net",
+            user: "b959a83957277c",
+            password: "5e9f74c2",
+            database: "heroku_2e384c4e07a3778",
+            multipleStatements: "true"
+            });
 
         database.connect();
 
@@ -405,12 +401,21 @@ app.post("/login", async function (req, res) {
     res.setHeader("Content-Type", "application/json");
   
     const mysql = require("mysql2/promise");
-    const connection = await mysql.createConnection({
-      host: "127.0.0.1",
-      user: "root",
-      password: "password",
-      database: "comp2800",
-    });
+    // const connection = await mysql.createConnection({
+    //   host: "127.0.0.1",
+    //   user: "root",
+    //   password: "password",
+    //   database: "comp2800",
+    // });
+
+    const connection = mysql.createConnection({
+        host: "us-cdbr-east-05.cleardb.net",
+        user: "b959a83957277c",
+        password: "5e9f74c2",
+        database: "heroku_2e384c4e07a3778",
+        multipleStatements: "true"
+        });
+
     connection.connect();
     const [rows, fields] = await connection.execute(
       `SELECT * FROM bby14_users WHERE email = "${req.body.email}" AND password = "${req.body.password}"`
@@ -490,21 +495,21 @@ app.get('/', function (req, res) {
 app.post('/upload-images', upload.array("files"), function (req, res) {
 
     if (req.session.loggedIn ) {
-// const heroku_connection = mysql.createConnection({
-//     host: "us-cdbr-east-05.cleardb.net",
-//     user: "b959a83957277c",
-//     password: "5e9f74c2",
-//     database: "heroku_2e384c4e07a3778",
-//     multipleStatements: "true"
-//     });
-
 const database = mysql.createConnection({
-    host: "127.0.0.1",
-    user: "root",
-    password: password,
-    database: "comp2800",
+    host: "us-cdbr-east-05.cleardb.net",
+    user: "b959a83957277c",
+    password: "5e9f74c2",
+    database: "heroku_2e384c4e07a3778",
     multipleStatements: "true"
     });
+
+// const database = mysql.createConnection({
+//     host: "127.0.0.1",
+//     user: "root",
+//     password: password,
+//     database: "comp2800",
+//     multipleStatements: "true"
+//     });
 
 
     database.connect();
@@ -557,18 +562,11 @@ const database = mysql.createConnection({
 
 // //For Milestone hand-ins:
 let port = 8000;
-// app.listen(port, function () {
-// });
+app.listen(port, function () {});
 
 //For Heroku deployment
-// app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 3000);
 
 
-// if (is_heroku) {
-    
-//     app.listen(process.env.PORT || 3000);
-// } else {
-//     app.listen(port, function () {});
-// }
 
-app.listen(port, function () {});
+
