@@ -416,7 +416,7 @@ app.post("/login", async function (req, res) {
         multipleStatements: "true"
         });
 
-    connection.connect();
+   
     const [rows, fields] = await connection.execute(
       `SELECT * FROM bby14_users WHERE email = "${req.body.email}" AND password = "${req.body.password}"`
     );
