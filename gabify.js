@@ -112,6 +112,8 @@ app.get("/user", function (req, res) {
         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
 
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+
+        
         res.send(profileDOM.serialize());
     } 
      else {
