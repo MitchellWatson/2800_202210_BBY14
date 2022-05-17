@@ -140,6 +140,9 @@ app.get("/userProfiles", function (req, res) {
 
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
 
+        
+
+
         res.send(profileDOM.serialize());
     } 
      else {
