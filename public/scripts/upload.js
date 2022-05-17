@@ -23,5 +23,8 @@ function uploadImages(e) {
     ).then(function(res) {
         console.log(res);
     }).catch(function(err) {("Error:", err)}
+    
     );
+
+    location.reload();
 }
