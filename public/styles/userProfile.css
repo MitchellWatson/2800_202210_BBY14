@@ -8,6 +8,7 @@ body {
     text-align: center;
     font-family: 'Quicksand', sans-serif;
     background-color: rgb(224, 224, 224);
+    
 }
 
 #header {
@@ -167,7 +168,21 @@ input {
     grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
     justify-content: center;
     align-items: center;
+    /* overflow-y: auto; */
+    -ms-overflow-style: none; /* for Internet Explorer, Edge */
+    scrollbar-width: none; /* for Firefox */
+    overflow-y: scroll; 
 }
+
+
+.user-info::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, and Opera */
+}
+
+
+
+
+
 
 .picture > img {
     width: 50%;
@@ -181,12 +196,12 @@ input {
 .options {
     grid-row: 3;
 }
-
+/* 
 .imageSelector {
     grid-row: 4;
     padding-top: 1em;
     padding-bottom: 5em;
-}
+} */
 
 .form {
     grid-row: 2;

@@ -16,11 +16,19 @@
     <div id="header"></div>
 
     <div class="user-info">
+        
 
-        <div class="picture">
-            <img id="avatar" src="/avatar/avatar_2.jpg">
+        <!-- <div class="imageSelector"> -->
+            <div class="picture">
+                <img id="avatar" src="/avatar/avatar_2.jpg">
+            <!-- </div> -->
+            <form id="upload-images-form" action="/" method="post">
+                <input id="image-upload" type="file" value="Upload Image" accept="image/png, image/gif, image/jpeg"
+                    multiple="multiple" />
+                <input id="submit2" type="submit" class="option" value="Upload" />
+            </form>
         </div>
-
+        
         <div class="form">
             <label id="f1">First Name</label>
             <input type="text" id="firstNameInput" class="form-control" placeholder="Bob">
@@ -39,13 +47,7 @@
             <a href="#" id="submit" class="option">Save</a>
         </div>
 
-        <div class="imageSelector">
-            <form id="upload-images-form" action="/" method="post">
-                <input id="image-upload" type="file" value="Upload Image" accept="image/png, image/gif, image/jpeg"
-                    multiple="multiple" />
-                <input id="submit2" type="submit" class="option" value="Upload" />
-            </form>
-        </div>
+        
 
     </div>
     <div id="footerPlaceholder"></div>
