@@ -40,7 +40,7 @@ app.use(bodyparser.urlencoded({
 
 
 //This is for Basil's local host; change to whatever yours is...
-const password = 'password'; 
+const password = ''; 
 
 
 

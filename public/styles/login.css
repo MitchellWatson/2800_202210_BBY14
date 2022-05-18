@@ -85,7 +85,7 @@ img{
     transform-style: preserve-3D;
     cursor:pointer;
 }
-#logo {
+.logo {
     width: 30vh;
     display: block;
     margin-left: auto;
@@ -121,7 +121,7 @@ form > div {
 }
 
 @media only screen and (min-width: 1025px) {
-    .card {
+    #card {
         top: 35%;
     }
 }
