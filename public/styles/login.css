@@ -22,7 +22,7 @@ h2 {
     padding-bottom: 20px;
 }
 
-.card {
+#card {
     background-color: rgb(255, 255, 255);
     padding: 20px 40px;
     border-radius: 10px;
@@ -45,17 +45,17 @@ h2 {
     width: 10%;
 }
 
-.card:hover {
+#card:hover {
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
 }
 
-.card h2 {
+#card h2 {
     text-align: center;
     margin: 0 auto;
     font-size: 200%;
 }
 
-.card a {
+#card a {
     text-decoration: none;
     color: blue;
 }
