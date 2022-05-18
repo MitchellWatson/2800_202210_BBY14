@@ -79,14 +79,23 @@ h2 {
     background-color: #7abaff;
 }
 
-.logo {
+img{
+    transition: all 1s ease-out;
+    transform-origin: center;
+    transform-style: preserve-3D;
+    cursor:pointer;
+}
+#logo {
     width: 30vh;
     display: block;
     margin-left: auto;
     margin-right: auto;
     position: fixed;
     top: 5%;
+
 }
+
+
 
 #login {
 justify-content: center;}
