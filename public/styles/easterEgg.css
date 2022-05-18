@@ -7,21 +7,6 @@
 }
 
 
-
-body {
-    background-color: rebeccapurple;
-    font-family: 'Poppins', sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh; /*vh = viewport height*/
-    overflow: hidden; /**hides the scrollbar default view*/
-    margin: 0;
-    
-}
-
-
 .btn {
     background-color: #fff;
     color: rebeccapurple;
@@ -46,10 +31,10 @@ body {
 
 #toasts {
     position: fixed;
-    bottom: 10px;
-    right: 10px;
+    bottom: 100px;
+    left: 10px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-end;
 }
 
@@ -61,14 +46,14 @@ body {
 
 }
 
-.toast.info {
+.toast.purple {
 color: rebeccapurple;
 }
 
-.toast.success {
+.toast.green {
 color: green;
     }
 
-.toast.error {
+.toast.red {
 color: red;
         }
