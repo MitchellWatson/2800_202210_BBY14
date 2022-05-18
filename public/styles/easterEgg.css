@@ -29,7 +29,7 @@
 
 }
 
-#toasts {
+#quotes {
     position: fixed;
     bottom: 100px;
     left: 10px;
@@ -38,7 +38,7 @@
     align-items: flex-end;
 }
 
-.toast {
+.quote {
     background-color: #fff;
     border-radius: 5px;
     padding: 1rem 2rem;
@@ -46,14 +46,14 @@
 
 }
 
-.toast.purple {
+.quote.purple {
 color: rebeccapurple;
 }
 
-.toast.green {
+.quote.green {
 color: green;
     }
 
-.toast.red {
+.quote.red {
 color: red;
         }

@@ -1,5 +1,5 @@
 const button = document.getElementById("secret-click");
-const toasts = document.getElementById('toasts')
+const toasts = document.getElementById('quotes')
 let count = 0;
 const messages = [
     'Age is just a number for those who know how to make the most of their lives', 
@@ -25,7 +25,7 @@ button.addEventListener('click', () => {
 function createNotification(message = null, type = null) {
 
     const notif = document.createElement('div')
-    notif.classList.add('toast')
+    notif.classList.add('quote')
     notif.classList.add(type ? type : getType())
 
     notif.innerText = message ? message : getMessage()
