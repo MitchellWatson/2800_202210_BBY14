@@ -44,7 +44,7 @@ const password = '';
 
 
 
-const database = mysql.createConnection({
+const database = mysql.createPool({
     host: "us-cdbr-east-05.cleardb.net",
     user: "b959a83957277c",
     password: "5e9f74c2",
@@ -56,7 +56,7 @@ const database = mysql.createConnection({
 // const sqlDB = "comp2800";
 const sqlDB = "heroku_2e384c4e07a3778";
 
-// const database = mysql.createConnection({
+// const database = mysql.createPool({
 //     host: "127.0.0.1",
 //     user: "root",
 //     password: password,
@@ -179,7 +179,7 @@ app.get("/userProfiles", function (req, res) {
 app.post('/create', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
 
-const database = mysql.createConnection({
+const database = mysql.createPool({
     host: "us-cdbr-east-05.cleardb.net",
     user: "b959a83957277c",
     password: "5e9f74c2",
@@ -187,7 +187,7 @@ const database = mysql.createConnection({
     multipleStatements: "true"
     });
 
-    // const database = await mysql.createConnection({
+    // const database = await mysql.createPool({
     //     host: "127.0.0.1",
     //     user: "root",
     //     password: password,
@@ -216,7 +216,7 @@ const database = mysql.createConnection({
 app.post('/updateUser', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
-  const database = mysql.createConnection({
+  const database = mysql.createPool({
     host: "us-cdbr-east-05.cleardb.net",
     user: "b959a83957277c",
     password: "5e9f74c2",
@@ -224,7 +224,7 @@ app.post('/updateUser', function (req, res) {
     multipleStatements: "true"
     });
 
-// const database = mysql.createConnection({
+// const database = mysql.createPool({
 //     host: "127.0.0.1",
 //     user: "root",
 //     password: password,
@@ -271,7 +271,7 @@ app.post('/updateUser', function (req, res) {
               })
           }
       })
-    database.end();
+
 
 });
 
@@ -284,7 +284,7 @@ app.get("/admin-users", function (req, res) {
 
 
 
-    // const database = mysql.createConnection({
+    // const database = mysql.createPool({
     //     host: "127.0.0.1",
     //     user: "root",
     //     password: password,
@@ -293,7 +293,7 @@ app.get("/admin-users", function (req, res) {
     //     });
 
 
-        const database = mysql.createConnection({
+        const database = mysql.createPool({
             host: "us-cdbr-east-05.cleardb.net",
             user: "b959a83957277c",
             password: "5e9f74c2",
@@ -353,7 +353,7 @@ app.get("/admin-users", function (req, res) {
             res.send(profileDOM.serialize());
         }
       );
-    database.end();
+
 
     }
   })
@@ -406,14 +406,14 @@ app.post("/login", async function (req, res) {
   
     const mysql = require("mysql2/promise");
 
-    // const connection = await mysql.createConnection({
+    // const connection = await mysql.createPool({
     //   host: "127.0.0.1",
     //   user: "root",
     //   password: "password",
     //   database: "comp2800",
     // });
 
-    const connection = mysql.createConnection({
+    const connection = mysql.createPool({
         host: "us-cdbr-east-05.cleardb.net",
         user: "b959a83957277c",
         password: "5e9f74c2",
@@ -439,7 +439,7 @@ app.post("/login", async function (req, res) {
 
       req.session.save(function (err) {});
  
-      connection.end();
+
   
       res.send({
         status: "success",
@@ -510,7 +510,7 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
 
     if (req.session.loggedIn ) {
 
-const database = mysql.createConnection({
+const database = mysql.createPool({
     host: "us-cdbr-east-05.cleardb.net",
     user: "b959a83957277c",
     password: "5e9f74c2",
@@ -521,7 +521,7 @@ const database = mysql.createConnection({
 const sql = require("mysql2");
 
 
-// const database = sql.createConnection({
+// const database = sql.createPool({
 //     host: "127.0.0.1",
 //     user: "root",
 //     password: password,
@@ -530,7 +530,7 @@ const sql = require("mysql2");
 //     });
 
 
-    database.connect();
+
 
     for(let i = 0; i < req.files.length; i++) {
         req.files[i].filename = req.files[i].originalname;
@@ -551,7 +551,7 @@ const sql = require("mysql2");
             console.log("file uploaded")
         })
     }
-    database.end();
+
 } else {
     res.redirect("/");
 }
