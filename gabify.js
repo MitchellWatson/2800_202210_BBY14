@@ -213,16 +213,17 @@ app.post('/create', async (req, res) => {
 
 
 
-app.post('/updateUser', function (req, res) {
+app.post('/updateUser', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
 
-    const database = mysql.createPool({
+    const database = await mysql.createPool({
         host: "us-cdbr-east-05.cleardb.net",
         user: "b959a83957277c",
         password: "5e9f74c2",
         database: "heroku_2e384c4e07a3778",
         multipleStatements: "true"
     });
+
 
     // const database = mysql.createPool({
     //     host: "127.0.0.1",
@@ -233,32 +234,31 @@ app.post('/updateUser', function (req, res) {
     //     });
 
 
-    database.connect();
-    database.query(`USE ${sqlDB}; UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ? WHERE ID = ?`,
-        [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.session.identity],
-        function (error, results, fields) {
+   let [results, error, fields] = await database.query(`USE ${sqlDB}; UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ? WHERE ID = ?`,
+        [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.session.identity]);
+
+
             if (error) {
                 console.log(error);
-            }
+            } else {
             res.send({
                 status: "success",
                 msg: "Recorded updated."
             });
-
-        });
+        }
 
     const loginInfo = `USE ${sqlDB}; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
-    database.query(loginInfo, function (error, results, fields) {
+    let [myResults, myError, myFields] =  await database.query(loginInfo);
         /* If there is an error, alert user of error
         *  If the length of results array is 0, then there was no matches in database
         *  If no error, then it is valid login and save info for session
         */
-        if (error) {
+        if (myError) {
             // change this to notify user of error
-        } else if (results[1].length == 0) {
+        } else if (myResults[1].length == 0) {
             res.send({ status: "fail", msg: "Incorrect email or password!" });
         } else {
-            let validUserInfo = results[1][0];
+            let validUserInfo = myResults[1][0];
             req.session.loggedIn = true;
             req.session.email = validUserInfo.email;
             req.session.first_name = validUserInfo.first_name;
@@ -266,14 +266,11 @@ app.post('/updateUser', function (req, res) {
             req.session.password = validUserInfo.password;
             req.session.identity = validUserInfo.ID;
             req.session.userType = validUserInfo.is_admin;
-            req.session.save(function (err) {
-                // session saved. for analytics we could record this in db
-            })
         }
-    })
+    
+    });
 
 
-});
 
 app.get("/admin-users", function (req, res) {
     if (req.session) {
