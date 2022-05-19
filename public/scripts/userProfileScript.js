@@ -22,7 +22,7 @@ form.addEventListener('submit', (e) =>  {
     if(user) {
         getUser(user)
 
-        search.value = ''git 
+        search.value = ''
     }
 
 })
