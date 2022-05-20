@@ -32,8 +32,10 @@ document.getElementById("submit").addEventListener("click", function (e) {
     let password = document.getElementById("passwordInput");
     let first = document.getElementById("firstNameInput");
     let last = document.getElementById("lastNameInput");
-    console.log(last);
-    let queryString = "email=" + email.value + "&password=" + password.value + "&first_name=" + first.value + "&last_name=" + last.value;
+    let age = document.getElementById("ageInput");
+    let bio = document.getElementById("bioInput");
+    let hobbies = document.getElementById("hobbiesInput");
+    let queryString = "email=" + email.value + "&password=" + password.value + "&first_name=" + first.value + "&last_name=" + last.value + "&age=" + age.value + "&bio=" + bio.value + "&hobbies=" + hobbies.value;
     ajaxPOST("/updateUser", function (data) {
         if (data) {
             let dataParsed = JSON.parse(data);
@@ -48,3 +50,4 @@ document.getElementById("submit").addEventListener("click", function (e) {
 
     }, queryString);
 });
+

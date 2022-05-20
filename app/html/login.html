@@ -8,10 +8,12 @@
         <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
         <title>Gabify</title>
         <link rel="stylesheet" href="/styles/login.css">
+        <link rel="stylesheet" href="/styles/easterEgg.css">
     </head>
 
     <body>
-        <img class="logo" alt="Gabbify" src="/images/gabify.png">
+        <img id="secret-click" class="logo" alt="Gabbify" src="/images/gabify.png">
+
         <div class="card">
             <h2 class="title">Login</h2>
 
@@ -22,12 +24,14 @@
             </form>
 
             <p class="text">Don't have an account?
-                <a href="/html/register.html">Register</a>
+                <a href="/register">Register</a>
             </p>
             <p id="incorrect"></p>
         </div>
-        
-        <script src="/scripts/login.js"></script>
+        <div id="quotes"></div>
+
     </body>
+    <script src="/scripts/login.js"></script>
+    <script src="/scripts/easterEgg.js"></script>
 
 </html>

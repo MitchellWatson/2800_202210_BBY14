@@ -16,36 +16,36 @@
     <div id="header"></div>
 
     <div class="user-info">
+        
 
-        <div class="picture">
-            <img id="avatar" src="/avatar/placeholder.jpg">
-        </div>
-
-        <div class="form">
-            <label id="f1">First Name</label>
-            <input type="text" id="firstNameInput" class="form-control" placeholder="Bob">
-            <br>
-            <label id="f2">Last Name</label>
-            <input type="text" id="lastNameInput" class="form-control" placeholder="Smith">
-            <br>
-            <label id="f3">Email</label>
-            <input type="text" id="emailInput" class="form-control" placeholder="email@address.com">
-            <br>
-            <label id="f4">Password</label>
-            <input type="text" id="passwordInput" class="form-control" placeholder="e.g. 555-555-5555">
-        </div>
-
-        <div id="options">
-            <a href="#" id="submit" class="option">Save</a>
-        </div>
-
-        <div class="imageSelector">
+        <!-- <div class="imageSelector"> -->
+            <div class="picture">
+                <img id="avatar" src="/avatar/avatar_2.jpg">
+            <!-- </div> -->
             <form id="upload-images-form" action="/" method="post">
                 <input id="image-upload" type="file" value="Upload Image" accept="image/png, image/gif, image/jpeg"
                     multiple="multiple" />
-                <input id="submit2" type="submit" class="option" value="Upload" />
+                <input id="submit2" type="submit" class="option" value="Upload photo" />
             </form>
         </div>
+        <div id="timeline"></div>
+        <form id="register">
+            <h2>Login Information</h2>
+            <input id="emailInput" type="text" required="required" placeholder="Email"><br />
+            <input id="passwordInput" type="text" required="required" placeholder="Password"><br />
+            <h2>Profile Information</h2>
+            <input id="firstNameInput" type="text" required="required" placeholder="First name"><br />
+            <input id="lastNameInput" type="text" required="required" placeholder="Last name"><br />
+            <input id="ageInput" type="number" required="required" placeholder="Age"><br />
+            <textarea rows="4" id="bioInput" value="" type="text" required="required" maxlength="100" placeholder="Tell us about yourself!"></textarea><br />
+            <input id="hobbiesInput" type="text" required="required" placeholder="Hobbies (ie. Walking, Cooking)"><br />
+            <input id="submit" type="button" value="Save Info">
+        </form>
+
+
+        <div id="options">
+            <a href="#" id="submit" class="option">Save</a>
+        </div>  
 
     </div>
     <div id="footerPlaceholder"></div>
