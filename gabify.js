@@ -230,15 +230,6 @@ const time = current.toLocaleTimeString("en-US");
                 userPosts.innerHTML += posts;
                 profileDOM.window.document.getElementById("timeline").appendChild(userPosts);
             }
-
-            
-            
-
-           
-
-
-          
-            
        
         });
 
