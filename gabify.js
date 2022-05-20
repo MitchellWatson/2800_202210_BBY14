@@ -120,6 +120,26 @@ app.get("/friendFinder", function (req, res) {
     }
 });
 
+app.get("/timeline", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/timeline.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+
+        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+        let navBarDOM = new JSDOM(navBar);
+        let string = `Timeline`;
+        let t = navBarDOM.window.document.createTextNode(string);
+        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+
+        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+        res.send(profileDOM.serialize());
+    }
+    else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
+
 app.get("/user", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/userProfiles.html", "utf8");
@@ -179,7 +199,7 @@ app.get("/userProfiles", function (req, res) {
 app.post('/create', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
 
-    const database = mysql.createPool({
+    const database = await mysql.createConnection({
         host: "us-cdbr-east-05.cleardb.net",
         user: "b959a83957277c",
         password: "5e9f74c2",
@@ -200,9 +220,9 @@ app.post('/create', async (req, res) => {
 
     if (results.length === 0) {
 
-        let insertionQuery = `USE ${sqlDB}; INSERT INTO bby14_users VALUES (?, '?', '?', '?', '?', ?);`;
+        let insertionQuery = `USE ${sqlDB}; INSERT INTO bby14_users VALUES ('?', '?', '?', '?', ?);`;
 
-        await database.query(insertionQuery, [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, req.body.is_admin]);
+        await database.query(insertionQuery, [req.body.first_name, req.body.last_name, req.body.email, req.body.password, req.body.is_admin]);
 
         res.send({ status: "success", msg: "Recorded updated." });
     } else {
@@ -234,54 +254,53 @@ app.post('/updateUser', async (req, res) => {
     //     });
 
 
-   let [results, error, fields] = await database.query(`USE ${sqlDB}; UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ? WHERE ID = ?`,
+    let [results, error, fields] = await database.query(`USE ${sqlDB}; UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ? WHERE ID = ?`,
         [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.session.identity]);
 
 
-            if (error) {
-                console.log(error);
-            } else {
-            res.send({
-                status: "success",
-                msg: "Recorded updated."
-            });
-        }
+    if (error) {
+        console.log(error);
+    } else {
+        res.send({
+            status: "success",
+            msg: "Recorded updated."
+        });
+    }
 
     const loginInfo = `USE ${sqlDB}; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
-    let [myResults, myError, myFields] =  await database.query(loginInfo);
-        /* If there is an error, alert user of error
-        *  If the length of results array is 0, then there was no matches in database
-        *  If no error, then it is valid login and save info for session
-        */
-        if (myError) {
-            // change this to notify user of error
-        } else if (myResults[1].length == 0) {
-            res.send({ status: "fail", msg: "Incorrect email or password!" });
-        } else {
-            let validUserInfo = myResults[1][0];
-            req.session.loggedIn = true;
-            req.session.email = validUserInfo.email;
-            req.session.first_name = validUserInfo.first_name;
-            req.session.last_name = validUserInfo.last_name;
-            req.session.password = validUserInfo.password;
-            req.session.identity = validUserInfo.ID;
-            req.session.userType = validUserInfo.is_admin;
-        }
-    
-    });
+    let [myResults, myError, myFields] = await database.query(loginInfo);
+    /* If there is an error, alert user of error
+    *  If the length of results array is 0, then there was no matches in database
+    *  If no error, then it is valid login and save info for session
+    */
+    if (myError) {
+        // change this to notify user of error
+    } else if (myResults[1].length == 0) {
+        res.send({ status: "fail", msg: "Incorrect email or password!" });
+    } else {
+        let validUserInfo = myResults[1][0];
+        req.session.loggedIn = true;
+        req.session.email = validUserInfo.email;
+        req.session.first_name = validUserInfo.first_name;
+        req.session.last_name = validUserInfo.last_name;
+        req.session.password = validUserInfo.password;
+        req.session.identity = validUserInfo.ID;
+        req.session.userType = validUserInfo.is_admin;
+    }
+
+});
 
 
 
-app.get("/admin-users", function (req, res) {
+app.get("/admin-users", async (req, res) => {
     if (req.session) {
         let profile = fs.readFileSync("./app/html/adminUsers.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
-        const mysql = require("mysql2");
 
 
 
-        // const database = mysql.createPool({
+        // const database = mysql.createConnection({
         //     host: "127.0.0.1",
         //     user: "root",
         //     password: password,
@@ -290,7 +309,9 @@ app.get("/admin-users", function (req, res) {
         //     });
 
 
-        const database = mysql.createPool({
+
+        
+        const database = await mysql.createConnection({
             host: "us-cdbr-east-05.cleardb.net",
             user: "b959a83957277c",
             password: "5e9f74c2",
@@ -298,62 +319,59 @@ app.get("/admin-users", function (req, res) {
             multipleStatements: "true"
         });
 
-        database.connect();
-
-        database.query(
-            `USE ${sqlDB}; SELECT * FROM bby14_users`,
-            function (error, results, fields) {
-                if (error) {
-                    console.log(error);
-                }
-
-                const usersProfiles = profileDOM.window.document.createElement("div");
-                const createButton = profileDOM.window.document.createElement("div");
-                let create = "<a href='/register'><button class='option'>Create User</button></a>";
-                profileDOM.window.document.getElementById("create").appendChild(createButton);
-
-                usersProfiles.innerHTML += create;
-                let users;
-
-                for (let i = 0; i < results.length; i++) {
-                    users =
-                        '<div class="card">' +
-                        '<div class="can">' +
-                        '<p style="text-decoration: underline;">ID</p>' +
-                        '<p>' + results[i].ID + '</p>' +
-                        '<p style="text-decoration: underline;">Email</p>' +
-                        '<p>' + results[i].email + '</p>' +
-                        '<p style="text-decoration: underline;">First Name</p>' +
-                        '<p>' + results[i].first_name + '</p>' +
-                        '<p style="text-decoration: underline;">Last Name</p>' +
-                        '<p>' + results[i].last_name + '</p>' +
-                        '<p style="text-decoration: underline;">Password</p>' +
-                        '<p>' + results[i].password + '</p>' +
-                        '<p style="text-decoration: underline;">Admin</p>' +
-                        '<p>' + results[i].is_admin + '</p>' +
-                        '</div>' +
-                        '</div>';
-                    usersProfiles.innerHTML += users;
-                }
 
 
-                profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
-
-                let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-                let navBarDOM = new JSDOM(navBar);
-                let string = `Users`;
-                let t = navBarDOM.window.document.createTextNode(string);
-                navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
-                profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-
-                res.send(profileDOM.serialize());
-            }
-        );
+        let [results, error] = await database.query(`USE ${sqlDB}; SELECT * FROM bby14_users`);
 
 
+        if (error) {
+            console.log(error);
+        }
+
+        const usersProfiles = profileDOM.window.document.createElement("div");
+        const createButton = profileDOM.window.document.createElement("div");
+        let create = "<a href='/register'><button class='option'>Create User</button></a>";
+        profileDOM.window.document.getElementById("create").appendChild(createButton);
+
+        usersProfiles.innerHTML += create;
+
+        let users;
+        for (let i = 0; i < results.length; i++) {
+            users =
+                '<div class="card">' +
+                '<div class="can">' +
+                '<p style="text-decoration: underline;">ID</p>' +
+                '<p>' + results[i].ID + '</p>' +
+                '<p style="text-decoration: underline;">Email</p>' +
+                '<p>' + results[i].email + '</p>' +
+                '<p style="text-decoration: underline;">First Name</p>' +
+                '<p>' + results[i].first_name + '</p>' +
+                '<p style="text-decoration: underline;">Last Name</p>' +
+                '<p>' + results[i].last_name + '</p>' +
+                '<p style="text-decoration: underline;">Password</p>' +
+                '<p>' + results[i].password + '</p>' +
+                '<p style="text-decoration: underline;">Admin</p>' +
+                '<p>' + results[i].is_admin + '</p>' +
+                '</div>' +
+                '</div>';
+            usersProfiles.innerHTML += users;
+        }
+
+
+        profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+
+        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+        let navBarDOM = new JSDOM(navBar);
+        let string = `Users`;
+        let t = navBarDOM.window.document.createTextNode(string);
+        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+
+        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+
+        res.send(profileDOM.serialize());
     }
-})
+});
+
 
 app.get("/main", async (req, res) => {
 
