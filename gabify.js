@@ -15,6 +15,7 @@ const path = require('path');
 const { connect } = require("http2");
 const multer = require('multer');
 const Connection = require("mysql/lib/Connection");
+const { CLIENT_FOUND_ROWS } = require("mysql/lib/protocol/constants/client");
 
 app.use("/html", express.static("./app/html"));
 app.use("/avatar", express.static("./app/avatar"));
@@ -37,32 +38,30 @@ app.use(bodyparser.urlencoded({
 }))
 
 
-
-
 //This is for Basil's local host; change to whatever yours is...
-const password = '';
+const password = 'password'; 
 
 
 
-const database = mysql.createPool({
-    host: "127.0.0.1",
-    user: "root",
-    password: "passwordSQL",
-    database: "comp2800",
-    multipleStatements: "true"
-    });
+// const database = mysql.createConnection({
+//     host: "us-cdbr-east-05.cleardb.net",
+//   password  user: "b959a83957277c",
+//     : "5e9f74c2",
+//     database: "heroku_2e384c4e07a3778",
+//     multipleStatements: "true"
+//     });
 
 //switch for heroku and milestones
 const sqlDB = "comp2800";
 // const sqlDB = "heroku_2e384c4e07a3778";
 
-// const database = mysql.createPool({
-//     host: "127.0.0.1",
-//     user: "root",
-//     password: password,
-//     database: "comp2800",
-//     multipleStatements: "true"
-//     });
+const database = mysql.createConnection({
+    host: "127.0.0.1",
+    user: "root",
+    password: password,
+    database: "comp2800",
+    multipleStatements: "true"
+    });
 
 
 app.get("/", function (req, res) {
@@ -75,9 +74,9 @@ app.get("/", function (req, res) {
 });
 
 app.get("/register", function (req, res) {
-    let doc = fs.readFileSync("./app/html/register.html", "utf8");
-    res.send(doc);
-}
+        let doc = fs.readFileSync("./app/html/register.html", "utf8");
+        res.send(doc);
+    }
 );
 
 app.get("/game", function (req, res) {
@@ -93,12 +92,14 @@ app.get("/game", function (req, res) {
 
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
         res.send(profileDOM.serialize());
-    }
-    else {
+    } 
+     else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
     }
 });
+
+
 
 app.get("/friendFinder", function (req, res) {
     if (req.session.loggedIn) {
@@ -113,8 +114,8 @@ app.get("/friendFinder", function (req, res) {
 
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
         res.send(profileDOM.serialize());
-    }
-    else {
+    } 
+     else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
     }
@@ -133,19 +134,40 @@ app.get("/user", function (req, res) {
 
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
 
-
+        
         res.send(profileDOM.serialize());
-    }
-    else {
+    } 
+     else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
     }
 });
 
 app.get("/userProfiles", function (req, res) {
+
+    const timeElapsed = Date.now();
+    const today = new Date(timeElapsed);
+    // let dateOfPost = `${today.toDateString()}`;
+
+    const current = new Date();
+             // By default US English uses 12hr time with AM/PM
+const time = current.toLocaleTimeString("en-US");
+
+
     if (req.session.loggedIn) {
 
+        req.session.reload(function(err) {
+            
+            req.body.first_name = req.session.first_name;
+            req.body.last_name = req.session.last_name;
+            req.body.email = req.session.email;
+            req.body.password = req.session.password;
+            });
 
+            
+        
+    
+        
         let profile = fs.readFileSync("./app/html/userProfiles.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
@@ -160,48 +182,111 @@ app.get("/userProfiles", function (req, res) {
         profileDOM.window.document.querySelector("#lastNameInput").setAttribute('value', req.session.last_name);
 
 
+        
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
 
-
+        
         let img = profileDOM.window.document.querySelector('#avatar');
         img.src = '/avatar/avatar_' + req.session.identity + '.jpg';
 
 
 
+
+//Start of the Timelinecards code
+
+
+
+        const mysql3 = require("mysql2");
+
+            const database = mysql3.createConnection({
+                host: "127.0.0.1",
+                user: "root",
+                password: password,
+                database: "comp2800",
+                multipleStatements: "true"
+                });
+            database.connect();
+
+        
+        database.query(`USE ${sqlDB}; SELECT * FROM Posts WHERE userID = ${req.session.identity}`, function (error, results, fields) {
+            if (error) {
+              console.log(error);
+            }
+
+
+            const userPosts = profileDOM.window.document.getElementById("timeline");
+
+            for(let i = 0; i < results.length; i++) {
+                let posts =
+                '<div class="card">' +
+                '<div class="can">' +
+                '<p style="text-decoration: underline;">'
+                + `Post ${results[i].postNum}` +  '</p>' +
+                '<p>' + results[i].posts + '</p>' +
+                '<p>' + results[i].postDate + '</p>' +
+                '<p>' + results[i].postTime + '</p>' +
+                '</div>' +
+                '</div>';
+                userPosts.innerHTML += posts;
+                profileDOM.window.document.getElementById("timeline").appendChild(userPosts);
+            }
+
+            
+            
+
+           
+
+
+          
+            
+       
+        });
+
+
+       
+
         res.send(profileDOM.serialize());
-    }
-    else {
+    } 
+     else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
     }
 });
 
+
 app.post('/create', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
+    req.session.reload(function(err) {
+            
+        req.body.first_name = req.session.first_name;
+        req.body.last_name = req.session.last_name;
+        req.body.email = req.session.email;
+        req.body.password = req.session.password;
+        });
 
-    const database = mysql.createPool({
+// const database = mysql.createConnection({
+//     host: "us-cdbr-east-05.cleardb.net",
+//     user: "b959a83957277c",
+//     password: "5e9f74c2",
+//     database: "heroku_2e384c4e07a3778",
+//     multipleStatements: "true"
+//     });
+
+    const database = await mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: password,
         database: "comp2800",
         multipleStatements: "true"
         });
 
-    // const database = await mysql.createPool({
-    //     host: "127.0.0.1",
-    //     user: "root",
-    //     password: password,
-    //     database: "comp2800",
-    //     multipleStatements: "true"
-    //     });
-
 
     let [results, fields] = await database.query(`USE ${sqlDB}; SELECT * FROM bby14_users WHERE email = '${req.body.email}';`);
         console.log(req.body.email);
-        let veri = true;
-    for (let i = 0; i < results.length; i++) {
-        if (results[i].email == req.body.email) {
-            veri = false;
+    let veri = true;
+        for (let i = 0; i < results.length; i++) {
+            if (results[i].email == req.body.email) {
+                veri = false;
         }
     }    
     if (veri) {
@@ -209,81 +294,64 @@ app.post('/create', async (req, res) => {
         let insertionQuery = `USE ${sqlDB}; INSERT INTO bby14_users VALUES (?, ?, ?, ?, ?, ?);`;
 
         await database.query(insertionQuery, [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, 0]);
-
-        res.send({ status: "success", msg: "Recorded updated." });
-    } else {
-        res.send({ "status": "fail", "message": "Invalid email" });
-    }
-});
-
-
+    
+    res.send({ status: "success", msg: "Recorded updated." });
+} else {
+    res.send({ "status": "fail", "message": "Invalid email"});
+}
+  });
 
 
-app.post('/updateUser', async (req, res) => {
+
+
+
+  app.post('/updateUser', async function (req, res){
     res.setHeader('Content-Type', 'application/json');
 
-    const database = mysql.createPool({
+    // const database = await mysql.createPool({
+    //     host: "us-cdbr-east-05.cleardb.net",
+    //     user: "b959a83957277c",
+    //     password: "5e9f74c2",
+    //     database: "heroku_2e384c4e07a3778",
+    //     multipleStatements: "true"
+    // });
+
+    const mysql = require("mysql2/promise");
+    const database = await mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: password,
         database: "comp2800",
         multipleStatements: "true"
         });
 
+    database.connect();
 
-    // const database = mysql.createPool({
-    //     host: "127.0.0.1",
-    //     user: "root",
-    //     password: password,
-    //     database: "comp2800",
-    //     multipleStatements: "true"
-    //     });
+   let [results, error, fields] = await database.execute(`SELECT * FROM bby14_users`);
 
-
-   let [results, error, fields] = await database.query(`USE ${sqlDB}; UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ? WHERE ID = ?`,
-        [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.session.identity]);
-
-
-            if (error) {
-                console.log(error);
-            } else {
-            res.send({
-                status: "success",
-                msg: "Recorded updated."
-            });
+        if (results.length > 0) {
+            req.session.first_name = `${req.body.first_name}`;
+            req.session.last_name = `${req.body.last_name}`;
+            req.session.email = `${req.body.email}`;
+            req.session.password = `${req.body.password}`;
         }
 
-        console.log("here");
-    const loginInfo = `USE ${sqlDB}; SELECT * FROM bby14_users WHERE ID = '${req.session.identity}'`;
-    console.log("here2");
-    let [myResults, myError, myFields] =  await database.query(loginInfo);
-        /* If there is an error, alert user of error
-        *  If the length of results array is 0, then there was no matches in database
-        *  If no error, then it is valid login and save info for session
-        */
-        console.log("here3");
-        if (myError) {
-            console.log("here4");
-            // change this to notify user of error
-        } else if (myResults[1].length == 0) {
-            console.log("here5");
-            res.send({ status: "fail", msg: "Incorrect email or password!" });
-        } else {
-            console.log("here6");
-            let validUserInfo = myResults[1][0];
-            console.log("email" + validUserInfo.email);
-            req.session.loggedIn = true;
-            req.session.email = validUserInfo.email;
-            req.session.first_name = validUserInfo.first_name;
-            req.session.last_name = validUserInfo.last_name;
-            req.session.password = validUserInfo.password;
-            req.session.identity = validUserInfo.ID;
-            req.session.userType = validUserInfo.is_admin;
-        }
+        const loginInfo = `USE ${sqlDB}; SELECT * FROM bby14_users WHERE ID = '${req.session.identity}'`;
     
+        database.query(loginInfo, [req.session.first_name, req.session.last_name, req.session.email, req.session.password]);
+
+
+
+        
+          
+
+
+      
+
+        database.end();
+
     });
-
-
+        
 
 app.get("/admin-users", function (req, res) {
     if (req.session.loggedIn) {
@@ -294,26 +362,26 @@ app.get("/admin-users", function (req, res) {
 
 
 
-        // const database = mysql.createPool({
-        //     host: "127.0.0.1",
-        //     user: "root",
-        //     password: password,
-        //     database: "comp2800",
+    const database = mysql2.createConnection({
+        host: "127.0.0.1",
+        user: "root",
+        password: password,
+        database: "comp2800",
+        multipleStatements: "true"
+        });
+
+
+        // const database = mysql.createConnection({
+        //     host: "us-cdbr-east-05.cleardb.net",
+        //     user: "b959a83957277c",
+        //     password: "5e9f74c2",
+        //     database: "heroku_2e384c4e07a3778",
         //     multipleStatements: "true"
         //     });
 
-
-        const database = mysql2.createPool({
-            host: "127.0.0.1",
-            user: "root",
-            password: "passwordSQL",
-            database: "comp2800",
-            multipleStatements: "true"
-            });
-
         database.connect();
 
-        database.query(
+       database.query(
             `USE ${sqlDB}; SELECT * FROM bby14_users`,
             function (error, results, fields) {
                 if (error) {
@@ -326,10 +394,10 @@ app.get("/admin-users", function (req, res) {
                 profileDOM.window.document.getElementById("create").appendChild(createButton);
 
                 usersProfiles.innerHTML += create;
-                let users;
-
+               
+            
                 for (let i = 0; i < results.length; i++) {
-                    users =
+                   let users =
                         '<div class="card">' +
                         '<div class="can">' +
                         '<p style="text-decoration: underline;">ID</p>' +
@@ -346,33 +414,33 @@ app.get("/admin-users", function (req, res) {
                         '<p>' + results[i].is_admin + '</p>' +
                         '</div>' +
                         '</div>';
-                    usersProfiles.innerHTML += users;
+                        usersProfiles.innerHTML += users;
                 }
 
 
-                profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+            profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
 
-                let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-                let navBarDOM = new JSDOM(navBar);
-                let string = `Users`;
-                let t = navBarDOM.window.document.createTextNode(string);
-                navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+            let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+            let navBarDOM = new JSDOM(navBar);
+            let string = `Users`;
+            let t = navBarDOM.window.document.createTextNode(string);
+            navBarDOM.window.document.querySelector("#welcome").appendChild(t);
 
-                profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+            profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
 
-                res.send(profileDOM.serialize());
-            }
-        );
-
+            res.send(profileDOM.serialize());
+        }
+      );
+    database.end();
 
     }
-})
+  })
 
 app.get("/main", async (req, res) => {
-
-    if (req.session.loggedIn) {
+    
+    if (req.session.loggedIn ) {
         if (req.session.userType) {
-
+            
             let profile = fs.readFileSync("./app/html/admin.html", "utf8");
             let profileDOM = new JSDOM(profile);
 
@@ -413,61 +481,61 @@ app.get("/main", async (req, res) => {
 
 app.post("/login", async function (req, res) {
     res.setHeader("Content-Type", "application/json");
-
+  
     const mysql = require("mysql2/promise");
+    
+    const connection = await mysql.createConnection({
+      host: "127.0.0.1",
+      user: "root",
+      password: password,
+      database: "comp2800",
+    });
 
-    // const connection = await mysql.createPool({
-    //   host: "127.0.0.1",
-    //   user: "root",
-    //   password: "password",
-    //   database: "comp2800",
-    // });
+    // const connection = mysql.createConnection({
+    //     host: "us-cdbr-east-05.cleardb.net",
+    //     user: "b959a83957277c",
+    //     password: "5e9f74c2",
+    //     database: "heroku_2e384c4e07a3778",
+    //     multipleStatements: "true"
+    //     });
 
-    const database = mysql.createPool({
-        host: "127.0.0.1",
-        user: "root",
-        password: "passwordSQL",
-        database: "comp2800",
-        multipleStatements: "true"
-        });
-
-
-    const [results, fields] = await database.execute(
-        `SELECT * FROM bby14_users WHERE email = "${req.body.email}" AND password = "${req.body.password}"`
+   
+    const [results, fields] = await connection.execute(
+      `SELECT * FROM bby14_users WHERE email = "${req.body.email}" AND password = "${req.body.password}"`
     );
-
+  
     if (results.length > 0) {
+     
 
+            req.session.email = results[0].email;
+            req.session.first_name = results[0].first_name;
+            req.session.last_name = results[0].last_name;
+            req.session.password = results[0].password;
+            req.session.identity = results[0].ID;
+            req.session.userType = results[0].is_admin;
+            req.session.loggedIn = true;
 
-        req.session.email = results[0].email;
-        req.session.first_name = results[0].first_name;
-        req.session.last_name = results[0].last_name;
-        req.session.password = results[0].password;
-        req.session.identity = results[0].ID;
-        req.session.userType = results[0].is_admin;
-        req.session.loggedIn = true;
-
-        req.session.save(function (err) { });
-
-
-
-        res.send({
-            status: "success",
-            msg: "Logged in.",
-        });
-
-
+      req.session.save(function (err) {});
+ 
+      connection.end();
+  
+      res.send({
+        status: "success",
+        msg: "Logged in.",
+      });
+  
+      
     } else {
-        res.send({
-            status: "fail",
-            msg: "User account not found.",
-        });
+      res.send({
+        status: "fail",
+        msg: "User account not found.",
+      });
     }
-});
+  });
 
 
 
-app.get("/logout", function (req, res) {
+  app.get("/logout", function (req, res) {
     if (req.session) {
         req.session.destroy(function (error) {
             if (error) {
@@ -494,7 +562,7 @@ const storage = multer.diskStorage({
     destination: function (req, file, callback) {
         callback(null, "./app/avatar/")
     },
-    filename: function (req, file, callback) {
+    filename: function(req, file, callback) {
         // // callback(null, "avatar_" + file.originalname.split('/').pop().trim());
         const sessionID = "" + req.session.identity;
         // callback(null, "avatar_" + sessionID + "." + file.originalname.split(".").pop());
@@ -518,53 +586,51 @@ app.get('/', function (req, res) {
 
 app.post('/upload-images', upload.array("files"), function (req, res) {
 
-    if (req.session.loggedIn) {
-
-        const database = mysql.createPool({
-            host: "127.0.0.1",
-            user: "root",
-            password: "passwordSQL",
-            database: "comp2800",
-            multipleStatements: "true"
-            });
-
-        const sql = require("mysql2");
+    if (req.session.loggedIn ) {
+// const database = mysql.createConnection({
+//     host: "us-cdbr-east-05.cleardb.net",
+//     user: "b959a83957277c",
+//     password: "5e9f74c2",
+//     database: "heroku_2e384c4e07a3778",
+//     multipleStatements: "true"
+//     });
+const sql = require("mysql2");
 
 
-        // const database = sql.createPool({
-        //     host: "127.0.0.1",
-        //     user: "root",
-        //     password: password,
-        //     database: "comp2800",
-        //     multipleStatements: "true"
-        //     });
+const database = sql.createConnection({
+    host: "127.0.0.1",
+    user: "root",
+    password: password,
+    database: "comp2800",
+    multipleStatements: "true"
+    });
 
 
+    database.connect();
 
-
-        for (let i = 0; i < req.files.length; i++) {
-            req.files[i].filename = req.files[i].originalname;
-        }
-
-
-        if (req.files.filename == undefined) {
-            console.log("No file upload");
-        } else {
-
-            let imgsrc = "avatar_" + req.session.identity + "." + req.files[0].originalname.split(".").pop();
-            let updateData = `USE ${sqlDB}; DELETE FROM userphotos WHERE userID = ${req.session.identity}; INSERT INTO userphotos (userID, imageID) VALUES (?, ?);`
-
-            console.log(imgsrc);
-            database.query(updateData, [req.session.identity, imgsrc], function (err, result) {
-
-                if (err) throw err
-                console.log("file uploaded")
-            })
-        }
-
-    } else {
-        res.redirect("/");
+    for(let i = 0; i < req.files.length; i++) {
+        req.files[i].filename = req.files[i].originalname;
     }
+
+   
+    if (req.files.filename == undefined) {
+        console.log("No file upload");
+    } else {
+        
+        let imgsrc = "avatar_" + req.session.identity + "." + req.files[0].originalname.split(".").pop();
+        let updateData = `USE ${sqlDB}; DELETE FROM userphotos WHERE userID = ${req.session.identity}; INSERT INTO userphotos (userID, imageID) VALUES (?, ?);`
+        
+        console.log(imgsrc);
+        database.query(updateData, [req.session.identity, imgsrc], function(err, result) {
+          
+            if (err) throw err
+            console.log("file uploaded")
+        })
+    }
+    database.end();
+} else {
+    res.redirect("/");
+}
 });
 
 
@@ -575,6 +641,10 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
 
 
 
+
+
+
+ 
 
 
 
@@ -589,12 +659,12 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
 
 
 // //For Milestone hand-ins:
-// let port = 8000;
-// app.listen(port, function () {
-// });
+let port = 8000;
+app.listen(port, function () {
+});
 
 //For Heroku deployment
-app.listen(process.env.PORT || 3000);
+// app.listen(process.env.PORT || 3000);
 
 
 

@@ -14,6 +14,19 @@
 
 <body>
     <div id="header"></div>
+    
+    <div id="timeline">
+        <h2 id="title">Timeline</h2>
+
+        <form id="time-line-input">
+        <label id="story-label" for="story">What's on your mind?</label>
+        <textarea id="story" name="story" rows="5" cols="1">Write a memory...</textarea>
+        <input id="submit-story" type="submit" value="Submit" class="option">
+        </form>
+
+        
+        
+    </div>
 
     <div class="user-info">
         
@@ -23,11 +36,19 @@
                 <img id="avatar" src="/avatar/avatar_2.jpg">
             <!-- </div> -->
             <form id="upload-images-form" action="/" method="post">
+                <label for=""></label>
                 <input id="image-upload" type="file" value="Upload Image" accept="image/png, image/gif, image/jpeg"
                     multiple="multiple" />
                 <input id="submit2" type="submit" class="option" value="Upload" />
             </form>
+
+            <br>
+
+            <!-- <div id="timeline">
+                <a href="/timeline" id="display-timeline" class="option">Go to Timeline</a>
+            </div> -->
         </div>
+        
         
         <div class="form">
             <label id="f1">First Name</label>
@@ -48,13 +69,16 @@
         </div>
 
         
-
+    
     </div>
+    
     <div id="footerPlaceholder"></div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="/scripts/skeleton.js"></script>
     <script src="/scripts/userProfile.js"></script>
     <script src="/scripts/upload.js"></script>
+   
+        
 </body>
 
 </html>

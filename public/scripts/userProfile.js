@@ -45,4 +45,5 @@ document.getElementById("submit").addEventListener("click", function (e) {
         }
 
     }, queryString);
+    location.reload();
 });

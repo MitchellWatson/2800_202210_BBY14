@@ -3,13 +3,42 @@
 body {
     display: grid;
     height: 100vh;
-    grid-template-columns: 1fr;
+    grid-template-columns: 50% 50%;
     grid-template-rows: 10% 75% 15%;
     text-align: center;
     font-family: 'Quicksand', sans-serif;
     background-color: rgb(224, 224, 224);
     
 }
+
+
+#timeline {
+    display: grid;
+    grid-column: 2 / span 2;
+    grid-row: 2;
+    grid-template-columns: 100%;
+    grid-template-rows: 10% 20% 30% 50%;
+}
+
+
+
+
+#title {
+    display: grid;
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+}
+
+
+
+#time-line-input {
+    display: grid;
+    grid-column: 1;
+    grid-row: 3;
+    width: 100%;
+}
+
 
 #header {
     display: grid;
@@ -68,13 +97,16 @@ body {
 }
 
 .option {
-    background-color: rgb(22, 154, 255);
-    border: 2px none;
-    border-radius: 5px;
-    color: rgb(235, 235, 235);
-    padding: 10px;
-    font-size: 150%;
-    margin: 1vh;
+  
+
+    
+    cursor: pointer;
+        background-color: rgb(139, 211, 255);
+        padding: 7px;
+        font-family: inherit;
+        font-size: 16px;
+        border: 0;
+        border-radius: 5px;
 }
 
 .footer span {
@@ -160,6 +192,7 @@ input {
 
 .form-control {
     border: 2px solid rgb(92, 165, 255);
+    max-width: 100%;
 }
 
 .user-info {
@@ -172,6 +205,8 @@ input {
     -ms-overflow-style: none; /* for Internet Explorer, Edge */
     scrollbar-width: none; /* for Firefox */
     overflow-y: scroll; 
+    border-right: 1px solid;
+    
 }
 
 
@@ -258,24 +293,40 @@ input {
     width: 80%;
 }
 
-@media only screen and (min-width: 1025px) {
-    .content {
+#options {
+    padding-bottom: 50%;
+}
+
+@media only screen and (max-width: 700px) {
+    
+
+
+    body {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        grid-template-rows: 1fr;
-        grid-gap: 1em;
-        margin: 0.5em;
-        height: 100%;
-        margin: 2em;
+        height: 100vh;
+        grid-template-columns: 50% 50%;
+        grid-template-rows: 10% 80% 10%;
+        text-align: center;
+        font-family: 'Quicksand', sans-serif;
+        background-color: rgb(224, 224, 224);
+        
     }
+
 
     #image-upload,
     #submit2 {
-        width: auto;
+        width: 70%;
     }
 
+
+    #timeline-image-upload,
+    #submit3 {
+        width: 70%;
+    }
+
+
     .picture > img {
-        width: 10%;
+        width: 50%;
     }
 
     .picture {
@@ -283,6 +334,121 @@ input {
     }
 
     .form {
-        grid-template-columns: auto auto;
+        display: grid;
+        grid-template-columns: 100%;
+        grid-template-rows: 10% 10% 10% 10% 10% 10% 10% 10%; 
+           
     }
+    
+    .form-control {
+        width: 90%;
+
+    }
+
+    #f1 {
+        grid-row: 1;
+        grid-column: 1;
+    }
+    
+    #f2 {
+        grid-row: 3;
+        grid-column: 1;
+    }
+    
+    #f3 {
+        grid-row: 5;
+        grid-column: 1;
+    }
+    
+    #f4 {
+        grid-row: 7;
+        grid-column: 1;
+    }
+    
+    #firstNameInput {
+        grid-row: 2;
+        grid-column: 1;
+        
+    }
+    
+    #lastNameInput {
+        grid-row: 4;
+        grid-column: 1;
+    }
+    
+    #emailInput {
+        grid-row: 6;
+        grid-column: 1;
+    }
+    
+    #passwordInput {
+        grid-row: 8;
+        grid-column: 1;
+    }
+
+
+
+
+    #timeline {
+        display: grid;
+        grid-column: 2 / span 2;
+        grid-row: 2;
+        grid-template-columns: 100%;
+        grid-template-rows: 10% 20% 30% 50%;
+        
+    }
+
+
+
+
+    #title {
+        display: grid;
+        grid-column: 1;
+        grid-row: 2;
+        width: 100%;
+    }
+
+    #story-label {
+        width: 140%;
+    }
+
+    #submit-story {
+        width: 100%;
+        margin-left: 25%;
+    }
+
+    
+    #time-line-input {
+        display: grid;
+        grid-column: 1;
+        grid-row: 3;
+        width: 70%;
+        
+    }
+
+    #time-card {
+        grid-row: 4;
+        grid-column: 1;
+    }
+
+    #story {
+        width: 100%;
+        padding-left: 45%;
+        
+    }
+
+    #post-timeline-form {
+        display: grid;
+        grid-column: 1;
+        grid-row: 2;
+        width: 50%;
+    }
+
+    #options {
+        padding-bottom: 50%;
+    }
+
+
+
 }
+
