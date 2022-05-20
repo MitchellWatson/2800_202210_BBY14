@@ -6,7 +6,7 @@ CREATE DATABASE IF NOT EXISTS comp2800;
 USE comp2800;
 
 CREATE TABLE IF NOT EXISTS bby14_users (
-  ID int NOT NULL PRIMARY KEY AUTO_INCREMENT(5,1),
+  ID int NOT NULL AUTO_INCREMENT,
   first_name varchar(30),
   last_name varchar(30),
   email varchar(30),

@@ -5,8 +5,8 @@
     "start": "node gabify.js"
   },
   "engines": {
-      "node": "18.0.0",
-      "npm": "8.6.0"
+    "node": "18.0.0",
+    "npm": "8.6.0"
   },
   "dependencies": {
     "body-parser": "^1.20.0",

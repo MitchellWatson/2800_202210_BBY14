@@ -2,9 +2,9 @@
 
 body {
     display: grid;
-    height: 80vh;
+    height: 100vh;
     grid-template-columns: 1fr;
-    grid-template-rows: 15% 70% 15%;
+    grid-template-rows: 10% 75% 15%;
     text-align: center;
     font-family: 'Quicksand', sans-serif;
     background-color: rgb(224, 224, 224);

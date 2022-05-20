@@ -45,16 +45,16 @@ const password = '';
 
 
 const database = mysql.createPool({
-    host: "us-cdbr-east-05.cleardb.net",
-    user: "b959a83957277c",
-    password: "5e9f74c2",
-    database: "heroku_2e384c4e07a3778",
+    host: "127.0.0.1",
+    user: "root",
+    password: "passwordSQL",
+    database: "comp2800",
     multipleStatements: "true"
-});
+    });
 
 //switch for heroku and milestones
-// const sqlDB = "comp2800";
-const sqlDB = "heroku_2e384c4e07a3778";
+const sqlDB = "comp2800";
+// const sqlDB = "heroku_2e384c4e07a3778";
 
 // const database = mysql.createPool({
 //     host: "127.0.0.1",
@@ -180,12 +180,12 @@ app.post('/create', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
 
     const database = mysql.createPool({
-        host: "us-cdbr-east-05.cleardb.net",
-        user: "b959a83957277c",
-        password: "5e9f74c2",
-        database: "heroku_2e384c4e07a3778",
+        host: "127.0.0.1",
+        user: "root",
+        password: "passwordSQL",
+        database: "comp2800",
         multipleStatements: "true"
-    });
+        });
 
     // const database = await mysql.createPool({
     //     host: "127.0.0.1",
@@ -196,13 +196,19 @@ app.post('/create', async (req, res) => {
     //     });
 
 
-    let [results, fields] = await database.query(`USE ${sqlDB}; SELECT * FROM bby14_users WHERE email = '?';`);
+    let [results, fields] = await database.query(`USE ${sqlDB}; SELECT * FROM bby14_users WHERE email = '${req.body.email}';`);
+        console.log(req.body.email);
+        let veri = true;
+    for (let i = 0; i < results.length; i++) {
+        if (results[i].email == req.body.email) {
+            veri = false;
+        }
+    }    
+    if (veri) {
 
-    if (results.length === 0) {
+        let insertionQuery = `USE ${sqlDB}; INSERT INTO bby14_users VALUES (?, ?, ?, ?, ?, ?);`;
 
-        let insertionQuery = `USE ${sqlDB}; INSERT INTO bby14_users VALUES (?, '?', '?', '?', '?', ?);`;
-
-        await database.query(insertionQuery, [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, req.body.is_admin]);
+        await database.query(insertionQuery, [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, 0]);
 
         res.send({ status: "success", msg: "Recorded updated." });
     } else {
@@ -216,13 +222,13 @@ app.post('/create', async (req, res) => {
 app.post('/updateUser', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
 
-    const database = await mysql.createPool({
-        host: "us-cdbr-east-05.cleardb.net",
-        user: "b959a83957277c",
-        password: "5e9f74c2",
-        database: "heroku_2e384c4e07a3778",
+    const database = mysql.createPool({
+        host: "127.0.0.1",
+        user: "root",
+        password: "passwordSQL",
+        database: "comp2800",
         multipleStatements: "true"
-    });
+        });
 
 
     // const database = mysql.createPool({
@@ -247,18 +253,25 @@ app.post('/updateUser', async (req, res) => {
             });
         }
 
-    const loginInfo = `USE ${sqlDB}; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
+        console.log("here");
+    const loginInfo = `USE ${sqlDB}; SELECT * FROM bby14_users WHERE ID = '${req.session.identity}'`;
+    console.log("here2");
     let [myResults, myError, myFields] =  await database.query(loginInfo);
         /* If there is an error, alert user of error
         *  If the length of results array is 0, then there was no matches in database
         *  If no error, then it is valid login and save info for session
         */
+        console.log("here3");
         if (myError) {
+            console.log("here4");
             // change this to notify user of error
         } else if (myResults[1].length == 0) {
+            console.log("here5");
             res.send({ status: "fail", msg: "Incorrect email or password!" });
         } else {
+            console.log("here6");
             let validUserInfo = myResults[1][0];
+            console.log("email" + validUserInfo.email);
             req.session.loggedIn = true;
             req.session.email = validUserInfo.email;
             req.session.first_name = validUserInfo.first_name;
@@ -273,11 +286,11 @@ app.post('/updateUser', async (req, res) => {
 
 
 app.get("/admin-users", function (req, res) {
-    if (req.session) {
+    if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/adminUsers.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
-        const mysql = require("mysql2");
+        const mysql2 = require("mysql2");
 
 
 
@@ -290,13 +303,13 @@ app.get("/admin-users", function (req, res) {
         //     });
 
 
-        const database = mysql.createPool({
-            host: "us-cdbr-east-05.cleardb.net",
-            user: "b959a83957277c",
-            password: "5e9f74c2",
-            database: "heroku_2e384c4e07a3778",
+        const database = mysql2.createPool({
+            host: "127.0.0.1",
+            user: "root",
+            password: "passwordSQL",
+            database: "comp2800",
             multipleStatements: "true"
-        });
+            });
 
         database.connect();
 
@@ -410,16 +423,16 @@ app.post("/login", async function (req, res) {
     //   database: "comp2800",
     // });
 
-    const connection = mysql.createPool({
-        host: "us-cdbr-east-05.cleardb.net",
-        user: "b959a83957277c",
-        password: "5e9f74c2",
-        database: "heroku_2e384c4e07a3778",
+    const database = mysql.createPool({
+        host: "127.0.0.1",
+        user: "root",
+        password: "passwordSQL",
+        database: "comp2800",
         multipleStatements: "true"
-    });
+        });
 
 
-    const [results, fields] = await connection.execute(
+    const [results, fields] = await database.execute(
         `SELECT * FROM bby14_users WHERE email = "${req.body.email}" AND password = "${req.body.password}"`
     );
 
@@ -508,12 +521,12 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
     if (req.session.loggedIn) {
 
         const database = mysql.createPool({
-            host: "us-cdbr-east-05.cleardb.net",
-            user: "b959a83957277c",
-            password: "5e9f74c2",
-            database: "heroku_2e384c4e07a3778",
+            host: "127.0.0.1",
+            user: "root",
+            password: "passwordSQL",
+            database: "comp2800",
             multipleStatements: "true"
-        });
+            });
 
         const sql = require("mysql2");
 
