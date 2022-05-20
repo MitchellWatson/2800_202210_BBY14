@@ -36,7 +36,7 @@ app.use(bodyparser.urlencoded({
 }))
 
 
-const connection = mysql.createConnection({
+const connection = mysql.createPool({
     host: "us-cdbr-east-05.cleardb.net",
     user: "b959a83957277c",
     password: "5e9f74c2",
@@ -151,14 +151,14 @@ app.get("/userProfiles", function (req, res) {
 app.post('/create', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
-    let connection = mysql.createConnection({
+    let connection = mysql.createPool({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
-    connection.connect();
+    
     connection.query('INSERT INTO bby14_users VALUES (?, ?, ?, ?, ?, ?)',
       [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, 0],
       function (error, results, fields) {
@@ -171,21 +171,21 @@ app.post('/create', function (req, res) {
         });
   
       });
-    connection.end();
+    
   
   });
 
 app.post('/updateUser', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
-    let connection = mysql.createConnection({
+    let connection = mysql.createPool({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
-    connection.connect();
+    
     connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ? WHERE ID = ?',
       [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.session.identity],
       function (error, results, fields) {
@@ -224,21 +224,21 @@ app.post('/updateUser', function (req, res) {
               })
           }
       })
-    connection.end();
+    
 
 });
 
 app.post('/updateAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
-    let connection = mysql.createConnection({
+    let connection = mysql.createPool({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
-    connection.connect();
+    
     connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, is_admin = ? WHERE ID = ?',
       [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.is_admin, req.body.id],
       function (error, results, fields) {
@@ -251,21 +251,21 @@ app.post('/updateAdmin', function (req, res) {
         });
   
       });
-    connection.end();
+    
 
 });
 
 app.post('/deleteAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
-    let connection = mysql.createConnection({
+    let connection = mysql.createPool({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
-    connection.connect();
+    
     connection.query('DELETE FROM bby14_users WHERE ID = ?',
       [req.body.id],
       function (error, results, fields) {
@@ -285,7 +285,7 @@ app.post('/deleteAdmin', function (req, res) {
     //     console.log("worked");
     // }
     // console.log(req.session.loggedIn);
-    connection.end();
+    
 
 });
 
@@ -296,14 +296,14 @@ app.get("/admin-users", function (req, res) {
 
         const mysql = require("mysql2");
 
-        const connection = mysql.createConnection({
+        const connection = mysql.createPool({
             host: "127.0.0.1",
             user: "root",
-            password: "passwordSQL",
+            password: "",
             database: "comp2800",
             multipleStatements: "true"
         });
-        connection.connect();
+        
 
         connection.query(
             "SELECT * FROM bby14_users",
@@ -413,15 +413,15 @@ app.get("/main", function (req, res) {
 app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
     const mysql = require("mysql2");
-    const connection = mysql.createConnection({
+    const connection = mysql.createPool({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
 
-    connection.connect();
+    
     // Checks if user typed in matching email and password
     const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
     connection.query(loginInfo, function (error, results, fields) {
@@ -468,7 +468,7 @@ app.get("/logout", function (req, res) {
 app.get("/redirectToUsers", function (req, res) {
     if (req.session.loggedIn) {
         if(req.session.userType) {
-            connection.connect();
+            
              const getUsers = `USE comp2800; SELECT * FROM bby_users;`;
             let doc = fs.readFileSync("./app/html/userProfiles.html", "utf8");
             let adminDoc = new JSDOM(doc);
@@ -531,7 +531,7 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
         req.files[i].filename = req.files[i].originalname;
     }
 
-    connection.connect();
+    
     if (!req.files[0].filename) {
         console.log("No file upload");
     } else {
