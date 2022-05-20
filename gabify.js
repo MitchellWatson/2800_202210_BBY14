@@ -44,25 +44,25 @@ const password = '';
 
 
 
-const database = mysql.createPool({
-    host: "127.0.0.1",
-    user: "root",
-    password: "passwordSQL",
-    database: "comp2800",
-    multipleStatements: "true"
-    });
+// const database = mysql.createPool({
+//     host: "us-cdbr-east-05.cleardb.net",
+//     user: "b959a83957277c",
+//     password: "5e9f74c2",
+//     database: "heroku_2e384c4e07a3778",
+//     multipleStatements: "true"
+// });
 
 //switch for heroku and milestones
 const sqlDB = "comp2800";
 // const sqlDB = "heroku_2e384c4e07a3778";
 
-// const database = mysql.createPool({
-//     host: "127.0.0.1",
-//     user: "root",
-//     password: password,
-//     database: "comp2800",
-//     multipleStatements: "true"
-//     });
+const database = mysql.createPool({
+    host: "127.0.0.1",
+    user: "root",
+    password: password,
+    database: "comp2800",
+    multipleStatements: "true"
+    });
 
 
 app.get("/", function (req, res) {
@@ -179,21 +179,21 @@ app.get("/userProfiles", function (req, res) {
 app.post('/create', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
 
-    const database = mysql.createPool({
+    // const database = mysql.createPool({
+    //     host: "us-cdbr-east-05.cleardb.net",
+    //     user: "b959a83957277c",
+    //     password: "5e9f74c2",
+    //     database: "heroku_2e384c4e07a3778",
+    //     multipleStatements: "true"
+    // });
+
+    const database = await mysql.createPool({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: password,
         database: "comp2800",
         multipleStatements: "true"
         });
-
-    // const database = await mysql.createPool({
-    //     host: "127.0.0.1",
-    //     user: "root",
-    //     password: password,
-    //     database: "comp2800",
-    //     multipleStatements: "true"
-    //     });
 
 
     let [results, fields] = await database.query(`USE ${sqlDB}; SELECT * FROM bby14_users WHERE email = '${req.body.email}';`);
@@ -222,22 +222,22 @@ app.post('/create', async (req, res) => {
 app.post('/updateUser', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
 
+    // const database = await mysql.createPool({
+    //     host: "us-cdbr-east-05.cleardb.net",
+    //     user: "b959a83957277c",
+    //     password: "5e9f74c2",
+    //     database: "heroku_2e384c4e07a3778",
+    //     multipleStatements: "true"
+    // });
+
+
     const database = mysql.createPool({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: password,
         database: "comp2800",
         multipleStatements: "true"
         });
-
-
-    // const database = mysql.createPool({
-    //     host: "127.0.0.1",
-    //     user: "root",
-    //     password: password,
-    //     database: "comp2800",
-    //     multipleStatements: "true"
-    //     });
 
 
    let [results, error, fields] = await database.query(`USE ${sqlDB}; UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ? WHERE ID = ?`,
@@ -294,22 +294,22 @@ app.get("/admin-users", function (req, res) {
 
 
 
-        // const database = mysql.createPool({
-        //     host: "127.0.0.1",
-        //     user: "root",
-        //     password: password,
-        //     database: "comp2800",
-        //     multipleStatements: "true"
-        //     });
-
-
-        const database = mysql2.createPool({
+        const database = mysql.createPool({
             host: "127.0.0.1",
             user: "root",
-            password: "passwordSQL",
+            password: password,
             database: "comp2800",
             multipleStatements: "true"
             });
+
+
+        // const database = mysql.createPool({
+        //     host: "us-cdbr-east-05.cleardb.net",
+        //     user: "b959a83957277c",
+        //     password: "5e9f74c2",
+        //     database: "heroku_2e384c4e07a3778",
+        //     multipleStatements: "true"
+        // });
 
         database.connect();
 
@@ -416,20 +416,20 @@ app.post("/login", async function (req, res) {
 
     const mysql = require("mysql2/promise");
 
-    // const connection = await mysql.createPool({
-    //   host: "127.0.0.1",
-    //   user: "root",
-    //   password: "password",
-    //   database: "comp2800",
-    // });
+    const connection = await mysql.createPool({
+      host: "127.0.0.1",
+      user: "root",
+      password: password,
+      database: "comp2800",
+    });
 
-    const database = mysql.createPool({
-        host: "127.0.0.1",
-        user: "root",
-        password: "passwordSQL",
-        database: "comp2800",
-        multipleStatements: "true"
-        });
+    // const connection = mysql.createPool({
+    //     host: "us-cdbr-east-05.cleardb.net",
+    //     user: "b959a83957277c",
+    //     password: "5e9f74c2",
+    //     database: "heroku_2e384c4e07a3778",
+    //     multipleStatements: "true"
+    // });
 
 
     const [results, fields] = await database.execute(
@@ -520,24 +520,24 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
 
     if (req.session.loggedIn) {
 
-        const database = mysql.createPool({
-            host: "127.0.0.1",
-            user: "root",
-            password: "passwordSQL",
-            database: "comp2800",
-            multipleStatements: "true"
-            });
+        // const database = mysql.createPool({
+        //     host: "us-cdbr-east-05.cleardb.net",
+        //     user: "b959a83957277c",
+        //     password: "5e9f74c2",
+        //     database: "heroku_2e384c4e07a3778",
+        //     multipleStatements: "true"
+        // });
 
         const sql = require("mysql2");
 
 
-        // const database = sql.createPool({
-        //     host: "127.0.0.1",
-        //     user: "root",
-        //     password: password,
-        //     database: "comp2800",
-        //     multipleStatements: "true"
-        //     });
+        const database = sql.createPool({
+            host: "127.0.0.1",
+            user: "root",
+            password: password,
+            database: "comp2800",
+            multipleStatements: "true"
+            });
 
 
 
