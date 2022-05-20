@@ -1,0 +1,59 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400&display=swap');
+ 
+/* Universal Selector applies a box sizing to set it to board a box so that if we add any padding/border to element, width doesnt change */
+* {
+    box-sizing: border-box; 
+}
+
+
+.btn {
+    background-color: #fff;
+    color: rebeccapurple;
+    font-family: inherit;
+    font-weight: bold;
+    padding: 1rem;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+
+}
+
+.btn:focus {
+    outline: none;
+
+}
+
+.btn:active {
+    transform: scale(0.98);
+
+}
+
+#quotes {
+    position: fixed;
+    bottom: 100px;
+    left: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.quote {
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 1rem 2rem;
+    margin: 0.5rem;
+
+}
+
+.quote.purple {
+color: rebeccapurple;
+}
+
+.quote.green {
+color: green;
+    }
+
+.quote.red {
+color: red;
+        }
