@@ -301,16 +301,19 @@ app.get("/admin-users", function (req, res) {
         let profile = fs.readFileSync("./app/html/adminUsers.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
-        const mysql2 = require("mysql2");
+        const mysql = require("mysql2");
 
-        const connection = mysql.createPool({
+        const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
             password: "",
             database: "comp2800",
             multipleStatements: "true"
         });
-        
+        connection.connect();
+
+        connection.query(
+            "SELECT * FROM bby14_users",
 
 
         // const database = mysql.createPool({
@@ -321,10 +324,7 @@ app.get("/admin-users", function (req, res) {
         //     multipleStatements: "true"
         // });
 
-        database.connect();
 
-        database.query(
-            `USE ${sqlDB}; SELECT * FROM bby14_users`,
             function (error, results, fields) {
                 if (error) {
                     console.log(error);
