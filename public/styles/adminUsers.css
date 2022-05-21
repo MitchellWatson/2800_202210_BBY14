@@ -69,10 +69,10 @@ body {
     background-color: rgb(22, 154, 255);
     border: 2px none;
     border-radius: 5px;
-    color: rgb(235, 235, 235);
+    color: rgb(255, 255, 255);
     padding: 10px;
-    font-size: 150%;
-    margin: 1vh;
+    margin: 2vh;
+    font-size: 3vh;
 }
 
 .footer span {
@@ -97,7 +97,7 @@ body {
     grid-template-columns: 1fr;
     grid-gap: 1em;
     margin: 0.5em;
-    padding-top: 6vh;
+    padding-top: 6vmax;
     padding-bottom: 10vh;
 }
 
@@ -107,33 +107,51 @@ body {
     width: 100%;
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
-    height: 47vh;
+    height: 85vh;
     text-align: left;
     margin-bottom: 2vh;
+    overflow-wrap: break-word;
+    display: grid;
+    grid-template-rows: 90% 10%;
+    font-size: 3vh;
+}
+
+.card .options {
+    grid-row: 2;
 }
 
 .card p {
     margin: 0;
-    padding-left: 3vw;
-    padding-top: 1vw;
-    font-size: 4vmin;
+    padding-left: 2vh;
+    padding-top: 2vh;
+}
+
+.card input {
+    margin-left: 2vh;
+    margin-top: 2vh;
+    width: 250px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 3vh;
 }
 
 
 .card span {
     position: relative;
     top: 25%;
-    font-size: 9vh;
 }
 
 .card:hover {
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.5);
 }
 
-.can {
+.card .can {
     border-radius: 10px;
     position: relative;
-    font-size: 6.5vmin;
+    grid-row: 1;
 }
 
 .avatar {
@@ -157,10 +175,10 @@ a {
     grid-row: 3;
 }
 
-@media only screen and (min-width: 1025px) {
+/* @media only screen and (min-width: 1025px) {
     .content {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: 1fr;
         grid-template-rows: 1fr;
         grid-gap: 1em;
         margin: 0.5em;
@@ -170,4 +188,4 @@ a {
     .card{
         height: 85%;
     }
-}
+} */

@@ -22,31 +22,26 @@ function ajaxPOST(url, callback, data) {
     xhr.send(params);
 }
 
+let buttonUpdate = document.getElementsByClassName("add");
 
+for (let i = 0; i < buttonUpdate.length; i++) {
+    buttonUpdate[i].addEventListener("click", update);
+}
 
-
-document.getElementById("submit").addEventListener("click", function (e) {
-    
-    
-    
-    e.preventDefault();
-    let email = document.getElementById("emailInput");
-    let password = document.getElementById("passwordInput");
-    let first = document.getElementById("firstNameInput");
-    let last = document.getElementById("lastNameInput");
-
-    let queryString = "email=" + email.value + "&password=" + password.value + "&first_name=" + first.value + "&last_name=" + last.value;
-    ajaxPOST("/create", function (data) {
+    function update() {
+    // e.preventDefault();
+    let id = this.target;
+    let queryString = "id=" + id;
+    ajaxPOST("/updateFriends", function (data) {
         if (data) {
             let dataParsed = JSON.parse(data);
 
             if (dataParsed.status == "fail") {
                 document.getElementById("errorMsg").innerHTML = dataParsed.msg;
             } else {
-                localStorage.setItem("email", email.value);
-                window.location.replace("/");
+                window.location.replace("/friendFinder");
             }
         }
 
     }, queryString);
-});
+}
