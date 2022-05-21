@@ -22,7 +22,18 @@ function ajaxPOST(url, callback, data) {
     xhr.send(params);
 }
 
-
+let latitude = 0
+let longitude = 0;
+document.getElementById("location").addEventListener("click", function () {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    }
+    
+function showPosition(position) {
+  latitude = position.coords.latitude;
+  longitude = position.coords.longitude;
+}
+})
 
 
 document.getElementById("submit").addEventListener("click", function (e) {
@@ -35,7 +46,7 @@ document.getElementById("submit").addEventListener("click", function (e) {
     let first = document.getElementById("firstNameInput");
     let last = document.getElementById("lastNameInput");
 
-    let queryString = "email=" + email.value + "&password=" + password.value + "&first_name=" + first.value + "&last_name=" + last.value;
+    let queryString = "email=" + email.value + "&password=" + password.value + "&first_name=" + first.value + "&last_name=" + last.value + "&latitude=" + latitude + "&longitude=" + longitude;
     ajaxPOST("/create", function (data) {
         if (data) {
             let dataParsed = JSON.parse(data);

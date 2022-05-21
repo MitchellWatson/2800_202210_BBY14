@@ -126,6 +126,91 @@ app.get("/user", function (req, res) {
     }
 });
 
+app.get("/timeline", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/timeline.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+
+        const mysql = require("mysql2");
+
+        const connection = mysql.createConnection({
+            host: "127.0.0.1",
+            user: "root",
+            password: "passwordSQL",
+            database: "comp2800",
+            multipleStatements: "true"
+        });
+        connection.connect();
+
+        connection.query(
+            "SELECT * FROM posts ORDER BY postDate ASC",
+            function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }
+
+                let newResults = [];
+                 for (let i = 0; i < results.length; i++) {
+                     if (results[i].userID == req.session.identity) {
+                         newResults[newResults.length] = results[i];
+                     }
+                 }
+
+                const usersProfiles = profileDOM.window.document.createElement("div");
+                const createButton = profileDOM.window.document.createElement("div");
+                let create = "<a href=''><button class='option'>Add Memory</button></a>";
+                profileDOM.window.document.getElementById("create").appendChild(createButton);
+                usersProfiles.innerHTML += create;
+                let users;
+                var old = "";
+                for (let i = 0; i < newResults.length; i++) {
+                    let dob = newResults[i].postDate
+                    var dobArr = dob.toDateString().split(' ');
+                    var dobFormat = dobArr[1] + ' ' + dobArr[2] + ', ' + dobArr[3];
+                    if (dobFormat.localeCompare(old) != 0) {
+                        old = dobFormat;
+                        users = '<h2>' + dobFormat + '</h2>';
+                        usersProfiles.innerHTML += users;
+                    }
+                    users =
+                        '<div class="card">' +
+                        '<div class="can">' +
+                        '<p style="text-decoration: underline;" value="' + newResults[i].postNum + '" id="numInput' + newResults[i].userID + '" >Memory #' + newResults[i].postNum + '</p>' +
+                        '<p style="text-decoration: underline;">Descrition</p>' +
+                        '<input type="text" id="descInput' + newResults[i].postNum + '" placeholder="e.g. John" value="' + newResults[i].posts + '"></input>' +
+                        '</div>' +
+                        '<div id="options">' +
+                        '<a target="' + newResults[i].postNum + '" class="option update">Update</a>' +
+                        '</div>' +
+                        '</div>';
+                        usersProfiles.innerHTML += users;
+                }
+                if (newResults.length == 0) {
+                    users = '<p>No memories. Start making some today!</p>';
+                    usersProfiles.innerHTML += users;
+                }
+
+
+            profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+
+            let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+            let navBarDOM = new JSDOM(navBar);
+            let string = `Timeline`;
+            let t = navBarDOM.window.document.createTextNode(string);
+            navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+
+            profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+
+            res.send(profileDOM.serialize());
+        }
+      );
+    } else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+  })
+
+
 app.get("/contact", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/contact.html", "utf8");
@@ -168,7 +253,6 @@ app.get("/contact", function (req, res) {
                         listFriends[listFriends.length] = results[i];
                     }
                 }
-                console.log(listFriends);
                 let friends = [];
                 for (let i = 0; i < listFriends.length; i++) {
                     for (let k = 0; k < results.length; k++) {
@@ -190,7 +274,6 @@ app.get("/contact", function (req, res) {
                         }
                     }
                 }
-
                 const usersProfiles = profileDOM.window.document.createElement("div");
                 let users;
                 
@@ -269,10 +352,13 @@ app.get("/userProfiles", function (req, res) {
         profileDOM.window.document.querySelector("#passwordInput").setAttribute('value', req.session.password);
         profileDOM.window.document.querySelector("#firstNameInput").setAttribute('value', req.session.first_name);
         profileDOM.window.document.querySelector("#lastNameInput").setAttribute('value', req.session.last_name);
-        profileDOM.window.document.querySelector("#ageInput").setAttribute('value', req.session.age);
+        if (req.session.age != null) {
+            profileDOM.window.document.querySelector("#ageInput").setAttribute('value', req.session.age);
+        }
         profileDOM.window.document.querySelector("#bioInput").setAttribute('value', req.session.bio);
-        profileDOM.window.document.querySelector("#hobbiesInput").setAttribute('value', req.session.hobbies);
-        
+        if (req.session.hobbies != null) {
+            profileDOM.window.document.querySelector("#ageInput").setAttribute('value', req.session.hobbies);
+        }        
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
 
         const mysql3 = require("mysql2");
@@ -287,12 +373,13 @@ app.get("/userProfiles", function (req, res) {
             database.connect();
 
         
-        database.query(`USE comp2800; SELECT * FROM Posts WHERE userID = ${req.session.identity}`, function (error, results, fields) {
+        database.query(`SELECT * FROM posts WHERE userID = ${req.session.identity}`, 
+        function (error, results, fields) {
             if (error) {
               console.log(error);
             }
             const userPosts = profileDOM.window.document.createElement("div");
-            for(let i = 1; i < results.length; i++) {
+            for(let i = 0; i < results.length; i++) {
                 let posts =
                 '<div class="card">' +
                 '<div class="can">' +
@@ -304,10 +391,14 @@ app.get("/userProfiles", function (req, res) {
                 '</div>' +
                 '</div>';
                 userPosts.innerHTML += posts;
-                profileDOM.window.document.getElementById("timeline").appendChild(userPosts);
             }
-       
+
+            
+            profileDOM.window.document.getElementById("timeline").innerHTML += userPosts;
+
         });
+
+
         res.send(profileDOM.serialize());
     } 
      else {
@@ -329,7 +420,7 @@ app.post('/create', function (req, res) {
     });
     connection.connect();
     connection.query('INSERT INTO bby14_users VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, null, null, null, null, null, 0],
+      [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, req.body.latitude, req.body.longitude, null, null, null, 0],
       function (error, results, fields) {
         if (error) {
           console.log(error);
@@ -365,7 +456,6 @@ app.post('/updateUser', function (req, res) {
           status: "success",
           msg: "Recorded updated."
         });
-  
       });
 
       const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
@@ -398,6 +488,33 @@ app.post('/updateUser', function (req, res) {
               })
           }
       })
+    connection.end();
+
+});
+
+app.post('/updateTimeline', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+  
+    let connection = mysql.createConnection({
+        host: "127.0.0.1",
+        user: "root",
+        password: "passwordSQL",
+        database: "comp2800",
+        multipleStatements: "true"
+    });
+    connection.connect();
+    connection.query(`UPDATE posts SET posts = ? WHERE userID = ? AND postNum = ?`,
+      [req.body.posts, req.session.identity, req.body.postNum],
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+        }
+        res.send({
+          status: "success",
+          msg: "Recorded updated."
+        });
+  
+      });
     connection.end();
 
 });
@@ -483,7 +600,6 @@ app.get("/admin-users", function (req, res) {
                 const createButton = profileDOM.window.document.createElement("div");
                 let create = "<a href='/register'><button class='option'>Create User</button></a>";
                 profileDOM.window.document.getElementById("create").appendChild(createButton);
-
                 usersProfiles.innerHTML += create;
                 let users;
                 
