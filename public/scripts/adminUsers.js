@@ -50,7 +50,7 @@ for (let i = 0; i < buttonUpdate.length; i++) {
                 document.getElementById("errorMsg").innerHTML = dataParsed.msg;
             } else {
                 localStorage.setItem("email", email.value);
-                window.location.replace("/admin-users");
+                window.location.replace("/");
             }
         }
 
