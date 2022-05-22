@@ -31,7 +31,7 @@
 
 #quotes {
     position: fixed;
-    bottom: 100px;
+    bottom: 20px;
     left: 10px;
     display: flex;
     flex-direction: row;
