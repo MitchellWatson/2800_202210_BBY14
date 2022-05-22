@@ -22,32 +22,26 @@ function ajaxPOST(url, callback, data) {
     xhr.send(params);
 }
 
+let buttonUpdate = document.getElementsByClassName("add");
 
+for (let i = 0; i < buttonUpdate.length; i++) {
+    buttonUpdate[i].addEventListener("click", update);
+}
 
-
-document.getElementById("submit").addEventListener("click", function (e) {
-    
-    e.preventDefault();
-    let email = document.getElementById("emailInput");
-    let password = document.getElementById("passwordInput");
-    let first = document.getElementById("firstNameInput");
-    let last = document.getElementById("lastNameInput");
-    let age = document.getElementById("ageInput");
-    let bio = document.getElementById("bioInput");
-    let hobbies = document.getElementById("hobbiesInput");
-    let queryString = "email=" + email.value + "&password=" + password.value + "&first_name=" + first.value + "&last_name=" + last.value + "&age=" + age.value + "&bio=" + bio.value + "&hobbies=" + hobbies.value;
-    ajaxPOST("/updateUser", function (data) {
+    function update() {
+    // e.preventDefault();
+    let id = this.target;
+    let queryString = "id=" + id;
+    ajaxPOST("/updateFriends", function (data) {
         if (data) {
             let dataParsed = JSON.parse(data);
 
             if (dataParsed.status == "fail") {
                 document.getElementById("errorMsg").innerHTML = dataParsed.msg;
             } else {
-                localStorage.setItem("email", email.value);
-                window.location.replace("/userProfiles");
+                window.location.replace("/friendFinder");
             }
         }
 
     }, queryString);
-});
-
+}

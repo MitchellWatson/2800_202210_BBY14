@@ -11,10 +11,34 @@ CREATE TABLE IF NOT EXISTS bby14_users (
   last_name varchar(30),
   email varchar(30),
   password varchar(30),
+  latitude float(20), 
+  longitude float(20), 
+  age int,
+  bio varchar(100),
+  hobbies varchar(100),
   is_admin BOOLEAN,
   UNIQUE(email),
   PRIMARY KEY (ID));
 
+CREATE TABLE IF NOT EXISTS Meet (
+requestor INTEGER,
+requestee INTEGER,
+place varchar(100),
+day date,
+hour time,
+reason varchar(100),
+accepted BOOLEAN,
+viewed BOOLEAN,
+PRIMARY KEY(requestor, requestee, day),
+FOREIGN KEY (requestor) REFERENCES bby14_users(ID),
+FOREIGN KEY (requestee) REFERENCES bby14_users(ID));
+
+CREATE TABLE IF NOT EXISTS Friends (
+user INTEGER,
+friend INTEGER,
+PRIMARY KEY(user, friend),
+FOREIGN KEY (user) REFERENCES bby14_users(ID),
+FOREIGN KEY (friend) REFERENCES bby14_users(ID));
 
 CREATE TABLE IF NOT EXISTS UserPhotos (
 userID INTEGER,
@@ -22,15 +46,33 @@ imageID VARBINARY(1000),
 PRIMARY KEY(userID, imageID),
 FOREIGN KEY (userID) REFERENCES bby14_users(ID));
 
+CREATE TABLE IF NOT EXISTS Posts (
+userID INTEGER,
+postNum INTEGER NOT NULL auto_increment,
+posts LONGTEXT,
+postDate varchar(30),
+postTime varchar(30),
+PRIMARY KEY(userID),
+KEY (postNum),
+FOREIGN KEY(userID) REFERENCES bby14_users(ID)
+);
 
-INSERT INTO bby14_users (first_name, last_name, email, password, is_admin) VALUES (
-    "Alpha", "Admin", "alpha@my.bcit.ca", "admin", true);
 
-INSERT INTO bby14_users (first_name, last_name, email, password, is_admin) VALUES (
-    "Bravo", "User", "bravo@my.bcit.ca", "user", false);
 
-INSERT INTO bby14_users (first_name, last_name, email, password, is_admin) VALUES (
-    "Charlie", "Admin", "charlie@my.bcit.ca", "admin", true);
 
-INSERT INTO bby14_users (first_name, last_name, email, password, is_admin) VALUES (
-    "Delta", "User", "delta@my.bcit.ca", "user", false);
+INSERT INTO bby14_users (first_name, last_name, email, password, latitude, longitude, age, bio, hobbies, is_admin) VALUES (
+    "Alpha", "Admin", "alpha@my.bcit.ca", "admin", 50, -123, 50, "Alpha bio.", "Walking, Hiking, Nature", true);
+
+INSERT INTO bby14_users (first_name, last_name, email, password, latitude, longitude, age, bio, hobbies, is_admin) VALUES (
+    "Bravo", "User", "bravo@my.bcit.ca", "user", 50, -122, 50, "Bravo bio.", "Knitting, Bingo, Cooking", false);
+
+INSERT INTO bby14_users (first_name, last_name, email, password, latitude, longitude, age, bio, is_admin) VALUES (
+    "Charlie", "Admin", "charlie@my.bcit.ca", "admin", 50, -124, 50, "Charlie bio.", true);
+
+INSERT INTO bby14_users (first_name, last_name, email, password, latitude, longitude, age, bio, is_admin) VALUES (
+    "Delta", "User", "delta@my.bcit.ca", "user", 100, -52, 50, "Delta bio.", false);
+    
+INSERT INTO bby14_users (first_name, last_name, email, password, latitude, longitude, age, bio, is_admin) VALUES (
+    "Echo", "User", "echo@my.bcit.ca", "user", 50, -125, 50, "Echo bio.", false);
+    
+INSERT INTO posts (userID, postNum, posts, postDate, postTime) VALUES (4, 1, "This is a test post",  "Friday May 20", "6:09 AM");

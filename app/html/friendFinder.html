@@ -10,42 +10,19 @@
         <link rel="stylesheet" href="/styles/friendFinder.css">
         <link rel="stylesheet" href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
-<div class="header">
-    <a href=""><span class="material-symbols-outlined">
-            arrow_back
-        </span>Back</a>
-    <h1 id="welcome"></h1>
-    <a href="/logout">Logout<span class="material-symbols-outlined">
-            logout
-        </span></a>
-</div>
-   
 
     <body>
+
         <div id="header"></div>
 
         <div class="content">
-            <div class="info">
-                <h1 id="info1">myName</h1>
-                <h1 id="info2">myAge</h1>
-            </div>
-            <img src="/images/profile.jpg" alt="profile" class="myPic">
-            <div class="profile">
-                <p id="fullname">FirstName LastName</p>
-                <p id="age">myAge</p>
-                <p id="hobbies">myHobbies</p>
-                <p id="distance">myDistance</p>
-            </div>
-            <div class="decision">
-                <button class="btn decline">Decline</button>
-                <button class="btn add">Add</button>
-            </div>
+            <div id="user_table"></div>
         </div>
-
 
         <div id="footerPlaceholder"></div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="/scripts/skeleton.js"></script>
+        <script src="/scripts/friendFinder.js"></script>
     </body>
 
 </html>
