@@ -24,12 +24,11 @@ CREATE TABLE IF NOT EXISTS Meet (
 requestor INTEGER,
 requestee INTEGER,
 place varchar(100),
-day date,
-hour time,
+date DATETIME,
 reason varchar(100),
 accepted BOOLEAN,
 viewed BOOLEAN,
-PRIMARY KEY(requestor, requestee, day),
+PRIMARY KEY(requestor, requestee, date),
 FOREIGN KEY (requestor) REFERENCES bby14_users(ID),
 FOREIGN KEY (requestee) REFERENCES bby14_users(ID));
 
@@ -75,6 +74,6 @@ INSERT INTO bby14_users (first_name, last_name, email, password, latitude, longi
 INSERT INTO bby14_users (first_name, last_name, email, password, latitude, longitude, age, bio, is_admin) VALUES (
     "Echo", "User", "echo@my.bcit.ca", "user", 50, -125, 50, "Echo bio.", false);
 
-INSERT INTO posts (userID, postNum, posts, postDate) VALUES (4, 3, "This is a test post3", '2022-05-20');    
-INSERT INTO posts (userID, postNum, posts, postDate) VALUES (4, 1, "This is a test post1", '2022-05-20');
-INSERT INTO posts (userID, postNum, posts, postDate) VALUES (4, 2, "This is a test post2", '2022-05-20');
+INSERT INTO posts (userID, postNum, posts, postDate, postTime) VALUES (4, 3, "This is a test post3", '2022-05-20', "12:30:00");    
+INSERT INTO posts (userID, postNum, posts, postDate, postTime) VALUES (4, 1, "This is a test post1", '2022-05-20', "12:40:00");
+INSERT INTO posts (userID, postNum, posts, postDate, postTime) VALUES (4, 2, "This is a test post2", '2022-05-20', "12:50:00");

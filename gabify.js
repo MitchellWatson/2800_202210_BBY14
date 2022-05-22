@@ -86,14 +86,14 @@ app.get("/game", function (req, res) {
     }
 });
 
-app.get("/meet", function (req, res) {
+app.get("/user", function (req, res) {
     if (req.session.loggedIn) {
-        let profile = fs.readFileSync("./app/html/meet.html", "utf8");
+        let profile = fs.readFileSync("./app/html/userProfiles.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
         let navBarDOM = new JSDOM(navBar);
-        let string = `Meet-up`;
+        let string = `Profile`;
         let t = navBarDOM.window.document.createTextNode(string);
         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
 
@@ -106,14 +106,14 @@ app.get("/meet", function (req, res) {
     }
 });
 
-app.get("/user", function (req, res) {
+app.get("/meet", function (req, res) {
     if (req.session.loggedIn) {
-        let profile = fs.readFileSync("./app/html/userProfiles.html", "utf8");
+        let profile = fs.readFileSync("./app/html/meet.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
         let navBarDOM = new JSDOM(navBar);
-        let string = `Profile`;
+        let string = `Meet-Up`;
         let t = navBarDOM.window.document.createTextNode(string);
         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
 
@@ -174,7 +174,7 @@ app.get("/timeline", function (req, res) {
                     users =
                         '<div class="card">' +
                         '<div class="can">' +
-                        '<p style="text-decoration: underline;" value="' + newResults[i].postNum + '" id="numInput' + newResults[i].userID + '" >Memory #' + newResults[i].postNum + '</p>' +
+                        '<p style="text-decoration: underline;" value="' + newResults[i].postNum + '" id="numInput' + newResults[i].userID + '" >Memory #' + (newResults.length - i) + '</p>' +
                         '<p style="text-decoration: underline;">Descrition</p>' +
                         '<input type="text" id="descInput' + newResults[i].postNum + '" placeholder="e.g. John" value="' + newResults[i].posts + '"></input>' +
                         '<p>Posted at: ' + newResults[i].postTime + '</p>' +
@@ -209,6 +209,120 @@ app.get("/timeline", function (req, res) {
         res.send(doc);
     }
   })
+
+  app.get("/request", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/request.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+
+        const mysql = require("mysql2");
+
+        const connection = mysql.createConnection({
+            host: "127.0.0.1",
+            user: "root",
+            password: "passwordSQL",
+            database: "comp2800",
+            multipleStatements: "true"
+        });
+        connection.connect();
+
+        let listUsers = [];
+
+        connection.query('SELECT * FROM bby14_users;',
+        function (error, results, fields) {
+          if (error) {
+            console.log(error);
+          }
+
+          for (let i = 0; i < results.length; i++) {
+                listUsers[listUsers.length] = results[i];
+            }
+        });
+
+        connection.query(
+            "SELECT * FROM friends;",
+            function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }
+                console.log(req.session.identity);
+                let listFriends = [];
+                for (let i = 0; i < results.length; i++) {
+                    if (results[i].user == req.session.identity) {
+                        listFriends[listFriends.length] = results[i];
+                    }
+                }
+                let friends = [];
+                for (let i = 0; i < listFriends.length; i++) {
+                    for (let k = 0; k < results.length; k++) {
+                        if (listFriends[i].friend == results[k].user & results[k].friend == listFriends[i].user) {
+                            friends[friends.length] = listFriends[i];
+                        }
+                    }
+                }
+                friends = friends.filter(function (e) {
+                    return e != null;
+                })
+
+                let finalUsers = [];
+
+                for (let i = 0; i < friends.length; i++) {
+                    for (let k = 0; k < listUsers.length; k++) {
+                        if (friends[i].friend == listUsers[k].ID) {
+                            finalUsers[finalUsers.length] = listUsers[k];
+                        }
+                    }
+                }
+                const usersProfiles = profileDOM.window.document.createElement("div");
+                let users;
+                    users =
+                    '<div id="drop">' +
+                    '<div class="card2">' +
+                        '<div class="can">' +
+                            '<p>Choose Friend</p>' +
+                            '<select type="date" id="personInput" placeholder="Select Friend">';
+                            for (let i = 0; i < finalUsers.length; i++) {
+                                users += '<option value="' + finalUsers[i].ID + '">' + finalUsers[i].first_name + ' ' + finalUsers[i].last_name + '</option>';
+                            }
+                            users +=
+                            '</select>' +
+                            '<p>When</p>' +
+                            '<input type="datetime-local" id="dateInput">' +
+                            '<p>Where</p>' +
+                            '<input type="text" id="placeInput" placeholder="Address or Location">' +
+                            '<p>Occasion</p>' +
+                            '<input type="text" id="reasonInput" placeholder="Reason for outing">' +
+                            '<a href=""><button id="request" class="option">Request</button></a>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+                        usersProfiles.innerHTML += users;
+                
+                if (friends.length == 0) {
+                    users = 'No friends yet.';
+                    usersProfiles.innerHTML += users;
+                }
+
+
+            profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+
+            let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+            let navBarDOM = new JSDOM(navBar);
+            let string = `Request`;
+            let t = navBarDOM.window.document.createTextNode(string);
+            navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+
+            profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+
+            res.send(profileDOM.serialize());
+        }
+      );
+    } 
+     else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
 
 
 app.get("/contact", function (req, res) {
@@ -352,13 +466,9 @@ app.get("/userProfiles", function (req, res) {
         profileDOM.window.document.querySelector("#passwordInput").setAttribute('value', req.session.password);
         profileDOM.window.document.querySelector("#firstNameInput").setAttribute('value', req.session.first_name);
         profileDOM.window.document.querySelector("#lastNameInput").setAttribute('value', req.session.last_name);
-        if (req.session.age != null) {
-            profileDOM.window.document.querySelector("#ageInput").setAttribute('value', req.session.age);
-        }
-        profileDOM.window.document.querySelector("#bioInput").setAttribute('value', req.session.bio);
-        if (req.session.hobbies != null) {
-            profileDOM.window.document.querySelector("#ageInput").setAttribute('value', req.session.hobbies);
-        }        
+        profileDOM.window.document.getElementById("ageInput").value = req.session.age;
+        profileDOM.window.document.querySelector("#bioInput").value = req.session.bio
+        profileDOM.window.document.querySelector("#ageInput").setAttribute('value', req.session.hobbies);  
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
 
         const mysql3 = require("mysql2");
@@ -406,6 +516,33 @@ app.get("/userProfiles", function (req, res) {
         res.send(doc);
     }
 });
+
+app.post('/addRequest', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+  
+    let connection = mysql.createConnection({
+        host: "127.0.0.1",
+        user: "root",
+        password: "passwordSQL",
+        database: "comp2800",
+        multipleStatements: "true"
+    });
+    connection.connect();
+    connection.query('INSERT INTO meet VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [req.session.identity, req.body.requestee, req.body.place, req.body.date, req.body.reason, 0, 0],
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+        }
+        res.send({
+          status: "success",
+          msg: "Recorded updated."
+        });
+  
+      });
+    connection.end();
+  
+  });
 
 
 app.post('/create', function (req, res) {
@@ -599,6 +736,8 @@ app.post('/deleteAdmin', function (req, res) {
     connection.end();
 
 });
+
+
 
 app.get("/admin-users", function (req, res) {
     if (req.session.loggedIn) {
