@@ -70,12 +70,5 @@ function ready(callback) {
         document.addEventListener("DOMContentLoaded", callback);
         console.log("Listener was invoked");
     }
-}
-
-document.getElementById("logo").addEventListener("click", myFunction);
+  }
   
-function myFunction() {
-    document.getElementById("logo").style.transform = "rotate(360deg)";
-
-}
-

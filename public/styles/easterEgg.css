@@ -31,7 +31,11 @@
 
 #quotes {
     position: fixed;
+<<<<<<< HEAD
     bottom: 20px;
+=======
+    bottom: 50px;
+>>>>>>> 92353e4a83de4718b9976c6819628b80d16a4685
     left: 10px;
     display: flex;
     flex-direction: row;
