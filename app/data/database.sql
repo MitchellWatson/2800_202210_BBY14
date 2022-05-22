@@ -51,6 +51,7 @@ userID INTEGER,
 postNum INTEGER NOT NULL auto_increment,
 posts LONGTEXT,
 postDate DATE,
+postTime TIME,
 PRIMARY KEY(userID, postNum),
 KEY (postNum),
 FOREIGN KEY(userID) REFERENCES bby14_users(ID)

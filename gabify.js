@@ -177,6 +177,7 @@ app.get("/timeline", function (req, res) {
                         '<p style="text-decoration: underline;" value="' + newResults[i].postNum + '" id="numInput' + newResults[i].userID + '" >Memory #' + newResults[i].postNum + '</p>' +
                         '<p style="text-decoration: underline;">Descrition</p>' +
                         '<input type="text" id="descInput' + newResults[i].postNum + '" placeholder="e.g. John" value="' + newResults[i].posts + '"></input>' +
+                        '<p>Posted at: ' + newResults[i].postTime + '</p>' +
                         '</div>' +
                         '<div id="options">' +
                         '<a target="' + newResults[i].postNum + '" class="option update">Update</a>' +
@@ -445,8 +446,8 @@ app.post('/create', function (req, res) {
         multipleStatements: "true"
     });
     connection.connect();
-    connection.query('INSERT INTO posts VALUES (?, ?, ?, ?)',
-      [req.session.identity, req.body.unknown, req.body.posts, req.body.postDate],
+    connection.query('INSERT INTO posts VALUES (?, ?, ?, ?, ?)',
+      [req.session.identity, req.body.unknown, req.body.posts, req.body.postDate, req.body.postTime],
       function (error, results, fields) {
         if (error) {
           console.log(error);
