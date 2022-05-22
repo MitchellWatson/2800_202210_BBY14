@@ -22,8 +22,33 @@ function ajaxPOST(url, callback, data) {
     xhr.send(params);
 }
 
+document.getElementById("new").addEventListener("click", function (e) {
+    var drop = document.getElementById("drop");
+    if (drop.style.display === "none") {
+        drop.style.display = "block";
+      } else {
+        drop.style.display = "none";
+      }
+    })
 
-
+    document.getElementById("done").addEventListener("click", function () {
+        // e.preventDefault();
+        let date = document.getElementById("dateInput");
+        let posts = document.getElementById("descInput");
+        let queryString = "posts=" + posts.value + "&postDate=" + date.value;
+        ajaxPOST("/addTimeline", function (data) {
+            if (data) {
+                let dataParsed = JSON.parse(data);
+    
+                if (dataParsed.status == "fail") {
+                    document.getElementById("errorMsg").innerHTML = dataParsed.msg;
+                } else {
+                    window.location.replace("/timeline");
+                }
+            }
+    
+        }, queryString);
+    })
 
 let buttonUpdate = document.getElementsByClassName("update");
 

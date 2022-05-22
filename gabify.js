@@ -155,12 +155,11 @@ app.get("/timeline", function (req, res) {
                          newResults[newResults.length] = results[i];
                      }
                  }
-
                 const usersProfiles = profileDOM.window.document.createElement("div");
-                const createButton = profileDOM.window.document.createElement("div");
-                let create = "<a href=''><button class='option'>Add Memory</button></a>";
-                profileDOM.window.document.getElementById("create").appendChild(createButton);
-                usersProfiles.innerHTML += create;
+                // const createButton = profileDOM.window.document.createElement("div");
+                // let create = "<a href=''><button class='option'>Add Memory</button></a>";
+                // profileDOM.window.document.getElementById("create").appendChild(createButton);
+                // usersProfiles.innerHTML += create;
                 let users;
                 var old = "";
                 for (let i = 0; i < newResults.length; i++) {
@@ -435,6 +434,33 @@ app.post('/create', function (req, res) {
   
   });
 
+  app.post('/addTimeline', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+  
+    let connection = mysql.createConnection({
+        host: "127.0.0.1",
+        user: "root",
+        password: "passwordSQL",
+        database: "comp2800",
+        multipleStatements: "true"
+    });
+    connection.connect();
+    connection.query('INSERT INTO posts VALUES (?, ?, ?, ?)',
+      [req.session.identity, req.body.unknown, req.body.posts, req.body.postDate],
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+        }
+        res.send({
+          status: "success",
+          msg: "Recorded updated."
+        });
+  
+      });
+    connection.end();
+  
+  });
+
 app.post('/updateUser', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
@@ -446,8 +472,8 @@ app.post('/updateUser', function (req, res) {
         multipleStatements: "true"
     });
     connection.connect();
-    connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, age = ?, bio = ?, hobbies = ? WHERE ID = ?',
-      [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.age, req.body.bio, req.body.hobbies, req.session.identity],
+    connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, latitude = ?, longitude = ?, age = ?, bio = ?, hobbies = ? WHERE ID = ?',
+      [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.latitude, req.body.longitude, req.body.age, req.body.bio, req.body.hobbies, req.session.identity],
       function (error, results, fields) {
         if (error) {
           console.log(error);
