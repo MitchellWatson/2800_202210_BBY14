@@ -107,14 +107,14 @@ body {
     width: 100%;
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
-    height: 70vh;
+    height: fit-content;
     text-align: left;
     margin-bottom: 2vh;
-    overflow-wrap: break-word;
     display: grid;
-    grid-template-rows: 15% 15% 20% 30% 10%;
-    grid-template-columns: 50% 50%;
+    grid-template-rows: 20% 15% 25% 20% 10% 10%;
+    grid-template-columns: 40% 60%;
     font-size: 3vh;
+    padding-bottom: 0.5em;
 }
 
 .card .name {
@@ -133,8 +133,8 @@ body {
 }
 
 img {
-    width: 40vw;
-    height: 40vw;
+    width: 30vw;
+    height: 30vw;
 }
 
 .card .bio {
@@ -148,14 +148,20 @@ img {
 }
 
 .card .distance {
-    grid-column: 1;
+    grid-column: 1 / span 2;
     grid-row: 5;
 }
 
 .card .button {
     grid-column: 2;
-    grid-row: 5;
+    grid-row: 6;
     vertical-align: bottom;
+    text-align: right;
+}
+
+.head {
+    color: rgb(27, 199, 0);
+    text-decoration: underline;
 }
 
 .card p {

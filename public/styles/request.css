@@ -132,7 +132,7 @@ h2 {
     width: 100%;
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
-    height: 60vh;
+    height: fit-content;
     text-align: left;
     margin-bottom: 2vh;
     overflow-wrap: break-word;

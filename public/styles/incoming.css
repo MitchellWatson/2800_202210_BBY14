@@ -10,10 +10,15 @@ body {
 }
 
 h2 {
-    color: rgb(255, 111, 0);
+    color: rgb(226, 98, 0);
     text-align: left;
     margin-bottom: 0;
     margin-left: 2vh;
+}
+
+.orange {
+    color: rgb(255, 111, 0);
+    text-decoration: underline;
 }
 
 #header {
@@ -134,7 +139,8 @@ h2 {
     width: 100%;
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
-    height: 60vh;
+    height: fit-content;
+    padding-bottom: 1em;
     text-align: left;
     margin-bottom: 2vh;
     overflow-wrap: break-word;

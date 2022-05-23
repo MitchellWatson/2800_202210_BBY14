@@ -23,18 +23,19 @@
     width: 100%;
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
-    height: 85vh;
+    height: fit-content;
     text-align: left;
     margin-bottom: 2vh;
     overflow-wrap: break-word;
     display: grid;
-    grid-template-rows: 90% 10%;
     font-size: 3vh;
 }
 
-.card .options {
-    grid-row: 2;
+#options {
+    margin: 1em;
+    margin-left: 0;
 }
+
 
 .card p {
     margin: 0;
@@ -62,11 +63,6 @@
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.5);
 }
 
-.card .can {
-    border-radius: 10px;
-    position: relative;
-    grid-row: 1;
-}
 
 .avatar {
     filter: brightness(60%);

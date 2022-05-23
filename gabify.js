@@ -39,7 +39,7 @@ app.use(bodyparser.urlencoded({
 const connection = mysql.createConnection({
     host: "127.0.0.1",
     user: "root",
-    password: "",
+    password: "passwordSQL",
     database: "comp2800",
     multipleStatements: "true"
 });
@@ -74,6 +74,26 @@ app.get("/game", function (req, res) {
         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
         let navBarDOM = new JSDOM(navBar);
         let string = `Game`;
+        let t = navBarDOM.window.document.createTextNode(string);
+        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+
+        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+        res.send(profileDOM.serialize());
+    } 
+     else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
+
+app.get("/help", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/help.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+
+        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+        let navBarDOM = new JSDOM(navBar);
+        let string = `Help`;
         let t = navBarDOM.window.document.createTextNode(string);
         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
 
@@ -136,7 +156,7 @@ app.get("/timeline", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "",
+            password: "passwordSQL",
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -220,7 +240,7 @@ app.get("/timeline", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "",
+            password: "passwordSQL",
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -334,7 +354,7 @@ app.get("/schedule", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "",
+            password: "passwordSQL",
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -374,7 +394,7 @@ app.get("/schedule", function (req, res) {
                     '<div class="card2">' +
                         '<div class="can">' +
                             '<h2>Meet-up</h2>' +
-                            '<p style="text-decoration: underline;">Who</p>' +
+                            '<p class="orange">Who</p>' +
                             '<p>';
                             for (let k = 0; k < listUsers.length; k++) {
                                 if (newResults[i].requestee == listUsers[k].ID && newResults[i].requestee != req.session.identity) {
@@ -385,11 +405,11 @@ app.get("/schedule", function (req, res) {
                             }
                             users +=
                             '</p>' +
-                            '<p style="text-decoration: underline;">When</p>' +
+                            '<p class="orange">When</p>' +
                             '<p>' + newResults[i].date + '</p>' +
-                            '<p style="text-decoration: underline;">Where</p>' +
+                            '<p class="orange">Where</p>' +
                             '<p>' + newResults[i].place + '</p>' +
-                            '<p style="text-decoration: underline;">Occasion</p>' +
+                            '<p class="orange">Occasion</p>' +
                             '<p>' + newResults[i].reason + '</p>' +
                         '</div>' +
                     '</div>';
@@ -433,7 +453,7 @@ app.get("/incoming", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "",
+            password: "passwordSQL",
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -535,7 +555,7 @@ app.get("/contact", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "",
+            password: "passwordSQL",
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -676,7 +696,7 @@ app.get("/userProfiles", function (req, res) {
             const database = mysql3.createConnection({
                 host: "127.0.0.1",
                 user: "root",
-                password: "",
+                password: "passwordSQL",
                 database: "comp2800",
                 multipleStatements: "true"
                 });
@@ -723,7 +743,7 @@ app.post('/addRequest', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -751,7 +771,7 @@ app.post('/create', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -778,7 +798,7 @@ app.post('/create', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -805,7 +825,7 @@ app.post('/create', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -829,7 +849,7 @@ app.post('/updateUser', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -887,7 +907,7 @@ app.post('/updateTimeline', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -914,7 +934,7 @@ app.post('/updateAdmin', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -941,7 +961,7 @@ app.post('/deleteAdmin', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -974,7 +994,7 @@ app.get("/admin-users", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "",
+            password: "passwordSQL",
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -1049,7 +1069,7 @@ app.get("/admin-users", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "",
+            password: "passwordSQL",
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -1146,22 +1166,22 @@ app.get("/admin-users", function (req, res) {
                     users =
                         '<div class="card">' +
                         '<div class="name">' +
-                        '<p style="text-decoration: underline;">Name</p>' +
+                        '<p class="head" >Name</p>' +
                         '<p>' + newResults[i].first_name + ' ' + newResults[i].last_name + '</p>' +
                         '</div>' +
                         '<div class="age">' +
-                        '<p style="text-decoration: underline;">Age</p>' +
+                        '<p class="head" >Age</p>' +
                         '<p>' + newResults[i].age + '</p>' +
                         '</div>' +
                         '<div class="img">' +
                         '<img src="/avatar/avatar_2.jpg">' +
                         '</div>' +
                         '<div class="bio">' +
-                        '<p style="text-decoration: underline;">Bio</p>' +
+                        '<p class="head" >Bio</p>' +
                         '<p>' + newResults[i].bio + '</p>' +
                         '</div>' +
                         '<div class="hobbies">' +
-                        '<p style="text-decoration: underline;">Hobbies</p>';
+                        '<p class="head" >Hobbies</p>';
                         if (newResults[i].hobbies != null) {
                             users += '<p>' + newResults[i].hobbies +'</p>';
                         } else {
@@ -1169,7 +1189,7 @@ app.get("/admin-users", function (req, res) {
                         }
                         users += '</div>'
                     users += '<div class="distance">' +
-                        '<p style="text-decoration: underline;">Distance</p>' +
+                        '<p class="head" >Distance</p>' +
                         '<p>';
                         for (let k = 0; k < places.length; k++) {
                             if (places[k].getId() == newResults[i].ID) {
@@ -1215,7 +1235,7 @@ app.get("/admin-users", function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -1289,7 +1309,7 @@ app.post("/login", function (req, res) {
     const connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
