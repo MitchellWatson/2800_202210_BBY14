@@ -107,11 +107,11 @@ body {
     width: 100%;
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
-    height: 15vh;
+    height: 10vh;
     text-align: left;
     margin-bottom: 2vh;
     overflow-wrap: break-word;
-    display: grid;
+    display:flex;
     font-size: 3vh;
 }
 
@@ -152,6 +152,7 @@ body {
 .card span {
     position: relative;
     top: 25%;
+    padding-left: 1vw;
 }
 
 .card:hover {
@@ -174,6 +175,17 @@ body {
 
 .avatar:hover {
     filter: brightness(100%);
+}
+
+.card a {
+    margin: 0;
+    padding-left: 2vh;
+    padding-top: 2vh;
+    font-size: 6vmin;
+}
+
+.card span {
+    font-size: 8vmin;
 }
 
 a {

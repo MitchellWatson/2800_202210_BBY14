@@ -67,7 +67,7 @@ body {
 }
 
 .option {
-    background-color: rgb(22, 154, 255);
+    background-color: rgb(191, 0, 216);;
     border: 2px none;
     border-radius: 5px;
     color: rgb(235, 235, 235);
@@ -147,7 +147,7 @@ a {
 
 
 #score {
-    background-color: rgb(34, 159, 255);
+    background-color: rgb(191, 0, 216);;
     padding: 0px auto;
     justify-content: center;
     border: 2px transparent;
@@ -166,7 +166,7 @@ a {
 }
 
 .btn {
-    background-color: rgb(22, 154, 255);
+    background-color: rgb(191, 0, 216);;
     border: 2px none;
     border-radius: 5px;
     color: rgb(235, 235, 235);

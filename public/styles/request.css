@@ -75,7 +75,7 @@ h2 {
 }
 
 .option {
-    background-color: rgb(12, 183, 0);
+    background-color: rgb(255, 106, 0);
     border: 2px none;
     border-radius: 5px;
     color: rgb(255, 255, 255);
@@ -115,7 +115,7 @@ h2 {
     transition: 0.3s;
     width: 100%;
     border-radius: 10px;
-    background-color: rgb(255, 255, 255);
+    background-color: rgb(255, 246, 238);
     height: 50vh;
     text-align: left;
     margin-bottom: 2vh;
@@ -131,7 +131,7 @@ h2 {
     transition: 0.3s;
     width: 100%;
     border-radius: 10px;
-    background-color: rgb(199, 215, 255);
+    background-color: rgb(255, 255, 255);
     height: 60vh;
     text-align: left;
     margin-bottom: 2vh;

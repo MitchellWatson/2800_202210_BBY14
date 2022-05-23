@@ -266,8 +266,9 @@ textarea {
 
 #submit {
     cursor: pointer;
-    background-color: rgb(139, 211, 255);
+    background-color: rgb(22, 154, 255);
     padding: 7px;
+    color: white;
     font-family: inherit;
     font-size: 16px;
     border: 0;

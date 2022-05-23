@@ -1,26 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600&display=swap');
-
 body {
     display: grid;
-    grid-template-areas:
-        "header"
-        "content"
-        "footer";
-    grid-template-columns: auto;
     height: 80vh;
+    /* grid-template-columns: 1fr;
+    grid-template-rows: 15% 10% 60% 15%; */
     text-align: center;
     font-family: 'Quicksand', sans-serif;
     background-color: rgb(224, 224, 224);
-    margin: 0;
 }
 
 #header {
-    grid-template-areas: header;
     display: grid;
     grid-column: 1;
     grid-row: 1;
     grid-template-columns: 25% 50% 25%;
-    height: 50%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     background-color: rgb(255, 255, 255);
     text-align: center;
     font-family: 'Quicksand', sans-serif;
@@ -37,7 +34,8 @@ body {
 
 #header a {
     color: rgb(58, 58, 255);
-    padding: 1em;
+    padding: 5%;
+    margin: 2%;
 }
 
 #header a:hover {
@@ -53,10 +51,9 @@ body {
 }
 
 .footer {
-    grid-template-areas: footer;
     display: grid;
-    /* grid-column: 1; */
-    /* grid-row: 4; */
+    grid-column: 1;
+    grid-row: 3;
     grid-template-columns: 1fr 1fr;
     left: 0;
     right: 0;
@@ -66,6 +63,16 @@ body {
     border: 2px rgb(255, 255, 255) solid;
     border-radius: 5px;
     font-size: 2.5vh;
+}
+
+.option {
+    background-color: #4343ff;
+    border: 2px none;
+    border-radius: 5px;
+    color: rgb(255, 255, 255);
+    padding: 10px;
+    margin: 2vh;
+    font-size: 3vh;
 }
 
 .footer span {
@@ -82,13 +89,16 @@ body {
     border-radius: 10px;
 }
 
-a {
-    text-decoration: none;
-    color: black;
-}
 
-#content {
-    grid-template-areas: content;
+.content {
+    display: grid;
+    grid-column: 1;
+    grid-row: 2;
+    grid-template-columns: 1fr;
+    grid-gap: 1em;
+    margin: 0.5em;
+    padding-top: 10vmax;
+    padding-bottom: 10vh;
 }
 
 .card {
@@ -97,18 +107,118 @@ a {
     width: 100%;
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
-    height: 35vh;
-    position: fixed;
-    top: 15%;
-    margin: auto;
+    height: 70vh;
+    text-align: left;
+    margin-bottom: 2vh;
+    overflow-wrap: break-word;
+    display: grid;
+    grid-template-rows: 15% 15% 20% 30% 10%;
+    grid-template-columns: 50% 50%;
+    font-size: 3vh;
 }
 
-@media only screen and (min-width: 1025px) {
+.card .name {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.card .age {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.card .img {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+}
+
+img {
+    width: 40vw;
+    height: 40vw;
+}
+
+.card .bio {
+    grid-column: 1 / span 2;
+    grid-row: 3;
+}
+
+.card .hobbies {
+    grid-column: 1 / span 2;
+    grid-row: 4;
+}
+
+.card .distance {
+    grid-column: 1;
+    grid-row: 5;
+}
+
+.card .button {
+    grid-column: 2;
+    grid-row: 5;
+    vertical-align: bottom;
+}
+
+.card p {
+    margin: 0;
+    padding-left: 2vh;
+    padding-top: 2vh;
+}
+
+.card input {
+    margin-left: 2vh;
+    margin-top: 2vh;
+    width: 250px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 3vh;
+}
+
+
+.card span {
+    position: relative;
+    top: 25%;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.5);
+}
+
+
+.avatar {
+    filter: brightness(60%);
+    -webkit-transition: all .7s ease;
+    transition: all .7s ease;
+    border-radius: 10px 10px 0 0;
+    width: 100%;
+}
+
+.avatar:hover {
+    filter: brightness(100%);
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+#footerPlaceholder {
+    grid-row: 3;
+}
+
+/* @media only screen and (min-width: 1025px) {
     .content {
         display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
         grid-gap: 1em;
         margin: 0.5em;
         height: 100%;
         margin: 2em;
     }
-}
+    .card{
+        height: 85%;
+    }
+} */
