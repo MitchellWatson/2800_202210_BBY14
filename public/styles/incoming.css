@@ -12,6 +12,8 @@ body {
 h2 {
     color: rgb(71, 71, 71);
     text-align: left;
+    margin-bottom: 0;
+    margin-left: 2vh;
 }
 
 #header {
@@ -131,8 +133,8 @@ h2 {
     transition: 0.3s;
     width: 100%;
     border-radius: 10px;
-    background-color: rgb(199, 215, 255);
-    height: 60vh;
+    background-color: rgb(255, 255, 255);
+    height: 70vh;
     text-align: left;
     margin-bottom: 2vh;
     overflow-wrap: break-word;

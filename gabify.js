@@ -6,7 +6,7 @@ const fs = require("fs");
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2');
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 
@@ -14,7 +14,6 @@ const bodyparser = require('body-parser');
 const path = require('path');
 const { connect } = require("http2");
 const multer = require('multer');
-const Connection = require("mysql/lib/Connection");
 
 app.use("/html", express.static("./app/html"));
 app.use("/avatar", express.static("./app/avatar"));
@@ -80,8 +79,8 @@ app.get("/game", function (req, res) {
 
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
         res.send(profileDOM.serialize());
-    }
-    else {
+    } 
+     else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
     }
@@ -100,8 +99,8 @@ app.get("/user", function (req, res) {
 
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
         res.send(profileDOM.serialize());
-    }
-    else {
+    } 
+     else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
     }
@@ -119,11 +118,9 @@ app.get("/meet", function (req, res) {
         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
 
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-
-
         res.send(profileDOM.serialize());
-    }
-    else {
+    } 
+     else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
     }
@@ -327,6 +324,206 @@ app.get("/timeline", function (req, res) {
     }
 });
 
+app.get("/schedule", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/schedule.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+
+        const mysql = require("mysql2");
+
+        const connection = mysql.createConnection({
+            host: "127.0.0.1",
+            user: "root",
+            password: "passwordSQL",
+            database: "comp2800",
+            multipleStatements: "true"
+        });
+        connection.connect();
+
+        let listUsers = [];
+
+        connection.query('SELECT * FROM bby14_users;',
+        function (error, results, fields) {
+          if (error) {
+            console.log(error);
+          }
+
+          for (let i = 0; i < results.length; i++) {
+                listUsers[listUsers.length] = results[i];
+            }
+        });
+
+        connection.query(
+            "SELECT * FROM meet ORDER BY date ASC;",
+            function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }
+                let newResults = []
+
+                for (let i = 0; i < results.length; i++) {
+                    if ((results[i].requestee == req.session.identity || results[i].requestor == req.session.identity) && results[i].viewed == 1 & results[i].accepted == 1) {
+                        newResults[newResults.length] = results[i];
+                    }
+                }
+
+                const usersProfiles = profileDOM.window.document.createElement("div");
+                let users;
+                for (let i = 0; i < newResults.length; i++) {
+                    users =
+                    '<div class="card2">' +
+                        '<div class="can">' +
+                            '<h2>Meet-up</h2>' +
+                            '<p style="text-decoration: underline;">Who</p>' +
+                            '<p>';
+                            for (let k = 0; k < listUsers.length; k++) {
+                                if (newResults[i].requestee == listUsers[k].ID && newResults[i].requestee != req.session.identity) {
+                                    users += listUsers[k].first_name + ' ' + listUsers[k].last_name;
+                                } else if (newResults[i].requestor == listUsers[k].ID && newResults[i].requestor != req.session.identity) {
+                                    users += listUsers[k].first_name + ' ' + listUsers[k].last_name;
+                                }
+                            }
+                            users +=
+                            '</p>' +
+                            '<p style="text-decoration: underline;">When</p>' +
+                            '<p>' + newResults[i].date + '</p>' +
+                            '<p style="text-decoration: underline;">Where</p>' +
+                            '<p>' + newResults[i].place + '</p>' +
+                            '<p style="text-decoration: underline;">Occasion</p>' +
+                            '<p>' + newResults[i].reason + '</p>' +
+                        '</div>' +
+                    '</div>';
+                        usersProfiles.innerHTML += users;
+                }
+
+                
+                if (newResults.length == 0) {
+                    users = 'No requests yet.';
+                    usersProfiles.innerHTML += users;
+                }
+
+
+            profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+
+            let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+            let navBarDOM = new JSDOM(navBar);
+            let string = `Schedule`;
+            let t = navBarDOM.window.document.createTextNode(string);
+            navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+
+            profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+
+            res.send(profileDOM.serialize());
+        }
+      );
+    } 
+     else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
+
+app.get("/incoming", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/incoming.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+
+        const mysql = require("mysql2");
+
+        const connection = mysql.createConnection({
+            host: "127.0.0.1",
+            user: "root",
+            password: "passwordSQL",
+            database: "comp2800",
+            multipleStatements: "true"
+        });
+        connection.connect();
+
+        let listUsers = [];
+
+        connection.query('SELECT * FROM bby14_users;',
+        function (error, results, fields) {
+          if (error) {
+            console.log(error);
+          }
+
+          for (let i = 0; i < results.length; i++) {
+                listUsers[listUsers.length] = results[i];
+            }
+        });
+
+        connection.query(
+            "SELECT * FROM meet ORDER BY date ASC;",
+            function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }
+                let newResults = []
+
+                for (let i = 0; i < results.length; i++) {
+                    if (results[i].requestee == req.session.identity && results[i].viewed == 0) {
+                        newResults[newResults.length] = results[i];
+                    }
+                }
+
+                const usersProfiles = profileDOM.window.document.createElement("div");
+                let users;
+                for (let i = 0; i < newResults.length; i++) {
+                    users =
+                    '<div id="drop">' +
+                    '<div class="card2">' +
+                        '<div class="can">' +
+                            '<h2>Meet-up Request</h2>' +
+                            '<p style="text-decoration: underline;">Who</p>' +
+                            '<p>';
+                            for (let k = 0; k < listUsers.length; k++) {
+                                if (newResults[i].requestor == listUsers[k].ID) {
+                                    users += listUsers[k].first_name + ' ' + listUsers[k].last_name;
+                                }
+                            }
+                            users +=
+                            '</p>' +
+                            '<p style="text-decoration: underline;">When</p>' +
+                            '<p>' + newResults[i].date + '</p>' +
+                            '<p style="text-decoration: underline;">Where</p>' +
+                            '<p>' + newResults[i].place + '</p>' +
+                            '<p style="text-decoration: underline;">Occasion</p>' +
+                            '<p>' + newResults[i].reason + '</p>' +
+                            '<a id="accept" target="' + newResults[i].reqNum + '" class="option">Accept</a>' +
+                            '<a id="decline" target="' + newResults[i].reqNum + '" class="option">Decline</a>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+                        usersProfiles.innerHTML += users;
+                }
+
+                
+                if (newResults.length == 0) {
+                    users = 'No requests yet.';
+                    usersProfiles.innerHTML += users;
+                }
+
+
+            profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+
+            let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+            let navBarDOM = new JSDOM(navBar);
+            let string = `Incoming`;
+            let t = navBarDOM.window.document.createTextNode(string);
+            navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+
+            profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+
+            res.send(profileDOM.serialize());
+        }
+      );
+    } 
+     else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
+
 
 app.get("/contact", function (req, res) {
     if (req.session.loggedIn) {
@@ -456,7 +653,7 @@ app.get("/contact", function (req, res) {
 app.get("/userProfiles", function (req, res) {
     if (req.session.loggedIn) {
 
-
+        
         let profile = fs.readFileSync("./app/html/userProfiles.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
@@ -512,15 +709,9 @@ app.get("/userProfiles", function (req, res) {
         });
 
 
-
-        let img = profileDOM.window.document.querySelector('#avatar');
-        img.src = '/avatar/avatar_' + req.session.identity + '.jpg';
-
-
-
         res.send(profileDOM.serialize());
-    }
-    else {
+    } 
+     else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
     }
@@ -537,8 +728,8 @@ app.post('/addRequest', function (req, res) {
         multipleStatements: "true"
     });
     connection.connect();
-    connection.query('INSERT INTO meet VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [req.session.identity, req.body.requestee, req.body.place, req.body.date, req.body.reason, 0, 0],
+    connection.query('INSERT INTO meet VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [req.session.identity, req.body.requestee, req.body.place, req.body.date, req.body.reason, 0, 0, req.body.id],
       function (error, results, fields) {
         if (error) {
           console.log(error);
@@ -557,10 +748,10 @@ app.post('/addRequest', function (req, res) {
 app.post('/create', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
-    let connection = mysql.createPool({
+    let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -577,17 +768,17 @@ app.post('/create', function (req, res) {
         });
   
       });
-    
+    connection.end();
   
   });
 
   app.post('/addTimeline', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
-    let connection = mysql.createPool({
+    let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -599,16 +790,38 @@ app.post('/create', function (req, res) {
           console.log(error);
         }
         res.send({
-            status: "success",
-            msg: "Recorded updated."
-          });
-    
+          status: "success",
+          msg: "Recorded updated."
         });
   
       });
     connection.end();
   
   });
+
+  app.post('/updateIncoming', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+  
+    let connection = mysql.createConnection({
+        host: "127.0.0.1",
+        user: "root",
+        password: "passwordSQL",
+        database: "comp2800",
+        multipleStatements: "true"
+    });
+    connection.connect();
+    connection.query('UPDATE meet SET accepted = ?, viewed = ? WHERE reqNum = ?',
+      [parseInt(req.body.accepted), parseInt(req.body.viewed), parseInt(req.body.reqNum)],
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+        }
+        res.send({
+          status: "success",
+          msg: "Recorded updated."
+        });
+      });
+    });
 
 app.post('/updateUser', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
@@ -632,6 +845,7 @@ app.post('/updateUser', function (req, res) {
           msg: "Recorded updated."
         });
       });
+
 
       const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
       connection.query(loginInfo, function (error, results, fields) {
@@ -663,7 +877,7 @@ app.post('/updateUser', function (req, res) {
               })
           }
       })
-    
+    connection.end();
 
 });
 
@@ -697,14 +911,14 @@ app.post('/updateTimeline', function (req, res) {
 app.post('/updateAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
-    let connection = mysql.createPool({
+    let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
-    
+    connection.connect();
     connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, is_admin = ? WHERE ID = ?',
       [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.is_admin, req.body.id],
       function (error, results, fields) {
@@ -717,21 +931,21 @@ app.post('/updateAdmin', function (req, res) {
         });
   
       });
-    
+    connection.end();
 
 });
 
 app.post('/deleteAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
-    let connection = mysql.createPool({
+    let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
-    
+    connection.connect();
     connection.query('DELETE FROM bby14_users WHERE ID = ?',
       [req.body.id],
       function (error, results, fields) {
@@ -755,30 +969,19 @@ app.get("/admin-users", function (req, res) {
         let profile = fs.readFileSync("./app/html/adminUsers.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
-        const mysql2 = require("mysql2");
+        const mysql = require("mysql2");
 
-        const connection = mysql.createPool({
+        const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "",
+            password: "passwordSQL",
             database: "comp2800",
             multipleStatements: "true"
         });
-        
+        connection.connect();
 
-
-        // const database = mysql.createPool({
-        //     host: "us-cdbr-east-05.cleardb.net",
-        //     user: "b959a83957277c",
-        //     password: "5e9f74c2",
-        //     database: "heroku_2e384c4e07a3778",
-        //     multipleStatements: "true"
-        // });
-
-        database.connect();
-
-        database.query(
-            `USE ${sqlDB}; SELECT * FROM bby14_users`,
+        connection.query(
+            "SELECT * FROM bby14_users",
             function (error, results, fields) {
                 if (error) {
                     console.log(error);
@@ -790,7 +993,7 @@ app.get("/admin-users", function (req, res) {
                 profileDOM.window.document.getElementById("create").appendChild(createButton);
                 usersProfiles.innerHTML += create;
                 let users;
-
+                
                 for (let i = 0; i < results.length; i++) {
                     users =
                         '<div class="card">' +
@@ -813,19 +1016,19 @@ app.get("/admin-users", function (req, res) {
                         '<a target="' + results[i].ID + '" class="option delete">Delete</a>' +
                         '</div>' +
                         '</div>';
-                    usersProfiles.innerHTML += users;
+                        usersProfiles.innerHTML += users;
                 }
 
 
-                profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+            profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
 
-                let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-                let navBarDOM = new JSDOM(navBar);
-                let string = `Users`;
-                let t = navBarDOM.window.document.createTextNode(string);
-                navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+            let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+            let navBarDOM = new JSDOM(navBar);
+            let string = `Users`;
+            let t = navBarDOM.window.document.createTextNode(string);
+            navBarDOM.window.document.querySelector("#welcome").appendChild(t);
 
-                profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+            profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
 
             res.send(profileDOM.serialize());
         }
@@ -834,7 +1037,7 @@ app.get("/admin-users", function (req, res) {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
     }
-})
+  })
 
   app.get("/friendFinder", function (req, res) {
     if (req.session.loggedIn) {
@@ -1039,7 +1242,7 @@ app.get("/main", function (req, res) {
     
     if (req.session.loggedIn ) {
         if (req.session.userType) {
-
+            
             let profile = fs.readFileSync("./app/html/admin.html", "utf8");
             let profileDOM = new JSDOM(profile);
 
@@ -1073,23 +1276,25 @@ app.get("/main", function (req, res) {
 
 
 
+// host: "127.0.0.1",
+// user: "root",
+// password: "",
+// database: "comp2800",
+// multipleStatements: "true"
 
 
-
-
-
-app.post("/login", async function (req, res) {
+app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
     const mysql = require("mysql2");
-    const connection = mysql.createPool({
+    const connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: "passwordSQL",
         database: "comp2800",
         multipleStatements: "true"
     });
 
-    
+    connection.connect();
     // Checks if user typed in matching email and password
     const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
     connection.query(loginInfo, function (error, results, fields) {
@@ -1125,8 +1330,6 @@ app.post("/login", async function (req, res) {
   
 });
 
-
-
 app.get("/logout", function (req, res) {
     if (req.session) {
         req.session.destroy(function (error) {
@@ -1143,7 +1346,7 @@ app.get("/logout", function (req, res) {
 app.get("/redirectToUsers", function (req, res) {
     if (req.session.loggedIn) {
         if(req.session.userType) {
-            
+            connection.connect();
              const getUsers = `USE comp2800; SELECT * FROM bby_users;`;
             let doc = fs.readFileSync("./app/html/userProfiles.html", "utf8");
             let adminDoc = new JSDOM(doc);
@@ -1170,8 +1373,6 @@ app.get("/redirectToUsers", function (req, res) {
     }
 });
 
-
-
 // Code to upload an image.
 // Adapted from Mutler and COMP 2537 example.
 // start of upload-app.js
@@ -1180,7 +1381,7 @@ const storage = multer.diskStorage({
     destination: function (req, file, callback) {
         callback(null, "./app/avatar/")
     },
-    filename: function (req, file, callback) {
+    filename: function(req, file, callback) {
         // // callback(null, "avatar_" + file.originalname.split('/').pop().trim());
         const sessionID = "" + req.session.identity;
         // callback(null, "avatar_" + sessionID + "." + file.originalname.split(".").pop());
@@ -1204,57 +1405,28 @@ app.get('/', function (req, res) {
 
 app.post('/upload-images', upload.array("files"), function (req, res) {
 
-    if (req.session.loggedIn) {
+    for(let i = 0; i < req.files.length; i++) {
+        req.files[i].filename = req.files[i].originalname;
+    }
 
-        // const database = mysql.createPool({
-        //     host: "us-cdbr-east-05.cleardb.net",
-        //     user: "b959a83957277c",
-        //     password: "5e9f74c2",
-        //     database: "heroku_2e384c4e07a3778",
-        //     multipleStatements: "true"
-        // });
-
-        const sql = require("mysql2");
-
-
-        const database = sql.createPool({
-            host: "127.0.0.1",
-            user: "root",
-            password: password,
-            database: "comp2800",
-            multipleStatements: "true"
-            });
-
-
-
-
-        for (let i = 0; i < req.files.length; i++) {
-            req.files[i].filename = req.files[i].originalname;
-        }
-
-
-        if (req.files.filename == undefined) {
-            console.log("No file upload");
-        } else {
-
-            let imgsrc = "avatar_" + req.session.identity + "." + req.files[0].originalname.split(".").pop();
-            let updateData = `USE ${sqlDB}; DELETE FROM userphotos WHERE userID = ${req.session.identity}; INSERT INTO userphotos (userID, imageID) VALUES (?, ?);`
-
-            console.log(imgsrc);
-            database.query(updateData, [req.session.identity, imgsrc], function (err, result) {
-
-                if (err) throw err
-                console.log("file uploaded")
-            })
-        }
-
-    
+    connection.connect();
     if (!req.files[0].filename) {
         console.log("No file upload");
     } else {
-        res.redirect("/");
+        
+        let imgsrc = "avatar_" + req.session.identity + "." + req.files[0].originalname.split(".").pop();
+        let updateData = `DELETE FROM userphotos WHERE userID = ${req.session.identity}; INSERT INTO userphotos (userID, imageID) VALUES (?, ?);`
+        
+        console.log(imgsrc);
+        connection.query(updateData, [req.session.identity, imgsrc], function(err, result) {
+          
+            if (err) throw err
+            console.log("file uploaded")
+        })
     }
-}});
+
+});
+
 
 
 // end of upload-app.js
@@ -1263,7 +1435,7 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
 
 
 
-
+ 
 
 
 
@@ -1284,5 +1456,4 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
 
 //For Heroku deployment
 app.listen(process.env.PORT || 3000);
-
 
