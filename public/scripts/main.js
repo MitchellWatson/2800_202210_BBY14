@@ -21,21 +21,13 @@ let chosen = messages[Math.floor(Math.random() * messages.length)]
 var quote = document.getElementById("quote").innerHTML = chosen;
 
 let once = localStorage.getItem("value");
-console.log("get" + once)
-modal.onload = function() {
-    if (once == 0) {
-        once++;
-        localStorage.setItem("value", once);
-        console.log("set" + once)
-        modal.style.display = "block";
-    }
-  }
-
   document.addEventListener("DOMContentLoaded", function() {
+      if (once == 0) {
         once++;
         localStorage.setItem("value", once);
         console.log("set" + once)
         modal.style.display = "block";
+      }
      })
 
 

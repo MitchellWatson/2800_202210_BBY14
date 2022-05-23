@@ -23,7 +23,7 @@ body {
 }
 
 h1 {
-    font-size: 2em;
+    font-size: 1.5em;
 }
 
 .card {
@@ -31,7 +31,7 @@ h1 {
     transition: 0.3s;
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
-    height: 5em;
+    height: fit-content;
     text-align: center;
     margin: 2em;
     display: grid;
@@ -151,7 +151,7 @@ h1 {
 }
 
 .btn:hover {
-    background-color: rgb(79, 179, 255);
+    background-color: rgb(142, 0, 163);
 }
 
 .hidden {

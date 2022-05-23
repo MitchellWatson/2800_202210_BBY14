@@ -686,7 +686,10 @@ app.get("/userProfiles", function (req, res) {
         profileDOM.window.document.querySelector("#passwordInput").setAttribute('value', req.session.password);
         profileDOM.window.document.querySelector("#firstNameInput").setAttribute('value', req.session.first_name);
         profileDOM.window.document.querySelector("#lastNameInput").setAttribute('value', req.session.last_name);
-        profileDOM.window.document.getElementById("ageInput").value = req.session.age;
+        profileDOM.window.document.querySelector("#ageInput").setAttribute('value', req.session.age);
+        console.log(req.session.age)
+        console.log(req.session.bio)
+        console.log(req.session.hobbies)
         profileDOM.window.document.querySelector("#bioInput").value = req.session.bio
         profileDOM.window.document.querySelector("#ageInput").setAttribute('value', req.session.hobbies);  
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
