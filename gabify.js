@@ -58,8 +58,7 @@ app.get("/", function (req, res) {
 app.get("/register", function (req, res) {
     let doc = fs.readFileSync("./app/html/register.html", "utf8");
     res.send(doc);
-}
-);
+});
 
 app.get("/game", function (req, res) {
     if (req.session.loggedIn) {
@@ -144,7 +143,7 @@ app.get("/userProfiles", function (req, res) {
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
 
 
-        let img = profileDOM.window.document.querySelector('#avatar');
+        let img = profileDOM.window.document.querySelector('#user-avatar');
         img.src = '/avatar/avatar_' + req.session.identity + '.jpg';
 
 
@@ -551,7 +550,7 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
         const database = sql.createPool({
             host: "127.0.0.1",
             user: "root",
-            password: password,
+            password: "",
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -597,6 +596,7 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
 
 //////////////////////////////////////////////////
 /////// code adapted from youtube tutorial ///////
+/////////// and socket.io documentation //////////
 //////////////////////////////////////////////////
 const http = require('http');
 const server = http.createServer(app);

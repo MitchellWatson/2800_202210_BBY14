@@ -21,7 +21,6 @@
 
   #send-container {
     position: fixed;
-    /* padding-bottom: 30px; */
     bottom: 20%;
     background-color: white;
     max-width: 1200px;

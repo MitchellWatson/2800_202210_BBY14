@@ -19,7 +19,7 @@ body {
     gap: 0px 0px;
     grid-auto-flow: row;
     grid-template-areas:
-        "back welcome logout";
+        "back welcome help";
     grid-area: 1 / 1 / 2 / 2;
     /* alignment */
     position: fixed;
@@ -28,6 +28,7 @@ body {
     background-color: rgb(255, 255, 255);
     text-align: center;
     align-items: center;
+    border-radius: 0 0 10px 10px;
 }
 
 #back {
@@ -38,8 +39,8 @@ body {
     grid-area: welcome;
 }
 
-#logout {
-    grid-area: logout;
+#help {
+    grid-area: help;
 }
 
 #content {
@@ -62,6 +63,7 @@ body {
     bottom: 0;
     background-color: rgb(255, 255, 255);
     text-align: center;
+    border-radius: 10px 10px 0 0;
 }
 
 #home {
@@ -74,7 +76,7 @@ body {
 
 /* alignment for icon and label */
 #back,
-#logout,
+#help,
 #home,
 #contact {
     display: flex;
@@ -87,7 +89,7 @@ body {
 
 /* alignment for icon and label */
 #back span,
-#logout span,
+#help span,
 #home span,
 #contact span {
     display: block;
@@ -96,8 +98,7 @@ body {
 }
 
 /* removed default anchor styling */
-#header a,
-#footer a {
+a {
     text-decoration: none;
 }
 
@@ -111,10 +112,28 @@ body {
 
 /* icon size */
 #header .icon, #footer .icon {
-    font-size: 2em;
+    font-size: 3em;
 }
 
 /* label size */
 #header .label, #footer .label {
     font-size: 1.25em;
 }
+
+/******** border radius ********/
+#back {
+    border-radius: 0 0 0 10px;
+}
+
+#help {
+    border-radius: 0 0 10px 0;
+}
+
+#home {
+    border-radius: 10px 0 0 0;
+}
+
+#contact {
+    border-radius: 0 10px 0 0;
+}
+/******** border radius ********/
