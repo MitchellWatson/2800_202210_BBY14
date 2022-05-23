@@ -615,22 +615,22 @@ app.get("/contact", function (req, res) {
                     users =
                         '<div class="card">' +
                         '<div class="name">' +
-                        '<p style="text-decoration: underline;">Name</p>' +
+                        '<p class="head" >Name</p>' +
                         '<p>' + finalUsers[i].first_name + ' ' + finalUsers[i].last_name + '</p>' +
                         '</div>' +
                         '<div class="age">' +
-                        '<p style="text-decoration: underline;">Age</p>' +
+                        '<p class="head">Age</p>' +
                         '<p>' + finalUsers[i].age + '</p>' +
                         '</div>' +
                         '<div class="img">' +
                         '<img src="/avatar/avatar_2.jpg">' +
                         '</div>' +
                         '<div class="bio">' +
-                        '<p style="text-decoration: underline;">Bio</p>' +
+                        '<p class="head">Bio</p>' +
                         '<p>' + finalUsers[i].bio + '</p>' +
                         '</div>' +
                         '<div class="hobbies">' +
-                        '<p style="text-decoration: underline;">Hobbies</p>';
+                        '<p class="head">Hobbies</p>';
                         if (finalUsers[i].hobbies != null) {
                             users += '<p>' + finalUsers[i].hobbies +'</p>';
                         } else {
