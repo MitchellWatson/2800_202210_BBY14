@@ -8,12 +8,14 @@
 }
 
 input {
-    width: 250px;
-    margin: 1vh;
-    display: inline-block;
+    color: rgb(78, 78, 78);
+    font-family: 'Quicksand', sans-serif;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 2vh;
+    width: 240px;
+    padding: 0.5em;
+    margin: 1vh;
 }
 
 .form-control {

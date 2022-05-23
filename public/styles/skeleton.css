@@ -29,6 +29,7 @@ body {
     text-align: center;
     align-items: center;
     border-radius: 0 0 10px 10px;
+    z-index: 0;
 }
 
 #back {
@@ -112,7 +113,7 @@ a {
 
 /* icon size */
 #header .icon, #footer .icon {
-    font-size: 3em;
+    font-size: 2.5em;
 }
 
 /* label size */

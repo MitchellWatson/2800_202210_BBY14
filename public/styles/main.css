@@ -88,12 +88,11 @@
     /* Hidden by default */
     position: fixed;
     /* Stay in place */
-    z-index: 1;
+    z-index: 5;
     /* Sit on top */
-    padding-top: 100px;
+    padding-top: 200px;
     /* Location of the box */
     left: 0;
-    top: 84px;
     width: 100%;
     /* Full width */
     height: 100%;
@@ -115,6 +114,7 @@
     width: 80%;
     border-radius: 10px;
     border: blue 2px solid;
+    font-size: 1.2em;
 }
 
 /* The Close Button */
