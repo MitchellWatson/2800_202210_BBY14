@@ -49,8 +49,7 @@ for (let i = 0; i < buttonUpdate.length; i++) {
             if (dataParsed.status == "fail") {
                 document.getElementById("errorMsg").innerHTML = dataParsed.msg;
             } else {
-                localStorage.setItem("email", email.value);
-                window.location.replace("/");
+                window.location.replace("/admin-users");
             }
         }
 
