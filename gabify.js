@@ -39,7 +39,7 @@ app.use(bodyparser.urlencoded({
 const connection = mysql.createConnection({
     host: "127.0.0.1",
     user: "root",
-    password: "passwordSQL",
+    password: "",
     database: "comp2800",
     multipleStatements: "true"
 });
@@ -136,7 +136,7 @@ app.get("/timeline", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "passwordSQL",
+            password: "",
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -220,7 +220,7 @@ app.get("/timeline", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "passwordSQL",
+            password: "",
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -334,7 +334,7 @@ app.get("/schedule", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "passwordSQL",
+            password: "",
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -433,7 +433,7 @@ app.get("/incoming", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "passwordSQL",
+            password: "",
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -535,7 +535,7 @@ app.get("/contact", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "passwordSQL",
+            password: "",
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -676,7 +676,7 @@ app.get("/userProfiles", function (req, res) {
             const database = mysql3.createConnection({
                 host: "127.0.0.1",
                 user: "root",
-                password: "passwordSQL",
+                password: "",
                 database: "comp2800",
                 multipleStatements: "true"
                 });
@@ -723,7 +723,7 @@ app.post('/addRequest', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -751,7 +751,7 @@ app.post('/create', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -778,7 +778,7 @@ app.post('/create', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -805,7 +805,7 @@ app.post('/create', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -829,7 +829,7 @@ app.post('/updateUser', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -887,7 +887,7 @@ app.post('/updateTimeline', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -914,21 +914,21 @@ app.post('/updateAdmin', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
     connection.connect();
     connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, is_admin = ? WHERE ID = ?',
-      [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.is_admin, req.body.id],
-      function (error, results, fields) {
-        if (error) {
-          console.log(error);
-        }
-        res.send({
-          status: "success",
-          msg: "Recorded updated."
-        });
+        [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.is_admin, req.body.id],
+        function (error, results, fields) {
+            if (error) {
+                console.log(error);
+            }
+            res.send({
+                status: "success",
+                msg: "Recorded updated."
+            });
   
       });
     connection.end();
@@ -941,21 +941,21 @@ app.post('/deleteAdmin', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
     connection.connect();
     connection.query('DELETE FROM bby14_users WHERE ID = ?',
-      [req.body.id],
-      function (error, results, fields) {
-        if (error) {
-          console.log(error);
-        }
-        res.send({
-          status: "success",
-          msg: "Recorded updated."
-        });
+        [req.body.id],
+        function (error, results, fields) {
+            if (error) {
+                console.log(error);
+            }
+            res.send({
+                status: "success",
+                msg: "Recorded updated."
+            });
   
       });
     connection.end();
@@ -974,7 +974,7 @@ app.get("/admin-users", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "passwordSQL",
+            password: "",
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -1030,9 +1030,9 @@ app.get("/admin-users", function (req, res) {
 
             profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
 
-            res.send(profileDOM.serialize());
-        }
-      );
+                res.send(profileDOM.serialize());
+            }
+        );
     } else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
@@ -1049,7 +1049,7 @@ app.get("/admin-users", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "passwordSQL",
+            password: "",
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -1215,7 +1215,7 @@ app.get("/admin-users", function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -1289,7 +1289,7 @@ app.post("/login", function (req, res) {
     const connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: "",
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -1308,7 +1308,7 @@ app.post("/login", function (req, res) {
             res.send({ status: "fail", msg: "Incorrect email or password!" });
         } else {
             let validUserInfo = results[1][0];
-            
+
             req.session.loggedIn = true;
             req.session.email = validUserInfo.email;
             req.session.first_name = validUserInfo.first_name;
@@ -1327,7 +1327,7 @@ app.post("/login", function (req, res) {
             res.send({ status: "success", msg: "Logged in." });
         }
     })
-  
+
 });
 
 app.get("/logout", function (req, res) {
@@ -1354,16 +1354,16 @@ app.get("/redirectToUsers", function (req, res) {
             let cardDoc = fs.readFileSync("./app/html/profileCards.html", "utf8");
             let cardDOM = new JSDOM(cardDoc);
 
-           
+
             let numUsers = 9;
 
 
-            for(let x = 0; x < numUsers; x++) {
-                adminDoc.window.document.querySelector("#main").innerHTML 
+            for (let x = 0; x < numUsers; x++) {
+                adminDoc.window.document.querySelector("#main").innerHTML
                     += cardDOM.window.document.querySelector(".card").innerHTML;
-            //     let usersList = adminDoc.window.document.querySelector("#main").innerHTML;
-            //     let userCards = cardDOM.window.document.querySelector(".card").innerHTML;
-            //    usersList.insertAdjacentElement("beforeend", userCards);
+                //     let usersList = adminDoc.window.document.querySelector("#main").innerHTML;
+                //     let userCards = cardDOM.window.document.querySelector(".card").innerHTML;
+                //    usersList.insertAdjacentElement("beforeend", userCards);
             }
             res.send(adminDoc.serialize());
         }
@@ -1390,18 +1390,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-
-
-
-
-//do we need this??
-app.get('/', function (req, res) {
-    let doc = fs.readFileSync('./app/html/index.html', "utf8");
-    res.send(doc);
-
-});
-
-
 
 app.post('/upload-images', upload.array("files"), function (req, res) {
 
@@ -1435,11 +1423,51 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
 
 
 
- 
+//////////////////////////////////////////////////
+/////// code adapted from youtube tutorial ///////
+/////////// and socket.io documentation //////////
+//////////////////////////////////////////////////
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
 
+const users = {};
 
+io.on('connection', socket => {
+    socket.on('new-user', name => {
+        users[socket.id] = name
+        socket.broadcast.emit('user-connected', name)
+    });
+    socket.on('send-chat-message', message => {
+        socket.broadcast.emit('chat-message', { message: message, name: users[socket.id] })
+    });
+    socket.on('disconnect', () => {
+        socket.broadcast.emit('user-disconnected', users[socket.id])
+        delete users[socket.id]
+    });
+});
 
+app.get("/chat", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/chat.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+        let navBarDOM = new JSDOM(navBar);
+        let string = `Chat`;
+        let t = navBarDOM.window.document.createTextNode(string);
+        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+        res.send(profileDOM.serialize());
+    }
+    else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
 
+app.set('port', process.env.PORT || 3000);
+server.listen(app.get('port'));
 
 
 
@@ -1455,5 +1483,5 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
 // });
 
 //For Heroku deployment
-app.listen(process.env.PORT || 3000);
+// app.listen(process.env.PORT || 3000);
 
