@@ -97,7 +97,6 @@ body {
     grid-template-columns: 1fr;
     grid-gap: 1em;
     margin: 0.5em;
-    padding-top: 10vmax;
     padding-bottom: 10vh;
 }
 
