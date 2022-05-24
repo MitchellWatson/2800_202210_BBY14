@@ -35,6 +35,29 @@ function showPosition(position) {
 }
 })
 
+var popUp = document.getElementById("popUp");
+
+var btn = document.getElementById("location");
+
+var span = document.getElementsByClassName("close")[0];
+
+var quote = document.getElementById("quote").innerHTML = 'Location has been sucessfully set.<span class="material-symbols-outlined">done</span>';
+
+  btn.addEventListener("click", function() {
+        popUp.style.display = "block";
+     })
+
+
+span.onclick = function() {
+    popUp.style.display = "none";
+}
+
+window.onclick = function(event) {
+  if (event.target == popUp) {
+    popUp.style.display = "none";
+  }
+}
+
 
 document.getElementById("submit").addEventListener("click", function (e) {
     
@@ -45,7 +68,7 @@ document.getElementById("submit").addEventListener("click", function (e) {
     let password = document.getElementById("passwordInput");
     let first = document.getElementById("firstNameInput");
     let last = document.getElementById("lastNameInput");
-
+    localStorage.setItem("register", 0)
     let queryString = "email=" + email.value + "&password=" + password.value + "&first_name=" + first.value + "&last_name=" + last.value + "&latitude=" + latitude + "&longitude=" + longitude;
     ajaxPOST("/create", function (data) {
         if (data) {
