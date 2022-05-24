@@ -688,11 +688,19 @@ app.get("/userProfiles", function (req, res) {
         profileDOM.window.document.querySelector("#passwordInput").setAttribute('value', req.session.password);
         profileDOM.window.document.querySelector("#firstNameInput").setAttribute('value', req.session.first_name);
         profileDOM.window.document.querySelector("#lastNameInput").setAttribute('value', req.session.last_name);
-        profileDOM.window.document.querySelector("#ageInput").setAttribute('value', req.session.age);
-        profileDOM.window.document.querySelector("#hobbiesInput").setAttribute('value', req.session.hobbies);  
+        if (req.session.age != null) {
+            profileDOM.window.document.querySelector("#ageInput").setAttribute('value', req.session.age);
+        }
+        if (req.session.hobbies != null) {
+            profileDOM.window.document.querySelector("#hobbiesInput").setAttribute('value', req.session.hobbies);
+        }
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
         const usersProfiles = profileDOM.window.document.createElement("div");
-        usersProfiles.innerHTML = '<textarea rows="4" id="bioInput" value="" type="text" required="required" maxlength="100" placeholder="Tell us about yourself!">' + req.session.bio +'</textarea>';
+        if (req.session.bio != null) {
+            usersProfiles.innerHTML = '<textarea rows="4" id="bioInput" value="" type="text" required="required" maxlength="100" placeholder="Tell us about yourself!">' + req.session.bio +'</textarea>';
+        } else {
+            usersProfiles.innerHTML = '<textarea rows="4" id="bioInput" value="" type="text" required="required" maxlength="100" placeholder="Tell us about yourself!"></textarea>';
+        }
         profileDOM.window.document.getElementById("bio").appendChild(usersProfiles);
 
         const mysql3 = require("mysql2");

@@ -90,7 +90,7 @@ textarea {
     width: 80%;
 }
 
-.modal {
+.pop {
     display: none;
     /* Hidden by default */
     position: fixed;
@@ -113,7 +113,7 @@ textarea {
 }
 
 /* Modal Content */
-.modal-content {
+.pop-content {
     background-color: #fefefe;
     margin: auto;
     padding: 20px;
