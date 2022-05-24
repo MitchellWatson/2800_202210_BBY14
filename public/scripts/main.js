@@ -17,6 +17,7 @@ let chosen = messages[Math.floor(Math.random() * messages.length)]
 var quote = document.getElementById("quote").innerHTML = chosen;
 
 let once = localStorage.getItem("value");
+localStorage.setItem("saved", 1);
   document.addEventListener("DOMContentLoaded", function() {
       if (once == 0) {
         once++;

@@ -67,6 +67,27 @@ window.onclick = function(event) {
   }
 }
 
+let saved = localStorage.getItem("saved");
+  document.addEventListener("DOMContentLoaded", function() {
+    var quote = document.getElementById("quote").innerHTML = 'Profile information succesfully saved.<span class="material-symbols-outlined">done</span>';
+      if (saved == 0) {
+        saved++;
+        localStorage.setItem("saved", saved);
+        popUp.style.display = "block";
+      }
+     })
+
+
+span.onclick = function() {
+    popUp.style.display = "none";
+}
+
+window.onclick = function(event) {
+  if (event.target == popUp) {
+    popUp.style.display = "none";
+  }
+}
+
 document.getElementById("submit").addEventListener("click", function (e) {
     
     e.preventDefault();
@@ -78,6 +99,7 @@ document.getElementById("submit").addEventListener("click", function (e) {
     let bio = document.getElementById("bioInput");
     let hobbies = document.getElementById("hobbiesInput");
     let queryString = "email=" + email.value + "&password=" + password.value + "&first_name=" + first.value + "&last_name=" + last.value + "&age=" + age.value + "&bio=" + bio.value + "&hobbies=" + hobbies.value;
+    localStorage.setItem("saved", 0);
     ajaxPOST("/updateUser", function (data) {
         if (data) {
             let dataParsed = JSON.parse(data);
