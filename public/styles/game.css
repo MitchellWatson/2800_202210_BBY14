@@ -34,6 +34,12 @@ h1 {
     margin: 1vh;
 }
 
+.btn-grid{
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 1fr);
+}
+
 #score {
     background-color: rgb(191, 0, 216);;
     padding: 0px auto;
