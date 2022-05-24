@@ -61,3 +61,7 @@ document.getElementById("submit").addEventListener("click", function (e) {
 
     }, queryString);
 });
+
+function regAlert() {
+    alert("Register Complete!");
+  }
