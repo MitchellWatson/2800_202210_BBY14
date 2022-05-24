@@ -35,11 +35,13 @@ app.use(bodyparser.urlencoded({
     extended: true
 }))
 
+let password = "passwordSQL"
+
 
 const connection = mysql.createConnection({
     host: "127.0.0.1",
     user: "root",
-    password: "",
+    password: password,
     database: "comp2800",
     multipleStatements: "true"
 });
@@ -156,7 +158,7 @@ app.get("/timeline", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "",
+            password: password,
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -240,7 +242,7 @@ app.get("/timeline", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "",
+            password: password,
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -354,7 +356,7 @@ app.get("/schedule", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "",
+            password: password,
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -453,7 +455,7 @@ app.get("/incoming", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "",
+            password: password,
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -555,7 +557,7 @@ app.get("/contact", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "",
+            password: password,
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -698,7 +700,7 @@ app.get("/userProfiles", function (req, res) {
             const database = mysql3.createConnection({
                 host: "127.0.0.1",
                 user: "root",
-                password: "",
+                password: password,
                 database: "comp2800",
                 multipleStatements: "true"
                 });
@@ -745,7 +747,7 @@ app.post('/addRequest', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: password,
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -773,7 +775,7 @@ app.post('/create', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: password,
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -800,7 +802,7 @@ app.post('/create', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: password,
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -827,7 +829,7 @@ app.post('/create', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: password,
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -845,19 +847,43 @@ app.post('/create', function (req, res) {
       });
     });
 
+    app.post('/updateLocation', function (req, res) {
+        res.setHeader('Content-Type', 'application/json');
+      
+        let connection = mysql.createConnection({
+            host: "127.0.0.1",
+            user: "root",
+            password: password,
+            database: "comp2800",
+            multipleStatements: "true"
+        });
+        connection.connect();
+        connection.query('UPDATE bby14_users SET latitude = ?, longitude = ? WHERE ID = ?',
+          [req.body.latitude, req.body.longitude, req.session.identity],
+          function (error, results, fields) {
+            if (error) {
+              console.log(error);
+            }
+            res.send({
+              status: "success",
+              msg: "Recorded updated."
+            });
+          });
+        });
+
 app.post('/updateUser', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: password,
         database: "comp2800",
         multipleStatements: "true"
     });
     connection.connect();
-    connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, latitude = ?, longitude = ?, age = ?, bio = ?, hobbies = ? WHERE ID = ?',
-      [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.latitude, req.body.longitude, req.body.age, req.body.bio, req.body.hobbies, req.session.identity],
+    connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, age = ?, bio = ?, hobbies = ? WHERE ID = ?',
+      [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.age, req.body.bio, req.body.hobbies, req.session.identity],
       function (error, results, fields) {
         if (error) {
           console.log(error);
@@ -868,6 +894,7 @@ app.post('/updateUser', function (req, res) {
         });
       });
 
+      
 
       const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
       connection.query(loginInfo, function (error, results, fields) {
@@ -909,7 +936,7 @@ app.post('/updateTimeline', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: password,
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -936,7 +963,7 @@ app.post('/updateAdmin', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: password,
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -963,7 +990,7 @@ app.post('/deleteAdmin', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: password,
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -996,7 +1023,7 @@ app.get("/admin-users", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "",
+            password: password,
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -1071,7 +1098,7 @@ app.get("/admin-users", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "",
+            password: password,
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -1243,7 +1270,7 @@ app.get("/admin-users", function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: password,
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -1317,7 +1344,7 @@ app.post("/login", function (req, res) {
     const connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "",
+        password: password,
         database: "comp2800",
         multipleStatements: "true"
     });
