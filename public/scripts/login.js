@@ -40,6 +40,7 @@ ready(function () {
     }
 
     document.querySelector("#submit").addEventListener("click", function (e) {
+        localStorage.setItem("value", 0);
         e.preventDefault();
         let email = document.getElementById("email");
         let password = document.getElementById("password");
