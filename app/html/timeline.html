@@ -14,7 +14,10 @@
     
     <div id="header"></div>
     <div class="content">
-        <button id="new" class='option'>Add Memory</button>
+
+        
+        <button id="new" class="option">Add Memory</button>
+        
         <div id="drop">
             <div class="card2">
                 <div class="can">
@@ -22,17 +25,37 @@
                     <input type="date" id="dateInput">
                     <p>Description</p>
                     <input type="text" id="descInput">
+                    
+                    <div class="picture">
+                        
+                        <form id="upload-images-form" action="/" method="post">
+                            <input id="image-upload" type="file" value="Upload Image" accept="image/png, image/gif, image/jpeg"
+                                multiple="multiple" />
+                            <input id="submit2" type="submit" class="option" value="Upload photo" />
+                        </form>
+            
+                    </div>
                     <a href=''><button id="done" class='option'>Done</button></a>
+
                 </div>
+
             </div>
         </div>
-        <div id="user_table"></div>
+
+        
+        <div id="user_table">
+
+
+
+            
+        </div>
     </div>
 
         <div id="footerPlaceholder"></div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="/scripts/skeleton.js"></script>
         <script src="/scripts/timeline.js"></script>
+
     </body>
 
 </html>
