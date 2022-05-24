@@ -64,9 +64,9 @@ function selectAnswer(e) {
   if (correct && increment) {
       score += 10
       num.innerHTML = "Score: " + score
-      result.innerHTML = "Correct!"
+      result.innerHTML = "Correct! <span class='material-symbols-outlined'> done </span>"
   } else {
-      result.innerHTML = "Inccorect."
+      result.innerHTML = "Inccorect. <span class='material-symbols-outlined'> close </span>"
   }
   setStatusClass(document.body, correct)
   Array.from(answerElement.children).forEach(button => {
