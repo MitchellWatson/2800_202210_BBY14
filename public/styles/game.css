@@ -3,23 +3,9 @@ body {
     text-align: center;
 }
 
-#header {
-    display: grid;
-    grid-column: 1;
-    grid-row: 1;
-    grid-template-columns: 25% 50% 25%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background-color: rgb(255, 255, 255);
-    text-align: center;
-    font-family: 'Quicksand', sans-serif;
-    z-index: 100;
-    border: 2px rgb(255, 255, 255) solid;
-    border-radius: 5px;
-    align-items: center;
-    font-size: 2.5vh;
+#content {
+    height: 100%;
+    overflow-y: auto;
 }
 
 h1 {
@@ -38,43 +24,6 @@ h1 {
     grid-template-rows: 90% 10%;
 }
 
-#header span {
-    font-size: 3.5vh;
-}
-
-#header a {
-    color: rgb(58, 58, 255);
-    padding: 5%;
-    margin: 2%;
-}
-
-#header a:hover {
-    background-color: rgb(216, 237, 255);
-    border-radius: 10px;
-}
-
-#welcome {
-    font-family: 'Quicksand', sans-serif;
-    font-size: 4vh;
-    margin: 0;
-    align-items: center;
-}
-
-.footer {
-    display: grid;
-    grid-column: 1;
-    grid-row: 4;
-    grid-template-columns: 1fr 1fr;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    position: fixed;
-    background-color: rgb(255, 255, 255);
-    border: 2px rgb(255, 255, 255) solid;
-    border-radius: 5px;
-    font-size: 2.5vh;
-}
-
 .option {
     background-color: rgb(191, 0, 216);;
     border: 2px none;
@@ -83,33 +32,6 @@ h1 {
     padding: 10px;
     font-size: 150%;
     margin: 1vh;
-}
-
-.footer span {
-    font-size: 4vh;
-}
-
-.footer a {
-    color: rgb(58, 58, 255);
-    padding: 3%;
-}
-
-.footer a:hover {
-    background-color: rgb(216, 237, 255);
-    border-radius: 10px;
-}
-
-
-.content {
-    display: grid;
-    grid-column: 1;
-    grid-row: 2;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    grid-gap: 0.5em;
-    text-align: center;
-    height: 100vh;
-    overflow: scroll;
 }
 
 #score {
