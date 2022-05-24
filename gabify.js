@@ -35,7 +35,7 @@ app.use(bodyparser.urlencoded({
     extended: true
 }))
 
-let password = "passwordSQL"
+let password = ""
 
 
 const connection = mysql.createConnection({
