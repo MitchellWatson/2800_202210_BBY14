@@ -16,8 +16,11 @@ const bodyparser = require('body-parser');
 const path = require('path');
 const { connect } = require("http2");
 const multer = require('multer');
+<<<<<<< HEAD
 const { Blob } = require("buffer");
 
+=======
+>>>>>>> 840f7e71a598a6799c97ef9f95ef6c43496b1cb8
 
 app.use("/html", express.static("./app/html"));
 app.use("/avatar", express.static("./app/avatar"));
@@ -39,7 +42,12 @@ app.use(bodyparser.urlencoded({
     extended: true
 }))
 
+<<<<<<< HEAD
 const password = "password";
+=======
+let password = ""
+
+>>>>>>> 840f7e71a598a6799c97ef9f95ef6c43496b1cb8
 
 const connection = mysql.createConnection({
     host: "127.0.0.1",
@@ -86,6 +94,29 @@ app.get("/game", function (req, res) {
         res.send(profileDOM.serialize());
     } 
      else {
+<<<<<<< HEAD
+=======
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
+
+app.get("/help", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/help.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+
+        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+        let navBarDOM = new JSDOM(navBar);
+        let string = `Help`;
+        let t = navBarDOM.window.document.createTextNode(string);
+        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+
+        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+        res.send(profileDOM.serialize());
+    } 
+     else {
+>>>>>>> 840f7e71a598a6799c97ef9f95ef6c43496b1cb8
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
     }
@@ -339,6 +370,206 @@ app.get("/timeline", function (req, res) {
     }
 });
 
+app.get("/schedule", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/schedule.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+
+        const mysql = require("mysql2");
+
+        const connection = mysql.createConnection({
+            host: "127.0.0.1",
+            user: "root",
+            password: password,
+            database: "comp2800",
+            multipleStatements: "true"
+        });
+        connection.connect();
+
+        let listUsers = [];
+
+        connection.query('SELECT * FROM bby14_users;',
+        function (error, results, fields) {
+          if (error) {
+            console.log(error);
+          }
+
+          for (let i = 0; i < results.length; i++) {
+                listUsers[listUsers.length] = results[i];
+            }
+        });
+
+        connection.query(
+            "SELECT * FROM meet ORDER BY date ASC;",
+            function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }
+                let newResults = []
+
+                for (let i = 0; i < results.length; i++) {
+                    if ((results[i].requestee == req.session.identity || results[i].requestor == req.session.identity) && results[i].viewed == 1 & results[i].accepted == 1) {
+                        newResults[newResults.length] = results[i];
+                    }
+                }
+
+                const usersProfiles = profileDOM.window.document.createElement("div");
+                let users;
+                for (let i = 0; i < newResults.length; i++) {
+                    users =
+                    '<div class="card2">' +
+                        '<div class="can">' +
+                            '<h2>Meet-up</h2>' +
+                            '<p class="orange">Who</p>' +
+                            '<p>';
+                            for (let k = 0; k < listUsers.length; k++) {
+                                if (newResults[i].requestee == listUsers[k].ID && newResults[i].requestee != req.session.identity) {
+                                    users += listUsers[k].first_name + ' ' + listUsers[k].last_name;
+                                } else if (newResults[i].requestor == listUsers[k].ID && newResults[i].requestor != req.session.identity) {
+                                    users += listUsers[k].first_name + ' ' + listUsers[k].last_name;
+                                }
+                            }
+                            users +=
+                            '</p>' +
+                            '<p class="orange">When</p>' +
+                            '<p>' + newResults[i].date + '</p>' +
+                            '<p class="orange">Where</p>' +
+                            '<p>' + newResults[i].place + '</p>' +
+                            '<p class="orange">Occasion</p>' +
+                            '<p>' + newResults[i].reason + '</p>' +
+                        '</div>' +
+                    '</div>';
+                        usersProfiles.innerHTML += users;
+                }
+
+                
+                if (newResults.length == 0) {
+                    users = 'No requests yet.';
+                    usersProfiles.innerHTML += users;
+                }
+
+
+            profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+
+            let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+            let navBarDOM = new JSDOM(navBar);
+            let string = `Schedule`;
+            let t = navBarDOM.window.document.createTextNode(string);
+            navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+
+            profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+
+            res.send(profileDOM.serialize());
+        }
+      );
+    } 
+     else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
+
+app.get("/incoming", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/incoming.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+
+        const mysql = require("mysql2");
+
+        const connection = mysql.createConnection({
+            host: "127.0.0.1",
+            user: "root",
+            password: password,
+            database: "comp2800",
+            multipleStatements: "true"
+        });
+        connection.connect();
+
+        let listUsers = [];
+
+        connection.query('SELECT * FROM bby14_users;',
+        function (error, results, fields) {
+          if (error) {
+            console.log(error);
+          }
+
+          for (let i = 0; i < results.length; i++) {
+                listUsers[listUsers.length] = results[i];
+            }
+        });
+
+        connection.query(
+            "SELECT * FROM meet ORDER BY date ASC;",
+            function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }
+                let newResults = []
+
+                for (let i = 0; i < results.length; i++) {
+                    if (results[i].requestee == req.session.identity && results[i].viewed == 0) {
+                        newResults[newResults.length] = results[i];
+                    }
+                }
+
+                const usersProfiles = profileDOM.window.document.createElement("div");
+                let users;
+                for (let i = 0; i < newResults.length; i++) {
+                    users =
+                    '<div id="drop">' +
+                    '<div class="card2">' +
+                        '<div class="can">' +
+                            '<h2>Meet-up Request</h2>' +
+                            '<p style="text-decoration: underline;">Who</p>' +
+                            '<p>';
+                            for (let k = 0; k < listUsers.length; k++) {
+                                if (newResults[i].requestor == listUsers[k].ID) {
+                                    users += listUsers[k].first_name + ' ' + listUsers[k].last_name;
+                                }
+                            }
+                            users +=
+                            '</p>' +
+                            '<p style="text-decoration: underline;">When</p>' +
+                            '<p>' + newResults[i].date + '</p>' +
+                            '<p style="text-decoration: underline;">Where</p>' +
+                            '<p>' + newResults[i].place + '</p>' +
+                            '<p style="text-decoration: underline;">Occasion</p>' +
+                            '<p>' + newResults[i].reason + '</p>' +
+                            '<a id="accept" target="' + newResults[i].reqNum + '" class="option">Accept</a>' +
+                            '<a id="decline" target="' + newResults[i].reqNum + '" class="option">Decline</a>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+                        usersProfiles.innerHTML += users;
+                }
+
+                
+                if (newResults.length == 0) {
+                    users = 'No requests yet.';
+                    usersProfiles.innerHTML += users;
+                }
+
+
+            profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+
+            let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+            let navBarDOM = new JSDOM(navBar);
+            let string = `Incoming`;
+            let t = navBarDOM.window.document.createTextNode(string);
+            navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+
+            profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+
+            res.send(profileDOM.serialize());
+        }
+      );
+    } 
+     else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
+
 
 app.get("/contact", function (req, res) {
     if (req.session.loggedIn) {
@@ -410,22 +641,22 @@ app.get("/contact", function (req, res) {
                     users =
                         '<div class="card">' +
                         '<div class="name">' +
-                        '<p style="text-decoration: underline;">Name</p>' +
+                        '<p class="head" >Name</p>' +
                         '<p>' + finalUsers[i].first_name + ' ' + finalUsers[i].last_name + '</p>' +
                         '</div>' +
                         '<div class="age">' +
-                        '<p style="text-decoration: underline;">Age</p>' +
+                        '<p class="head">Age</p>' +
                         '<p>' + finalUsers[i].age + '</p>' +
                         '</div>' +
                         '<div class="img">' +
                         '<img src="/avatar/avatar_2.jpg">' +
                         '</div>' +
                         '<div class="bio">' +
-                        '<p style="text-decoration: underline;">Bio</p>' +
+                        '<p class="head">Bio</p>' +
                         '<p>' + finalUsers[i].bio + '</p>' +
                         '</div>' +
                         '<div class="hobbies">' +
-                        '<p style="text-decoration: underline;">Hobbies</p>';
+                        '<p class="head">Hobbies</p>';
                         if (finalUsers[i].hobbies != null) {
                             users += '<p>' + finalUsers[i].hobbies +'</p>';
                         } else {
@@ -481,10 +712,20 @@ app.get("/userProfiles", function (req, res) {
         profileDOM.window.document.querySelector("#passwordInput").setAttribute('value', req.session.password);
         profileDOM.window.document.querySelector("#firstNameInput").setAttribute('value', req.session.first_name);
         profileDOM.window.document.querySelector("#lastNameInput").setAttribute('value', req.session.last_name);
-        profileDOM.window.document.getElementById("ageInput").value = req.session.age;
-        profileDOM.window.document.querySelector("#bioInput").value = req.session.bio
-        profileDOM.window.document.querySelector("#ageInput").setAttribute('value', req.session.hobbies);  
+        if (req.session.age != null) {
+            profileDOM.window.document.querySelector("#ageInput").setAttribute('value', req.session.age);
+        }
+        if (req.session.hobbies != null) {
+            profileDOM.window.document.querySelector("#hobbiesInput").setAttribute('value', req.session.hobbies);
+        }
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+        const usersProfiles = profileDOM.window.document.createElement("div");
+        if (req.session.bio != null) {
+            usersProfiles.innerHTML = '<textarea rows="4" id="bioInput" value="" type="text" required="required" maxlength="100" placeholder="Tell us about yourself!">' + req.session.bio +'</textarea>';
+        } else {
+            usersProfiles.innerHTML = '<textarea rows="4" id="bioInput" value="" type="text" required="required" maxlength="100" placeholder="Tell us about yourself!"></textarea>';
+        }
+        profileDOM.window.document.getElementById("bio").appendChild(usersProfiles);
 
         let img = profileDOM.window.document.querySelector('#avatar');
        img.src = './avatar/avatar_' + req.session.identity + '.jpg';
@@ -540,12 +781,15 @@ app.get("/userProfiles", function (req, res) {
         //     img.src = imageURL;
         // });
 
+<<<<<<< HEAD
  
 
         
 
 
 
+=======
+>>>>>>> 840f7e71a598a6799c97ef9f95ef6c43496b1cb8
         res.send(profileDOM.serialize());
     } 
      else {
@@ -565,8 +809,8 @@ app.post('/addRequest', function (req, res) {
         multipleStatements: "true"
     });
     connection.connect();
-    connection.query('INSERT INTO meet VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [req.session.identity, req.body.requestee, req.body.place, req.body.date, req.body.reason, 0, 0],
+    connection.query('INSERT INTO meet VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [req.session.identity, req.body.requestee, req.body.place, req.body.date, req.body.reason, 0, 0, req.body.id],
       function (error, results, fields) {
         if (error) {
           console.log(error);
@@ -605,8 +849,11 @@ app.post('/create', function (req, res) {
         });
   
       });
+<<<<<<< HEAD
 
     // connection.query('INSERT INTO userphotos VALUES (?, ?)', [req.body.ID, "placeholder"])
+=======
+>>>>>>> 840f7e71a598a6799c97ef9f95ef6c43496b1cb8
     connection.end();
   
   });
@@ -638,6 +885,54 @@ app.post('/create', function (req, res) {
   
   });
 
+  app.post('/updateIncoming', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+  
+    let connection = mysql.createConnection({
+        host: "127.0.0.1",
+        user: "root",
+        password: password,
+        database: "comp2800",
+        multipleStatements: "true"
+    });
+    connection.connect();
+    connection.query('UPDATE meet SET accepted = ?, viewed = ? WHERE reqNum = ?',
+      [parseInt(req.body.accepted), parseInt(req.body.viewed), parseInt(req.body.reqNum)],
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+        }
+        res.send({
+          status: "success",
+          msg: "Recorded updated."
+        });
+      });
+    });
+
+    app.post('/updateLocation', function (req, res) {
+        res.setHeader('Content-Type', 'application/json');
+      
+        let connection = mysql.createConnection({
+            host: "127.0.0.1",
+            user: "root",
+            password: password,
+            database: "comp2800",
+            multipleStatements: "true"
+        });
+        connection.connect();
+        connection.query('UPDATE bby14_users SET latitude = ?, longitude = ? WHERE ID = ?',
+          [req.body.latitude, req.body.longitude, req.session.identity],
+          function (error, results, fields) {
+            if (error) {
+              console.log(error);
+            }
+            res.send({
+              status: "success",
+              msg: "Recorded updated."
+            });
+          });
+        });
+
 app.post('/updateUser', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
@@ -649,8 +944,8 @@ app.post('/updateUser', function (req, res) {
         multipleStatements: "true"
     });
     connection.connect();
-    connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, latitude = ?, longitude = ?, age = ?, bio = ?, hobbies = ? WHERE ID = ?',
-      [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.latitude, req.body.longitude, req.body.age, req.body.bio, req.body.hobbies, req.session.identity],
+    connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, age = ?, bio = ?, hobbies = ? WHERE ID = ?',
+      [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.age, req.body.bio, req.body.hobbies, req.session.identity],
       function (error, results, fields) {
         if (error) {
           console.log(error);
@@ -660,6 +955,8 @@ app.post('/updateUser', function (req, res) {
           msg: "Recorded updated."
         });
       });
+
+      
 
       const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
       connection.query(loginInfo, function (error, results, fields) {
@@ -734,15 +1031,15 @@ app.post('/updateAdmin', function (req, res) {
     });
     connection.connect();
     connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, is_admin = ? WHERE ID = ?',
-      [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.is_admin, req.body.id],
-      function (error, results, fields) {
-        if (error) {
-          console.log(error);
-        }
-        res.send({
-          status: "success",
-          msg: "Recorded updated."
-        });
+        [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.is_admin, req.body.id],
+        function (error, results, fields) {
+            if (error) {
+                console.log(error);
+            }
+            res.send({
+                status: "success",
+                msg: "Recorded updated."
+            });
   
       });
     connection.end();
@@ -761,15 +1058,15 @@ app.post('/deleteAdmin', function (req, res) {
     });
     connection.connect();
     connection.query('DELETE FROM bby14_users WHERE ID = ?',
-      [req.body.id],
-      function (error, results, fields) {
-        if (error) {
-          console.log(error);
-        }
-        res.send({
-          status: "success",
-          msg: "Recorded updated."
-        });
+        [req.body.id],
+        function (error, results, fields) {
+            if (error) {
+                console.log(error);
+            }
+            res.send({
+                status: "success",
+                msg: "Recorded updated."
+            });
   
       });
     connection.end();
@@ -844,9 +1141,9 @@ app.get("/admin-users", function (req, res) {
 
             profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
 
-            res.send(profileDOM.serialize());
-        }
-      );
+                res.send(profileDOM.serialize());
+            }
+        );
     } else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
@@ -996,12 +1293,18 @@ app.get("/admin-users", function (req, res) {
                     users =
                         '<div class="card">' +
                         '<div class="name">' +
-                        '<p style="text-decoration: underline;">Name</p>' +
+                        '<p class="head" >Name</p>' +
                         '<p>' + newResults[i].first_name + ' ' + newResults[i].last_name + '</p>' +
                         '</div>' +
                         '<div class="age">' +
-                        '<p style="text-decoration: underline;">Age</p>' +
-                        '<p>' + newResults[i].age + '</p>' +
+                        '<p class="head" >Age</p>' +
+                        '<p>'; 
+                        if (newResults[i].age != null) {
+                            users += '<p>' + newResults[i].age +'</p>';
+                        } else {
+                            users += '<p>Age not listed</p>'
+                        }
+                        '</p>' +
                         '</div>' +
                         '<div class="img">' +
 
@@ -1009,11 +1312,11 @@ app.get("/admin-users", function (req, res) {
                         '<img src="/avatar/avatar_' + results[i].ID + '.jpg">' +
                         '</div>' +
                         '<div class="bio">' +
-                        '<p style="text-decoration: underline;">Bio</p>' +
+                        '<p class="head" >Bio</p>' +
                         '<p>' + newResults[i].bio + '</p>' +
                         '</div>' +
                         '<div class="hobbies">' +
-                        '<p style="text-decoration: underline;">Hobbies</p>';
+                        '<p class="head" >Hobbies</p>';
                         if (newResults[i].hobbies != null) {
                             users += '<p>' + newResults[i].hobbies +'</p>';
                         } else {
@@ -1021,7 +1324,7 @@ app.get("/admin-users", function (req, res) {
                         }
                         users += '</div>'
                     users += '<div class="distance">' +
-                        '<p style="text-decoration: underline;">Distance</p>' +
+                        '<p class="head" >Distance</p>' +
                         '<p>';
                         for (let k = 0; k < places.length; k++) {
                             if (places[k].getId() == newResults[i].ID) {
@@ -1136,7 +1439,10 @@ app.get("/main", function (req, res) {
 // multipleStatements: "true"
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 840f7e71a598a6799c97ef9f95ef6c43496b1cb8
 app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
     const mysql = require("mysql2");
@@ -1163,7 +1469,7 @@ app.post("/login", function (req, res) {
             res.send({ status: "fail", msg: "Incorrect email or password!" });
         } else {
             let validUserInfo = results[1][0];
-            
+
             req.session.loggedIn = true;
             req.session.email = validUserInfo.email;
             req.session.first_name = validUserInfo.first_name;
@@ -1182,7 +1488,11 @@ app.post("/login", function (req, res) {
             res.send({ status: "success", msg: "Logged in." });
         }
     })
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 840f7e71a598a6799c97ef9f95ef6c43496b1cb8
 });
 
 app.get("/logout", function (req, res) {
@@ -1198,7 +1508,39 @@ app.get("/logout", function (req, res) {
 });
 
 
+<<<<<<< HEAD
 
+=======
+app.get("/redirectToUsers", function (req, res) {
+    if (req.session.loggedIn) {
+        if(req.session.userType) {
+            connection.connect();
+             const getUsers = `USE comp2800; SELECT * FROM bby_users;`;
+            let doc = fs.readFileSync("./app/html/userProfiles.html", "utf8");
+            let adminDoc = new JSDOM(doc);
+
+            let cardDoc = fs.readFileSync("./app/html/profileCards.html", "utf8");
+            let cardDOM = new JSDOM(cardDoc);
+
+
+            let numUsers = 9;
+
+
+            for (let x = 0; x < numUsers; x++) {
+                adminDoc.window.document.querySelector("#main").innerHTML
+                    += cardDOM.window.document.querySelector(".card").innerHTML;
+                //     let usersList = adminDoc.window.document.querySelector("#main").innerHTML;
+                //     let userCards = cardDOM.window.document.querySelector(".card").innerHTML;
+                //    usersList.insertAdjacentElement("beforeend", userCards);
+            }
+            res.send(adminDoc.serialize());
+        }
+    } else {
+        let redirect = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(redirect);
+    }
+});
+>>>>>>> 840f7e71a598a6799c97ef9f95ef6c43496b1cb8
 
 // Code to upload an image.
 // Adapted from Mutler and COMP 2537 example.
@@ -1218,6 +1560,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+<<<<<<< HEAD
 // code to store images as posts for users. 
 const postStorage = multer.diskStorage({
     destination: function (req, file, callback) {
@@ -1243,6 +1586,8 @@ app.get('/', function (req, res) {
 
 
 
+=======
+>>>>>>> 840f7e71a598a6799c97ef9f95ef6c43496b1cb8
 app.post('/upload-images', upload.array("files"), function (req, res) {
 
     for(let i = 0; i < req.files.length; i++) {
@@ -1254,7 +1599,11 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
         console.log("No file upload");
     } else {
         
+<<<<<<< HEAD
         let imgsrc = "avatar_" + req.session.identity + "." + "jpg";
+=======
+        let imgsrc = "avatar_" + req.session.identity + "." + req.files[0].originalname.split(".").pop();
+>>>>>>> 840f7e71a598a6799c97ef9f95ef6c43496b1cb8
         let updateData = `DELETE FROM userphotos WHERE userID = ${req.session.identity}; INSERT INTO userphotos (userID, imageID) VALUES (?, ?);`
         
         console.log(imgsrc);
@@ -1303,9 +1652,51 @@ app.post('/upload-post-images', uploadPostImages.array("files"), function (req, 
 
  
 
+//////////////////////////////////////////////////
+/////// code adapted from youtube tutorial ///////
+/////////// and socket.io documentation //////////
+//////////////////////////////////////////////////
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
 
+const users = {};
 
+io.on('connection', socket => {
+    socket.on('new-user', name => {
+        users[socket.id] = name
+        socket.broadcast.emit('user-connected', name)
+    });
+    socket.on('send-chat-message', message => {
+        socket.broadcast.emit('chat-message', { message: message, name: users[socket.id] })
+    });
+    socket.on('disconnect', () => {
+        socket.broadcast.emit('user-disconnected', users[socket.id])
+        delete users[socket.id]
+    });
+});
 
+app.get("/chat", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/chat.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+        let navBarDOM = new JSDOM(navBar);
+        let string = `Chat`;
+        let t = navBarDOM.window.document.createTextNode(string);
+        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+        res.send(profileDOM.serialize());
+    }
+    else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
+
+app.set('port', process.env.PORT || 3000);
+server.listen(app.get('port'));
 
 
 
@@ -1322,6 +1713,9 @@ app.listen(port, function () {
 
 //For Heroku deployment
 // app.listen(process.env.PORT || 3000);
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 840f7e71a598a6799c97ef9f95ef6c43496b1cb8
 

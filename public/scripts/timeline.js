@@ -110,3 +110,6 @@ function uploadImages(e) {
 
     location.reload();
 }
+function postAlert() {
+    alert("Memory Added!");
+  }

@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600&display=swap');
+
+body {
+    display: grid;
+    grid-template-rows: 84px auto 84px;
+    grid-auto-columns: 1fr 1fr;
+    gap: 0% 0%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Quicksand', sans-serif;
+    background-color: #FAEBEFFF;
+    height: 100vh;
+    
+}
+
+
+#header {
+    display: grid;
+    grid-template-columns: 25% 50% 25%;
+    grid-template-rows: 1fr;
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+        "back welcome help";
+    grid-area: 1 / 1 / 2 / 2;
+    /* alignment */
+    position: fixed;
+    width: 100%;
+    height: 84px;
+    background-color: rgb(157, 171, 255);
+    text-align: center;
+    align-items: center;
+    border-radius: 0 0 10px 10px;
+    z-index: 0;
+}
+
+#back {
+    grid-area: back;
+}
+
+#welcome {
+    grid-area: welcome;
+}
+
+#help {
+    grid-area: help;
+}
+
+#content {
+    grid-area: 2 / 1 / 3 / 2;
+}
+
+#footer {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 1fr;
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+        "home contact";
+    grid-area: 3 / 1 / 4 / 2;
+    /* alignment */
+    position: fixed;
+    width: 100%;
+    height: 84px;
+    bottom: 0;
+    background-color: rgb(157, 171, 255);
+    text-align: center;
+    border-radius: 10px 10px 0 0;
+}
+
+#home {
+    grid-area: home;
+}
+
+#contact {
+    grid-area: contact;
+}
+
+/* alignment for icon and label */
+#back,
+#help,
+#home,
+#contact {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: rgb(0, 0, 0);
+}
+
+/* alignment for icon and label */
+#back span,
+#help span,
+#home span,
+#contact span {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* removed default anchor styling */
+a {
+    text-decoration: none;
+}
+
+/* hover for icon and label */
+#header a:hover,
+#footer a:hover {
+    background-color: #FC766AFF;
+    cursor: pointer;
+    align-items: center;
+}
+
+/* icon size */
+#header .icon, #footer .icon {
+    font-size: 2.5em;
+}
+
+/* label size */
+#header .label, #footer .label {
+    font-size: 1.25em;
+}
+
+/******** border radius ********/
+#back {
+    border-radius: 0 0 0 10px;
+}
+
+#help {
+    border-radius: 0 0 10px 0;
+}
+
+#home {
+    border-radius: 10px 0 0 0;
+}
+
+#contact {
+    border-radius: 0 10px 0 0;
+}
+/******** border radius ********/

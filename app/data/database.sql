@@ -28,7 +28,8 @@ date DATETIME,
 reason varchar(100),
 accepted BOOLEAN,
 viewed BOOLEAN,
-PRIMARY KEY(requestor, requestee, date),
+reqNum INTEGER auto_increment,
+PRIMARY KEY(reqNum),
 FOREIGN KEY (requestor) REFERENCES bby14_users(ID),
 FOREIGN KEY (requestee) REFERENCES bby14_users(ID));
 

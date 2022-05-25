@@ -64,9 +64,9 @@ function selectAnswer(e) {
   if (correct && increment) {
       score += 10
       num.innerHTML = "Score: " + score
-      result.innerHTML = "Correct!"
+      result.innerHTML = "Correct! <span class='material-symbols-outlined'> done </span>"
   } else {
-      result.innerHTML = "Inccorect."
+      result.innerHTML = "Inccorect. <span class='material-symbols-outlined'> close </span>"
   }
   setStatusClass(document.body, correct)
   Array.from(answerElement.children).forEach(button => {
@@ -149,6 +149,87 @@ const questions = [
       { text: '1960', correct: true },
       { text: '1956', correct: false },
       { text: '1958', correct: false }
+    ]
+  },
+  {
+    question: 'Who were the first two astronauts to walk on the moon?',
+    answers: [
+      { text: 'Eugene Cernan and Pete Conrad', correct: false },
+      { text: 'Sally Ride and Michael Collins', correct: false },
+      { text: 'Neil Armstrong and Buzz Aldrin', correct: true },
+      { text: 'Jim Lovell and Fred Haise', correct: false }
+    ]
+  },
+  {
+    question: 'Disco emerged as a popular genre of dance music in the late 1970s following the success of what film that starred actor John Travolta?',
+    answers: [
+      { text: 'Saturday Night Fever', correct: true },
+      { text: 'Dirty Dancing', correct: false },
+      { text: 'Can\'t Stop the Music', correct: false },
+      { text: 'Xanadu', correct: false }
+    ]
+  },
+  {
+    question: 'Rock music changed mainstream sounds and gained popularity among American youths. What British rock band performed for American audiences for the first time in 1964 on the Ed Sullivan Show?',
+    answers: [
+      { text: 'Led Zeppelin', correct: false },
+      { text: 'The Rolling Stones', correct: false },
+      { text: 'The Who', correct: false },
+      { text: 'The Beatles', correct: true }
+    ]
+  },
+  {
+    question: 'Which famous American comedian rose to fame on the popular 70s show Mork & Mindy?',
+    answers: [
+      { text: 'Rodney Dangerfield', correct: false },
+      { text: 'Chris Rock', correct: false },
+      { text: 'Aisha Tyler', correct: false },
+      { text: 'Robin Williams', correct: true }
+    ]
+  },
+  {
+    question: 'Before he changed it to Muhammad Ali, by what name was the World Heavyweight Boxing champion known?',
+    answers: [
+      { text: 'Cassius Clay', correct: true },
+      { text: 'Sugar Ray Robinson', correct: false },
+      { text: 'Joe Louis', correct: false },
+      { text: 'Sugar Ray Leonard', correct: false }
+    ]
+  },
+  {
+    question: 'What iconic music and pop culture magazine was founded in San Francisco in 1967?',
+    answers: [
+      { text: 'The Atlantic', correct: false },
+      { text: 'Rolling Stone', correct: true },
+      { text: 'The New Yorker', correct: false },
+      { text: 'Entertainment Weekly', correct: false }
+    ]
+  },
+  {
+    question: 'President John F. Kennedy was assassinated in 1963 by Lee Harvey Oswald while traveling in the presidential motorcade in what state?',
+    answers: [
+      { text: 'Alabama', correct: false },
+      { text: 'Arkansas', correct: false },
+      { text: 'Texas', correct: true },
+      { text: 'Oklahoma', correct: false }
+    ]
+  },
+  {
+    question: 'What popular comedic sketch show began in 1975 and introduced such famous cast members as Chevy Chase, Eddie Murphy, and Gilda Radner?',
+    answers: [
+      { text: 'The Kids in the Hall', correct: false },
+      { text: 'In Living Color', correct: false },
+      { text: 'MADtv', correct: false },
+      { text: 'Saturday Night Live', correct: true }
+    ]
+  },
+  {
+    question: '1975\'s blockbuster thriller \'Jaws\' is considered one of the best movies ever made. Who directed this hugely successful film?',
+    answers: [
+      { text: 'Ridley Scott', correct: false },
+      { text: 'George Lucas', correct: false },
+      { text: 'James Cameron', correct: false },
+      { text: 'Steven Spielberg', correct: true }
     ]
   },
 ]

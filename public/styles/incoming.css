@@ -1,9 +1,14 @@
+.orange {
+    color: rgb(255, 111, 0);
+    text-decoration: underline;
+}
+
 #decline {
     background-color: rgb(234, 0, 0);
 }
 
 .option {
-    background-color: rgb(255, 106, 0);
+    background-color: rgb(12, 183, 0);
     border: 2px none;
     border-radius: 5px;
     color: rgb(255, 255, 255);
@@ -28,7 +33,7 @@
     transition: 0.3s;
     width: 100%;
     border-radius: 10px;
-    background-color: rgb(255, 246, 238);
+    background-color: rgb(255, 255, 255);
     height: 50vh;
     text-align: left;
     margin-bottom: 2vh;
@@ -46,6 +51,7 @@
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
     height: fit-content;
+    padding-bottom: 1em;
     text-align: left;
     margin-bottom: 2vh;
     overflow-wrap: break-word;

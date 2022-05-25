@@ -1,77 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600&display=swap');
-body {
-    display: grid;
-    height: 80vh;
-    /* grid-template-columns: 1fr;
-    grid-template-rows: 15% 10% 60% 15%; */
-    text-align: center;
-    font-family: 'Quicksand', sans-serif;
-    background-color: rgb(224, 224, 224);
-}
-
 h2 {
     color: rgb(71, 71, 71);
     text-align: left;
 }
 
-#header {
-    display: grid;
-    grid-column: 1;
-    grid-row: 1;
-    grid-template-columns: 25% 50% 25%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background-color: rgb(255, 255, 255);
-    text-align: center;
-    font-family: 'Quicksand', sans-serif;
-    z-index: 100;
-    border: 2px rgb(255, 255, 255) solid;
-    border-radius: 5px;
-    align-items: center;
-    font-size: 2.5vh;
-}
-
-#header span {
-    font-size: 3.5vh;
-}
-
-#header a {
-    color: rgb(58, 58, 255);
-    padding: 5%;
-    margin: 2%;
-}
-
-#header a:hover {
-    background-color: rgb(216, 237, 255);
-    border-radius: 10px;
-}
-
-#welcome {
-    font-family: 'Quicksand', sans-serif;
-    font-size: 4vh;
-    margin: 0;
-    align-items: center;
-}
-
-.footer {
-    display: grid;
-    grid-column: 1;
-    grid-row: 3;
-    grid-template-columns: 1fr 1fr;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    position: fixed;
-    background-color: rgb(255, 255, 255);
-    border: 2px rgb(255, 255, 255) solid;
-    border-radius: 5px;
-    font-size: 2.5vh;
-}
-
 .option {
-    background-color: rgb(12, 183, 0);
+    background-color: rgb(205, 78, 0);
     border: 2px none;
     border-radius: 5px;
     color: rgb(255, 255, 255);
@@ -79,21 +12,6 @@ h2 {
     margin: 2vh;
     font-size: 3vh;
 }
-
-.footer span {
-    font-size: 4vh;
-}
-
-.footer a {
-    color: rgb(58, 58, 255);
-    padding: 3%;
-}
-
-.footer a:hover {
-    background-color: rgb(216, 237, 255);
-    border-radius: 10px;
-}
-
 
 .content {
     display: grid;
@@ -180,7 +98,6 @@ h2 {
     font-size: 3vh;
 }
 
-
 .card span {
     position: relative;
     top: 25%;
@@ -206,15 +123,6 @@ h2 {
 
 .avatar:hover {
     filter: brightness(100%);
-}
-
-a {
-    text-decoration: none;
-    color: black;
-}
-
-#footerPlaceholder {
-    grid-row: 3;
 }
 
 /* @media only screen and (min-width: 1025px) {
