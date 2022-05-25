@@ -1,6 +1,3 @@
-// Code to do server side is adapted from a COMP 1537 assignment.
-
-
 "use strict";
 const express = require("express");
 const session = require("express-session");
@@ -66,14 +63,23 @@ app.use(bodyparser.urlencoded({
     extended: true
 }))
 
-let password = "";
+// local db
+const dbHost = "127.0.0.1";
+const dbUser = "root";
+const dbPassword = "";
+const dbName = "comp2800";
 
+// heroku db
+// const dbHost = "us-cdbr-east-05.cleardb.net";
+// const dbUser = "b959a83957277c";
+// const dbPassword = "5e9f74c2";
+// const dbName = "heroku_2e384c4e07a3778";
 
 const connection = mysql.createConnection({
-    host: "127.0.0.1",
-    user: "root",
-    password: password,
-    database: "comp2800",
+    host: dbHost,
+    user: dbUser,
+    password: dbPassword,
+    database: dbName,
     multipleStatements: "true"
 });
 
@@ -187,10 +193,10 @@ app.get("/timeline", function (req, res) {
         const mysql = require("mysql2");
 
         const connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: password,
-            database: "comp2800",
+            host: dbHost,
+            user: dbUser,
+            password: dbPassword,
+            database: dbName,
             multipleStatements: "true"
         });
         connection.connect();
@@ -281,10 +287,10 @@ app.get("/request", function (req, res) {
         const mysql = require("mysql2");
 
         const connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: password,
-            database: "comp2800",
+            host: dbHost,
+            user: dbUser,
+            password: dbPassword,
+            database: dbName,
             multipleStatements: "true"
         });
         connection.connect();
@@ -395,10 +401,10 @@ app.get("/schedule", function (req, res) {
         const mysql = require("mysql2");
 
         const connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: password,
-            database: "comp2800",
+            host: dbHost,
+            user: dbUser,
+            password: dbPassword,
+            database: dbName,
             multipleStatements: "true"
         });
         connection.connect();
@@ -494,10 +500,10 @@ app.get("/incoming", function (req, res) {
         const mysql = require("mysql2");
 
         const connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: password,
-            database: "comp2800",
+            host: dbHost,
+            user: dbUser,
+            password: dbPassword,
+            database: dbName,
             multipleStatements: "true"
         });
         connection.connect();
@@ -596,10 +602,10 @@ app.get("/contact", function (req, res) {
         const mysql = require("mysql2");
 
         const connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: password,
-            database: "comp2800",
+            host: dbHost,
+            user: dbUser,
+            password: dbPassword,
+            database: dbName,
             multipleStatements: "true"
         });
         connection.connect();
@@ -753,10 +759,10 @@ app.get("/userProfiles", function (req, res) {
         const mysql3 = require("mysql2");
 
         const database = mysql3.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: password,
-            database: "comp2800",
+            host: dbHost,
+            user: dbUser,
+            password: dbPassword,
+            database: dbName,
             multipleStatements: "true"
         });
         database.connect();
@@ -812,10 +818,10 @@ app.post('/addRequest', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
     let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
+        host: dbHost,
+        user: dbUser,
+        password: dbPassword,
+        database: dbName,
         multipleStatements: "true"
     });
     connection.connect();
@@ -840,10 +846,10 @@ app.post('/create', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
     let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
+        host: dbHost,
+        user: dbUser,
+        password: dbPassword,
+        database: dbName,
         multipleStatements: "true"
     });
     connection.connect();
@@ -867,10 +873,10 @@ app.post('/addTimeline', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
     let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
+        host: dbHost,
+        user: dbUser,
+        password: dbPassword,
+        database: dbName,
         multipleStatements: "true"
     });
     connection.connect();
@@ -894,10 +900,10 @@ app.post('/updateIncoming', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
     let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
+        host: dbHost,
+        user: dbUser,
+        password: dbPassword,
+        database: dbName,
         multipleStatements: "true"
     });
     connection.connect();
@@ -918,10 +924,10 @@ app.post('/updateLocation', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
     let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
+        host: dbHost,
+        user: dbUser,
+        password: dbPassword,
+        database: dbName,
         multipleStatements: "true"
     });
     connection.connect();
@@ -942,10 +948,10 @@ app.post('/updateUser', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
     let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
+        host: dbHost,
+        user: dbUser,
+        password: dbPassword,
+        database: dbName,
         multipleStatements: "true"
     });
     connection.connect();
@@ -963,7 +969,7 @@ app.post('/updateUser', function (req, res) {
 
 
 
-    const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
+    const loginInfo = `USE ${dbName}; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
     connection.query(loginInfo, function (error, results, fields) {
         /* If there is an error, alert user of error
         *  If the length of results array is 0, then there was no matches in database
@@ -1001,10 +1007,10 @@ app.post('/updateTimeline', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
     let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
+        host: dbHost,
+        user: dbUser,
+        password: dbPassword,
+        database: dbName,
         multipleStatements: "true"
     });
     connection.connect();
@@ -1028,10 +1034,10 @@ app.post('/updateAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
     let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
+        host: dbHost,
+        user: dbUser,
+        password: dbPassword,
+        database: dbName,
         multipleStatements: "true"
     });
     connection.connect();
@@ -1055,10 +1061,10 @@ app.post('/deleteAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
     let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
+        host: dbHost,
+        user: dbUser,
+        password: dbPassword,
+        database: dbName,
         multipleStatements: "true"
     });
     connection.connect();
@@ -1088,10 +1094,10 @@ app.get("/admin-users", function (req, res) {
         const mysql = require("mysql2");
 
         const connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: password,
-            database: "comp2800",
+            host: dbHost,
+            user: dbUser,
+            password: dbPassword,
+            database: dbName,
             multipleStatements: "true"
         });
         connection.connect();
@@ -1163,10 +1169,10 @@ app.get("/friendFinder", function (req, res) {
         const mysql = require("mysql2");
 
         const connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: password,
-            database: "comp2800",
+            host: dbHost,
+            user: dbUser,
+            password: dbPassword,
+            database: dbName,
             multipleStatements: "true"
         });
         connection.connect();
@@ -1364,10 +1370,10 @@ app.post('/updateFriends', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
     let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
+        host: dbHost,
+        user: dbUser,
+        password: dbPassword,
+        database: dbName,
         multipleStatements: "true"
     });
     connection.connect();
@@ -1427,10 +1433,10 @@ app.get("/main", function (req, res) {
 
 
 
-// host: "127.0.0.1",
-// user: "root",
+// host: dbHost,
+// user: dbUser,
 // password: "",
-// database: "comp2800",
+// database: dbName,
 // multipleStatements: "true"
 
 
@@ -1438,16 +1444,16 @@ app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
     const mysql = require("mysql2");
     const connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
+        host: dbHost,
+        user: dbUser,
+        password: dbPassword,
+        database: dbName,
         multipleStatements: "true"
     });
 
     connection.connect();
     // Checks if user typed in matching email and password
-    const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
+    const loginInfo = `USE ${dbName}; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
 
     connection.query(loginInfo, function (error, results, fields) {
         /* If there is an error, alert user of error
