@@ -35,7 +35,7 @@ app.use(bodyparser.urlencoded({
     extended: true
 }))
 
-let password = ""
+let password = "passwordSQL"
 
 
 const connection = mysql.createConnection({
@@ -1046,7 +1046,7 @@ app.get("/admin-users", function (req, res) {
 
                 const usersProfiles = profileDOM.window.document.createElement("div");
                 const createButton = profileDOM.window.document.createElement("div");
-                let create = "<a href='/register'><button class='option'>Create User</button></a>";
+                let create = "<a href='/register'><button class='option'>Create User</button></a><br><a><button id='edit' class='option'>Edit Users</button></a>";
                 profileDOM.window.document.getElementById("create").appendChild(createButton);
                 usersProfiles.innerHTML += create;
                 let users;
@@ -1058,15 +1058,15 @@ app.get("/admin-users", function (req, res) {
                         '<p style="text-decoration: underline;">ID</p>' +
                         '<p>' + results[i].ID + '</p>' +
                         '<p style="text-decoration: underline;">First Name</p>' +
-                        '<input type="text" id="firstNameInput' + results[i].ID + '" placeholder="e.g. John" value="' + results[i].first_name + '"></input>' +
+                        '<input class="inputs" type="text" id="firstNameInput' + results[i].ID + '" placeholder="e.g. John" value="' + results[i].first_name + '" readonly>' +
                         '<p style="text-decoration: underline;">Last Name</p>' +
-                        '<input type="text" id="lastNameInput' + results[i].ID + '" placeholder="e.g. Smith" value="' + results[i].last_name + '"></input>' +
+                        '<input class="inputs" type="text" id="lastNameInput' + results[i].ID + '" placeholder="e.g. Smith" value="' + results[i].last_name + '" readonly>' +
                         '<p style="text-decoration: underline;">Email</p>' +
-                        '<input type="text" id="emailInput' + results[i].ID + '" placeholder="e.g. bob@gmail.com" value="' + results[i].email + '"></input>' +
+                        '<input class="inputs" type="text" id="emailInput' + results[i].ID + '" placeholder="e.g. bob@gmail.com" value="' + results[i].email + '" readonly>' +
                         '<p style="text-decoration: underline;">Password</p>' +
-                        '<input type="text" id="passwordInput' + results[i].ID + '" placeholder="" value="' + results[i].password + '"></input>' +
+                        '<input class="inputs" type="text" id="passwordInput' + results[i].ID + '" placeholder="" value="' + results[i].password + '" readonly>' +
                         '<p style="text-decoration: underline;">Admin</p>' +
-                        '<input type="number" id="adminInput' + results[i].ID + '" placeholder="0 for user/1 for admin" min="0" max="1" value="' + results[i].is_admin + '"></input>' +
+                        '<input class="inputs" type="number" id="adminInput' + results[i].ID + '" placeholder="0 for user/1 for admin" min="0" max="1" value="' + results[i].is_admin + '" readonly>' +
                         '</div>' +
                         '<div id="options">' +
                         '<a target="' + results[i].ID + '" class="option submit">Save</a>' +
