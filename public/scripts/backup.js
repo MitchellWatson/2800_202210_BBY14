@@ -78,7 +78,6 @@ for (let i = 0; i < buttonUpdate.length; i++) {
     }, queryString);
 }
 
-<<<<<<< HEAD
 
 
 const upLoadForm = document.getElementById("upload-images-form");
@@ -111,8 +110,6 @@ function uploadImages(e) {
 
     location.reload();
 }
-=======
 function postAlert() {
     alert("Memory Added!");
   }
->>>>>>> 840f7e71a598a6799c97ef9f95ef6c43496b1cb8
