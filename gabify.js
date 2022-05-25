@@ -1101,7 +1101,7 @@ app.get("/admin-users", function (req, res) {
 
                 const usersProfiles = profileDOM.window.document.createElement("div");
                 const createButton = profileDOM.window.document.createElement("div");
-                let create = "<a href='/register'><button class='option'>Create User</button></a><br><a><button id='edit' class='option'>Edit Users</button></a>";
+                let create = "<a href='/register'><button class='option' id='create1'>Create User</button></a><br><a><button id='edit' class='option'>Edit Users</button></a>";
                 profileDOM.window.document.getElementById("create").appendChild(createButton);
                 usersProfiles.innerHTML += create;
                 let users;
