@@ -116,13 +116,19 @@ document.getElementById("submit").addEventListener("click", function (e) {
 });
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 =======
+=======
+>>>>>>> Basil_Kim_Chat
 function saveAlert() {
     alert("Information Saved!");
   }
 function logoutAlert() {
     alert("You have logged out!");
   }
+<<<<<<< HEAD
 >>>>>>> 840f7e71a598a6799c97ef9f95ef6c43496b1cb8
+=======
+>>>>>>> Basil_Kim_Chat
