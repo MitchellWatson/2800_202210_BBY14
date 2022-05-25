@@ -16,6 +16,23 @@ const bodyparser = require('body-parser');
 const path = require('path');
 const { connect } = require("http2");
 const multer = require('multer');
+const { Blob } = require("buffer");
+
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
+const formatMessage = require('./helpers/formatDate')
+
+const users = {};
+
+const {
+    getActiveUser,
+    exitRoom,
+    newUser,
+    getIndividualRoomUsers
+  } = require('./helpers/userHelper');
+
 
 app.use("/html", express.static("./app/html"));
 app.use("/avatar", express.static("./app/avatar"));
@@ -37,8 +54,7 @@ app.use(bodyparser.urlencoded({
     extended: true
 }))
 
-let password = ""
-
+const password = "password";
 
 const connection = mysql.createConnection({
     host: "127.0.0.1",
@@ -1140,6 +1156,20 @@ app.get("/admin-users", function (req, res) {
         });
         connection.connect();
 
+        let userProfilePics = [];
+
+
+
+        connection.query('SELECT * FROM userphotos;', 
+        function(error, results, fields) {
+            if (error)
+                throw error;
+            for (let i = 0; i < results.length; i++) {
+                userProfilePics[i] = results[i];
+                console.log(userProfilePics[i].userID);
+            }
+        }); 
+
         let listFriends = [];
 
         connection.query('SELECT * FROM friends;',
@@ -1162,32 +1192,7 @@ app.get("/admin-users", function (req, res) {
 
 
 
-        // Reading the image from the userPhotos table
-        let userImages = [];
-
-     
-        connection.query('SELECT * FROM userphotos;',
-            function (error, photoresults, fields) {
-                if(error) {
-                    throw(error);
-                }
-
-                for (var i = 0; i < photoresults.length; i++) {
-
-                    if(photoresults[i].imageID) {
-                        let buff = Buffer.from(photoresults[i].imageID);
-
-                        // let blob = new Blob([buff]);
-                        // var img_file = URL.createObjectURL(blob);
-                        // console.log(img_file);
-                    }
-                }
-            });
-
-            // ([JSON.stringify(buff)], {
-            //     type: 'application/json',
-            // });
-
+       
 
         connection.query(
             "SELECT * FROM bby14_users;",
@@ -1258,12 +1263,16 @@ app.get("/admin-users", function (req, res) {
                     }
                 }
 
+                
             
 
                 const usersProfiles = profileDOM.window.document.createElement("div");
                 let users;
                 
                 for (let i = 0; i < newResults.length; i++) {
+                    let age = (newResults[i].age ? '<p>' + newResults[i].age +'</p>' : '<p>Age not listed</p>');
+                    // let imageProf = (userProfilePics.indexOf(newResults[i].ID) !== -1 ? '<img src="./avatar/' + userProfilePics[i].imageID + '>' : '<img src="./avatar/placeholder.jpg">');
+                    
                     users =
                         '<div class="card">' +
                         '<div class="name">' +
@@ -1272,18 +1281,12 @@ app.get("/admin-users", function (req, res) {
                         '</div>' +
                         '<div class="age">' +
                         '<p class="head" >Age</p>' +
-                        '<p>'; 
-                        if (newResults[i].age != null) {
-                            users += '<p>' + newResults[i].age +'</p>';
-                        } else {
-                            users += '<p>Age not listed</p>'
-                        }
-                        '</p>' +
-                        '</div>' +
+                        age +
+                        '</div>' + 
                         '<div class="img">' +
-
-
-                        '<img src="/avatar/avatar_' + results[i].ID + '.jpg">' +
+                    
+                        '<img src="./avatar/avatar_' + results[i].ID + '.jpg">' +
+                        // imageProf +
                         '</div>' +
                         '<div class="bio">' +
                         '<p class="head" >Bio</p>' +
@@ -1312,13 +1315,20 @@ app.get("/admin-users", function (req, res) {
                         '</div>' +
                         '</div>';
                         usersProfiles.innerHTML += users;
-               
+                  
+                   
                 }
+
+   
+
                 if (places.length == 0) {
                     users = 'No users to be added.';
                     usersProfiles.innerHTML += users;
                 }
 
+                
+
+                 
 
             profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
 
@@ -1473,35 +1483,6 @@ app.get("/logout", function (req, res) {
 });
 
 
-app.get("/redirectToUsers", function (req, res) {
-    if (req.session.loggedIn) {
-        if(req.session.userType) {
-            connection.connect();
-             const getUsers = `USE comp2800; SELECT * FROM bby_users;`;
-            let doc = fs.readFileSync("./app/html/userProfiles.html", "utf8");
-            let adminDoc = new JSDOM(doc);
-
-            let cardDoc = fs.readFileSync("./app/html/profileCards.html", "utf8");
-            let cardDOM = new JSDOM(cardDoc);
-
-
-            let numUsers = 9;
-
-
-            for (let x = 0; x < numUsers; x++) {
-                adminDoc.window.document.querySelector("#main").innerHTML
-                    += cardDOM.window.document.querySelector(".card").innerHTML;
-                //     let usersList = adminDoc.window.document.querySelector("#main").innerHTML;
-                //     let userCards = cardDOM.window.document.querySelector(".card").innerHTML;
-                //    usersList.insertAdjacentElement("beforeend", userCards);
-            }
-            res.send(adminDoc.serialize());
-        }
-    } else {
-        let redirect = fs.readFileSync("./app/html/login.html", "utf8");
-        res.send(redirect);
-    }
-});
 
 // Code to upload an image.
 // Adapted from Mutler and COMP 2537 example.
@@ -1520,6 +1501,33 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+// code to store images as posts for users. 
+const postStorage = multer.diskStorage({
+    destination: function (req, file, callback) {
+        callback(null, "./app/posts/")
+    },
+    filename: function (req, file, callback) {
+        let count=0;
+        callback(null, "posts_" + count++ + ".jpg");
+    }
+});
+
+const uploadPostImages = multer({
+    storage: postStorage
+});
+
+
+
+
+
+app.get('/', function (req, res) {
+    let doc = fs.readFileSync('./app/html/index.html', "utf8");
+    res.send(doc);
+
+});
+
+
 
 app.post('/upload-images', upload.array("files"), function (req, res) {
 
@@ -1585,12 +1593,7 @@ app.post('/upload-post-images', uploadPostImages.array("files"), function (req, 
 /////// code adapted from youtube tutorial ///////
 /////////// and socket.io documentation //////////
 //////////////////////////////////////////////////
-const http = require('http');
-const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
 
-const users = {};
 
 io.on('connection', socket => {
     socket.on('new-user', name => {
@@ -1624,6 +1627,92 @@ app.get("/chat", function (req, res) {
     }
 });
 
+
+
+//code for one-to-one chat; work in progress
+// io.on('connection', socket => {
+//     socket.on('joinRoom', ({ username, room }) => {
+//       const user = newUser(socket.id, username, room);
+  
+//       socket.join(user.room);
+  
+//       // General welcome
+//       socket.emit('message', formatMessage("WebCage", 'Messages are limited to this room! '));
+  
+//       // Broadcast everytime users connects
+//       socket.broadcast
+//         .to(user.room)
+//         .emit(
+//           'message',
+//           formatMessage("WebCage", `${user.username} has joined the room`)
+//         );
+  
+//       // Current active users and room name
+//       io.to(user.room).emit('roomUsers', {
+//         room: user.room,
+//         users: getIndividualRoomUsers(user.room)
+//       });
+//     });
+  
+//     // Listen for client message
+//     socket.on('chatMessage', msg => {
+//       const user = getActiveUser(socket.id);
+  
+//       io.to(user.room).emit('message', formatMessage(user.username, msg));
+//     });
+  
+//     // Runs when client disconnects
+//     socket.on('disconnect', () => {
+//       const user = exitRoom(socket.id);
+  
+//       if (user) {
+//         io.to(user.room).emit(
+//           'message',
+//           formatMessage("WebCage", `${user.username} has left the room`)
+//         );
+  
+//         // Current active users and room name
+//         io.to(user.room).emit('roomUsers', {
+//           room: user.room,
+//           users: getIndividualRoomUsers(user.room)
+//         });
+//       }
+//     });
+//   });
+  
+
+
+
+
+
+
+
+
+
+
+// app.get("/gabChat", function (req, res) {
+//     if (req.session.loggedIn) {
+//         let profile = fs.readFileSync("./app/html/gabChat.html", "utf8");
+//         let profileDOM = new JSDOM(profile);
+//         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+//         let navBarDOM = new JSDOM(navBar);
+//         let string = `Chat`;
+//         let t = navBarDOM.window.document.createTextNode(string);
+//         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+//         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+//         res.send(profileDOM.serialize());
+//     }
+//     else {
+//         let doc = fs.readFileSync("./app/html/login.html", "utf8");
+//         res.send(doc);
+//     }
+// });
+
+
+
+
+
+
 app.set('port', process.env.PORT || 3000);
 server.listen(app.get('port'));
 
@@ -1636,10 +1725,12 @@ server.listen(app.get('port'));
 
 
 // //For Milestone hand-ins:
-let port = 8000;
-app.listen(port, function () {
-});
+// let port = 8000;
+// app.listen(port, function () {
+// });
 
 //For Heroku deployment
 // app.listen(process.env.PORT || 3000);
+
+
 
