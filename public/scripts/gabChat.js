@@ -8,8 +8,6 @@ const { username, room } = Qs.parse(location.search, {
   ignoreQueryPrefix: true,
 });
 
-console.log({username, room})
-
 const socket = io();
 
 // Join chatroom
@@ -87,11 +85,7 @@ function outputUsers(users) {
 document.getElementById('leave-btn').addEventListener('click', () => {
   const leaveRoom = confirm('Are you sure you want to leave the chatroom?');
   if (leaveRoom) {
-    window.location = '../main.html';
+    window.location = '../index.html';
   } else {
   }
 });
-
-
-
-
