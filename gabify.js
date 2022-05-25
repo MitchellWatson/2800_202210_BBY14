@@ -67,13 +67,24 @@ app.use(bodyparser.urlencoded({
 let password = "passwordSQL"
 
 
-const connection = mysql.createConnection({
+const connectionLocal = {
     host: "127.0.0.1",
     user: "root",
     password: password,
     database: "comp2800",
     multipleStatements: "true"
+};
+
+var connection = mysql.createPool(connectionLocal);
+
+
+//For Milestone hand-ins:
+let port = 8000;
+app.listen(port, function () {
 });
+
+// For Heroku deployment
+// app.listen(process.env.PORT || 3000);
 
 
 app.get("/", function (req, res) {
@@ -182,18 +193,6 @@ app.get("/timeline", function (req, res) {
         let profile = fs.readFileSync("./app/html/timeline.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
-        const mysql = require("mysql2");
-
-        const connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: password,
-            database: "comp2800",
-            multipleStatements: "true"
-        });
-        connection.connect();
-        
-
         connection.query(
             "SELECT * FROM bby14_users",
             function (error, results, fields) {
@@ -276,17 +275,6 @@ app.get("/timeline", function (req, res) {
         let profile = fs.readFileSync("./app/html/request.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
-        const mysql = require("mysql2");
-
-        const connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: password,
-            database: "comp2800",
-            multipleStatements: "true"
-        });
-        connection.connect();
-
         let listUsers = [];
 
         connection.query('SELECT * FROM bby14_users;',
@@ -358,11 +346,7 @@ app.get("/timeline", function (req, res) {
                     '</div>' +
                 '</div>';
                         usersProfiles.innerHTML += users;
-                
-                if (friends.length == 0) {
-                    users = 'No friends yet.';
-                    usersProfiles.innerHTML += users;
-                }
+            
 
 
             profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
@@ -389,17 +373,6 @@ app.get("/schedule", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/schedule.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
-        const mysql = require("mysql2");
-
-        const connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: password,
-            database: "comp2800",
-            multipleStatements: "true"
-        });
-        connection.connect();
 
         let listUsers = [];
 
@@ -488,17 +461,6 @@ app.get("/incoming", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/incoming.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
-        const mysql = require("mysql2");
-
-        const connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: password,
-            database: "comp2800",
-            multipleStatements: "true"
-        });
-        connection.connect();
 
         let listUsers = [];
 
@@ -591,17 +553,6 @@ app.get("/contact", function (req, res) {
         let profile = fs.readFileSync("./app/html/contact.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
-        const mysql = require("mysql2");
-
-        const connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: password,
-            database: "comp2800",
-            multipleStatements: "true"
-        });
-        connection.connect();
-
         let listUsers = [];
 
         connection.query('SELECT * FROM bby14_users;',
@@ -665,7 +616,6 @@ app.get("/contact", function (req, res) {
                         '</div>' +
                         '<div class="img">' +
                         '<img src="./avatar/avatar_' + finalUsers[i].ID + '.jpg">' +
-                        // imageProf +
                         '</div>' +
                         '<div class="bio">' +
                         '<p class="head">Bio</p>' +
@@ -686,7 +636,7 @@ app.get("/contact", function (req, res) {
                         '</div>';
                         usersProfiles.innerHTML += users;
                 }
-                if (friends.length == 0) {
+                if (finalUsers.length == 0) {
                     users = 'No friends yet.';
                     usersProfiles.innerHTML += users;
                 }
@@ -745,21 +695,9 @@ app.get("/userProfiles", function (req, res) {
 
         let img = profileDOM.window.document.querySelector('#avatar');
        img.src = './avatar/avatar_' + req.session.identity + '.jpg';
-       
-
-        const mysql3 = require("mysql2");
-
-            const database = mysql3.createConnection({
-                host: "127.0.0.1",
-                user: "root",
-                password: password,
-                database: "comp2800",
-                multipleStatements: "true"
-                });
-            database.connect();
 
         
-        database.query(`SELECT * FROM posts WHERE userID = ${req.session.identity}`, 
+        connection.query(`SELECT * FROM posts WHERE userID = ${req.session.identity}`, 
         function (error, results, fields) {
             if (error) {
               console.log(error);
@@ -783,20 +721,6 @@ app.get("/userProfiles", function (req, res) {
             profileDOM.window.document.getElementById("timeline").innerHTML += userPosts;
 
         });
-
-        // let imageURL;
-        // database.query(`SELECT * FROM userphotos WHERE userID = ${req.session.identity}`,
-        // function(error,results, fields) {
-        //     if (error)
-        //         throw error;
-        //     if (results.length > 0) {
-        //         imageURL = './avatar/avatar_' + req.session.identity + '.jpg';
-        //     } else {
-        //         imageURL = './avatar/placeholder.jpg';
-        //     }
-        //     img.src = imageURL;
-        // });
-
         res.send(profileDOM.serialize());
     } 
      else {
@@ -808,14 +732,6 @@ app.get("/userProfiles", function (req, res) {
 app.post('/addRequest', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
-    let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
-        multipleStatements: "true"
-    });
-    connection.connect();
     connection.query('INSERT INTO meet VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [req.session.identity, req.body.requestee, req.body.place, req.body.date, req.body.reason, 0, 0, req.body.id],
       function (error, results, fields) {
@@ -827,23 +743,13 @@ app.post('/addRequest', function (req, res) {
           msg: "Recorded updated."
         });
   
-      });
-    connection.end();
-  
+      });  
   });
 
 
 app.post('/create', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
-    let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
-        multipleStatements: "true"
-    });
-    connection.connect();
     connection.query('INSERT INTO bby14_users VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, req.body.latitude, req.body.longitude, null, null, null, 0],
       function (error, results, fields) {
@@ -856,21 +762,12 @@ app.post('/create', function (req, res) {
         });
   
       });
-    connection.end();
   
   });
 
   app.post('/addTimeline', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
-    let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
-        multipleStatements: "true"
-    });
-    connection.connect();
     connection.query('INSERT INTO posts VALUES (?, ?, ?, ?, ?, ?)',
       [req.session.identity, req.body.unknown, req.body.posts, req.body.postDate, req.body.postTime, req.body.image],
       function (error, results, fields) {
@@ -882,22 +779,12 @@ app.post('/create', function (req, res) {
           msg: "Recorded updated."
         });
   
-      });
-    connection.end();
-  
+      });  
   });
 
   app.post('/updateIncoming', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
-    let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
-        multipleStatements: "true"
-    });
-    connection.connect();
     connection.query('UPDATE meet SET accepted = ?, viewed = ? WHERE reqNum = ?',
       [parseInt(req.body.accepted), parseInt(req.body.viewed), parseInt(req.body.reqNum)],
       function (error, results, fields) {
@@ -913,15 +800,7 @@ app.post('/create', function (req, res) {
 
     app.post('/updateLocation', function (req, res) {
         res.setHeader('Content-Type', 'application/json');
-      
-        let connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: password,
-            database: "comp2800",
-            multipleStatements: "true"
-        });
-        connection.connect();
+
         connection.query('UPDATE bby14_users SET latitude = ?, longitude = ? WHERE ID = ?',
           [req.body.latitude, req.body.longitude, req.session.identity],
           function (error, results, fields) {
@@ -937,15 +816,7 @@ app.post('/create', function (req, res) {
 
 app.post('/updateUser', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
-  
-    let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
-        multipleStatements: "true"
-    });
-    connection.connect();
+
     connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, age = ?, bio = ?, hobbies = ? WHERE ID = ?',
       [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.age, req.body.bio, req.body.hobbies, req.session.identity],
       function (error, results, fields) {
@@ -990,21 +861,11 @@ app.post('/updateUser', function (req, res) {
               })
           }
       })
-    connection.end();
-
 });
 
 app.post('/updateTimeline', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
-    let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
-        multipleStatements: "true"
-    });
-    connection.connect();
     connection.query(`UPDATE posts SET posts = ? WHERE userID = ? AND postNum = ?`,
       [req.body.posts, req.session.identity, req.body.postNum],
       function (error, results, fields) {
@@ -1017,21 +878,12 @@ app.post('/updateTimeline', function (req, res) {
         });
   
       });
-    connection.end();
 
 });
 
 app.post('/updateAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
-  
-    let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
-        multipleStatements: "true"
-    });
-    connection.connect();
+
     connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, is_admin = ? WHERE ID = ?',
         [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.is_admin, req.body.id],
         function (error, results, fields) {
@@ -1044,21 +896,11 @@ app.post('/updateAdmin', function (req, res) {
             });
   
       });
-    connection.end();
-
 });
 
 app.post('/deleteAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
-    let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
-        multipleStatements: "true"
-    });
-    connection.connect();
     connection.query('DELETE FROM bby14_users WHERE ID = ?',
         [req.body.id],
         function (error, results, fields) {
@@ -1071,8 +913,6 @@ app.post('/deleteAdmin', function (req, res) {
             });
   
       });
-    connection.end();
-
 });
 
 
@@ -1081,17 +921,6 @@ app.get("/admin-users", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/adminUsers.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
-        const mysql = require("mysql2");
-
-        const connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: password,
-            database: "comp2800",
-            multipleStatements: "true"
-        });
-        connection.connect();
 
         connection.query(
             "SELECT * FROM bby14_users",
@@ -1102,7 +931,7 @@ app.get("/admin-users", function (req, res) {
 
                 const usersProfiles = profileDOM.window.document.createElement("div");
                 const createButton = profileDOM.window.document.createElement("div");
-                let create = "<a href='/register'><button class='option' id='create1'>Create User</button></a><br><a><button id='edit' class='option'>Edit Users</button></a>";
+                let create = "<a href='/register'><button class='option' id='create1'>Create User</button></a><a><button id='edit' class='option'>Edit Users</button></a>";
                 profileDOM.window.document.getElementById("create").appendChild(createButton);
                 usersProfiles.innerHTML += create;
                 let users;
@@ -1157,20 +986,7 @@ app.get("/admin-users", function (req, res) {
         let profile = fs.readFileSync("./app/html/friendFinder.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
-        const mysql = require("mysql2");
-
-        const connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: password,
-            database: "comp2800",
-            multipleStatements: "true"
-        });
-        connection.connect();
-
         let userProfilePics = [];
-
-
 
         connection.query('SELECT * FROM userphotos;', 
         function(error, results, fields) {
@@ -1360,14 +1176,6 @@ app.get("/admin-users", function (req, res) {
   app.post('/updateFriends', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
-    let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
-        multipleStatements: "true"
-    });
-    connection.connect();
     connection.query('INSERT INTO Friends VALUES (?, ?)',
       [req.session.identity, req.body.id],
       function (error, results, fields) {
@@ -1380,8 +1188,6 @@ app.get("/admin-users", function (req, res) {
         });
   
       });
-    connection.end();
-
 });
 
 
@@ -1433,16 +1239,6 @@ app.get("/main", function (req, res) {
 
 app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
-    const mysql = require("mysql2");
-    const connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: password,
-        database: "comp2800",
-        multipleStatements: "true"
-    });
-
-    connection.connect();
     // Checks if user typed in matching email and password
     const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
 
@@ -1542,8 +1338,6 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
     for(let i = 0; i < req.files.length; i++) {
         req.files[i].filename = req.files[i].originalname;
     }
-
-    connection.connect();
     if (!req.files[0].filename) {
         console.log("No file upload");
     } else {
@@ -1551,7 +1345,6 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
         let imgsrc = "avatar_" + req.session.identity + "." + req.files[0].originalname.split(".").pop();
         let updateData = `DELETE FROM userphotos WHERE userID = ${req.session.identity}; INSERT INTO userphotos (userID, imageID) VALUES (?, ?);`
         
-        console.log(imgsrc);
         connection.query(updateData, [req.session.identity, imgsrc], function(err, result) {
           
             if (err) throw err
@@ -1568,7 +1361,6 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
 
 
 app.post('/upload-post-images', uploadPostImages.array("files"), function (req, res) {
-    connection.connect();
         if (req.files.length > 0) {
             for(let i = 0; i < req.files.length; i++) {
                 req.files[i].filename = req.files[i].originalname;
@@ -1679,9 +1471,9 @@ app.get("/chat", function (req, res) {
     }
 });
 
-const PORT = process.env.PORT || 3000;
+// const PORT = process.env.PORT || 3000;
 
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
 //code for one-to-one chat; work in progress

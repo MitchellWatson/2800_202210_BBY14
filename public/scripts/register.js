@@ -64,8 +64,6 @@ document.getElementById("question").addEventListener("click", function () {
 
 document.getElementById("submit").addEventListener("click", function (e) {
     
-    
-    
     e.preventDefault();
     let email = document.getElementById("emailInput");
     let password = document.getElementById("passwordInput");

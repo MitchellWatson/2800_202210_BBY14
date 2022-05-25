@@ -22,7 +22,6 @@
     grid-column: 1;
     grid-row: 2;
     grid-template-columns: 1fr;
-    grid-gap: 1em;
     margin: 0.5em;
     padding-bottom: 85px;
 }
@@ -39,7 +38,7 @@
     overflow-wrap: break-word;
     display: grid;
     font-size: 3vh;
-    text-align: center;
+    text-align: left;
 }
 
 #options {
