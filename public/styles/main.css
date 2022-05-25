@@ -15,12 +15,14 @@
     height: 92%;
     margin: auto;
     border-radius: 10px;
+    display: grid;
+    grid-template-rows: 50% 50%;
     background-color: rgb(255, 255, 255);
 }
 
 .card span {
+    grid-row: 2;
     position: relative;
-    top: 25%;
     font-size: 8vh;
 }
 
@@ -28,12 +30,13 @@
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.5);
 }
 
-.can {
+.card .can {
+    grid-row: 1;
     padding: 2px 16px;
     border-radius: 10px;
     position: relative;
-    top: 15%;
-    font-size: 6vmin;
+    top: 25%;
+    font-size: 1.5em;
     color: #000;
 }
 
