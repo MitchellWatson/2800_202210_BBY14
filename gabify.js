@@ -66,7 +66,7 @@ app.use(bodyparser.urlencoded({
 // local db
 const dbHost = "127.0.0.1";
 const dbUser = "root";
-const dbPassword = "passwordSQL";
+const dbPassword = "";
 const dbName = "comp2800";
 
 // heroku db
@@ -75,7 +75,7 @@ const dbName = "comp2800";
 // const dbPassword = "5e9f74c2";
 // const dbName = "heroku_2e384c4e07a3778";
 
-const connection = mysql.createPool({
+const connection = mysql.createConnection({
     host: dbHost,
     user: dbUser,
     password: dbPassword,
