@@ -64,7 +64,7 @@ app.use(bodyparser.urlencoded({
     extended: true
 }))
 
-let password = ""
+let password = "passwordSQL"
 
 
 const connection = mysql.createConnection({
@@ -664,7 +664,8 @@ app.get("/contact", function (req, res) {
                         '<p>' + finalUsers[i].age + '</p>' +
                         '</div>' +
                         '<div class="img">' +
-                        '<img src="/avatar/avatar_2.jpg">' +
+                        '<img src="./avatar/avatar_' + finalUsers[i].ID + '.jpg">' +
+                        // imageProf +
                         '</div>' +
                         '<div class="bio">' +
                         '<p class="head">Bio</p>' +
