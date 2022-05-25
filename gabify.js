@@ -66,7 +66,7 @@ app.use(bodyparser.urlencoded({
 // local db
 const dbHost = "127.0.0.1";
 const dbUser = "root";
-const dbPassword = "";
+const dbPassword = "passwordSQL";
 const dbName = "comp2800";
 
 // heroku db
@@ -75,26 +75,13 @@ const dbName = "comp2800";
 // const dbPassword = "5e9f74c2";
 // const dbName = "heroku_2e384c4e07a3778";
 
-let password = "passwordSQL";
-
-const connectionLocal = {
-    host: "127.0.0.1",
-    user: "root",
-    password: password,
-    database: "comp2800",
+const connection = mysql.createPool({
+    host: dbHost,
+    user: dbUser,
+    password: dbPassword,
+    database: dbName,
     multipleStatements: "true"
-};
-
-var connection = mysql.createPool(connectionLocal);
-
-
-//For Milestone hand-ins:
-let port = 8000;
-app.listen(port, function () {
 });
-
-// For Heroku deployment
-// app.listen(process.env.PORT || 3000);
 
 
 app.get("/", function (req, res) {
@@ -204,7 +191,7 @@ app.get("/timeline", function (req, res) {
         let profileDOM = new JSDOM(profile);
 
         connection.query(
-            "SELECT * FROM bby14_users",
+            "SELECT * FROM posts ORDER BY postDate DESC",
             function (error, results, fields) {
                 if (error) {
                     console.log(error);
@@ -245,9 +232,6 @@ app.get("/timeline", function (req, res) {
                         '<p style="text-decoration: underline;">Description</p>' +
                         '<input type="text" id="descInput' + newResults[i].postNum + '" placeholder="e.g. John" value="' + newResults[i].posts + '"></input>' +
                         '<p>Posted at: ' + newResults[i].postTime + '</p>' +
-
-                        '<img src="' + newResults[i].imageID + '"/>' +
-
                         '</div>' +
                         '<div id="options">' +
                         '<a target="' + newResults[i].postNum + '" class="option update">Update</a>' +
@@ -353,9 +337,14 @@ app.get("/request", function (req, res) {
                     '<input type="text" id="reasonInput" placeholder="Reason for outing">' +
                     '<a href=""><button id="request" class="option">Request</button></a>' +
                     '</div>' +
-                '</div>';
-                        usersProfiles.innerHTML += users;
-            
+                    '</div>' +
+                    '</div>';
+                usersProfiles.innerHTML += users;
+
+                if (friends.length == 0) {
+                    users = 'No friends yet.';
+                    usersProfiles.innerHTML += users;
+                }
 
 
                 profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
@@ -626,6 +615,7 @@ app.get("/contact", function (req, res) {
                         '</div>' +
                         '<div class="img">' +
                         '<img src="./avatar/avatar_' + finalUsers[i].ID + '.jpg">' +
+                        // imageProf +
                         '</div>' +
                         '<div class="bio">' +
                         '<p class="head">Bio</p>' +
@@ -646,7 +636,7 @@ app.get("/contact", function (req, res) {
                         '</div>';
                     usersProfiles.innerHTML += users;
                 }
-                if (finalUsers.length == 0) {
+                if (friends.length == 0) {
                     users = 'No friends yet.';
                     usersProfiles.innerHTML += users;
                 }
@@ -704,31 +694,47 @@ app.get("/userProfiles", function (req, res) {
         profileDOM.window.document.getElementById("bio").appendChild(usersProfiles);
 
         let img = profileDOM.window.document.querySelector('#avatar');
-       img.src = './avatar/avatar_' + req.session.identity + '.jpg';
-
-        
-        connection.query(`SELECT * FROM posts WHERE userID = ${req.session.identity}`, 
-        function (error, results, fields) {
-            if (error) {
-              console.log(error);
-            }
-            const userPosts = profileDOM.window.document.createElement("div");
-            for(let i = 0; i < results.length; i++) {
-                let posts =
-                '<div class="card">' +
-                '<div class="can">' +
-                '<p style="text-decoration: underline;">' +
-                'Post' + results[i].postNum + '</p>' +
-                '<p>' + results[i].posts + '</p>' +
-                '<p>' + results[i].postDate + '</p>' +
-                '<p>' + results[i].postTime + '</p>' +
-                '</div>' +
-                '</div>';
-                userPosts.innerHTML += posts;
-            }
+        img.src = './avatar/avatar_' + req.session.identity + '.jpg';
 
 
-        });
+        connection.query(`SELECT * FROM posts WHERE userID = ${req.session.identity}`,
+            function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }
+                const userPosts = profileDOM.window.document.createElement("div");
+                for (let i = 0; i < results.length; i++) {
+                    let posts =
+                        '<div class="card">' +
+                        '<div class="can">' +
+                        '<p style="text-decoration: underline;">' +
+                        'Post' + results[i].postNum + '</p>' +
+                        '<p>' + results[i].posts + '</p>' +
+                        '<p>' + results[i].postDate + '</p>' +
+                        '<p>' + results[i].postTime + '</p>' +
+                        '</div>' +
+                        '</div>';
+                    userPosts.innerHTML += posts;
+                }
+
+
+                profileDOM.window.document.getElementById("timeline").innerHTML += userPosts;
+
+            });
+
+        // let imageURL;
+        // database.query(`SELECT * FROM userphotos WHERE userID = ${req.session.identity}`,
+        // function(error,results, fields) {
+        //     if (error)
+        //         throw error;
+        //     if (results.length > 0) {
+        //         imageURL = './avatar/avatar_' + req.session.identity + '.jpg';
+        //     } else {
+        //         imageURL = './avatar/placeholder.jpg';
+        //     }
+        //     img.src = imageURL;
+        // });
+
         res.send(profileDOM.serialize());
     }
     else {
@@ -739,7 +745,7 @@ app.get("/userProfiles", function (req, res) {
 
 app.post('/addRequest', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
-  
+
     connection.query('INSERT INTO meet VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
         [req.session.identity, req.body.requestee, req.body.place, req.body.date, req.body.reason, 0, 0, req.body.id],
         function (error, results, fields) {
@@ -752,13 +758,12 @@ app.post('/addRequest', function (req, res) {
             });
 
         });
-  
-      });  
+});
 
 
 app.post('/create', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
-  
+
     connection.query('INSERT INTO bby14_users VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, req.body.latitude, req.body.longitude, null, null, null, 0],
         function (error, results, fields) {
@@ -771,14 +776,13 @@ app.post('/create', function (req, res) {
             });
 
         });
-  
-      });
+});
 
 app.post('/addTimeline', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
-  
-    connection.query('INSERT INTO posts VALUES (?, ?, ?, ?, ?, ?)',
-        [req.session.identity, req.body.unknown, req.body.posts, req.body.postDate, req.body.postTime, req.body.image],
+
+    connection.query('INSERT INTO posts VALUES (?, ?, ?, ?, ?)',
+        [req.session.identity, req.body.unknown, req.body.posts, req.body.postDate, req.body.postTime],
         function (error, results, fields) {
             if (error) {
                 console.log(error);
@@ -789,12 +793,11 @@ app.post('/addTimeline', function (req, res) {
             });
 
         });
-  
-      });  
+});
 
 app.post('/updateIncoming', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
-  
+
     connection.query('UPDATE meet SET accepted = ?, viewed = ? WHERE reqNum = ?',
         [parseInt(req.body.accepted), parseInt(req.body.viewed), parseInt(req.body.reqNum)],
         function (error, results, fields) {
@@ -808,12 +811,12 @@ app.post('/updateIncoming', function (req, res) {
         });
 });
 
-    app.post('/updateLocation', function (req, res) {
-        res.setHeader('Content-Type', 'application/json');
+app.post('/updateLocation', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
 
-        connection.query('UPDATE bby14_users SET latitude = ?, longitude = ? WHERE ID = ?',
-          [req.body.latitude, req.body.longitude, req.session.identity],
-          function (error, results, fields) {
+    connection.query('UPDATE bby14_users SET latitude = ?, longitude = ? WHERE ID = ?',
+        [req.body.latitude, req.body.longitude, req.session.identity],
+        function (error, results, fields) {
             if (error) {
                 console.log(error);
             }
@@ -870,49 +873,13 @@ app.post('/updateUser', function (req, res) {
                 // session saved. for analytics we could record this in db
             })
         }
-        res.send({
-          status: "success",
-          msg: "Recorded updated."
-        });
-      });
+    })
 
-      
-
-      const loginInfo2 = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
-      connection.query(loginInfo2, function (error, results, fields) {
-          /* If there is an error, alert user of error
-          *  If the length of results array is 0, then there was no matches in database
-          *  If no error, then it is valid login and save info for session
-          */
-          if (error) {
-              // change this to notify user of error
-          } else if (results[1].length == 0) {
-              res.send({ status: "fail", msg: "Incorrect email or password!" });
-          } else {
-              let validUserInfo = results[1][0];
-              req.session.loggedIn = true;
-              req.session.email = validUserInfo.email;
-              req.session.first_name = validUserInfo.first_name;
-              req.session.last_name = validUserInfo.last_name;
-              req.session.password = validUserInfo.password;
-              req.session.identity = validUserInfo.ID;
-              req.session.longitude = validUserInfo.longitude;
-              req.session.latitude = validUserInfo.latitude;
-              req.session.age = validUserInfo.age;
-              req.session.bio = validUserInfo.bio;
-              req.session.hobbies = validUserInfo.hobbies;
-              req.session.userType = validUserInfo.is_admin;
-
-              req.session.save(function (err) {
-                  // session saved. for analytics we could record this in db
-              })
-          }
-      })
 });
 
 app.post('/updateTimeline', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
-  
+
     connection.query(`UPDATE posts SET posts = ? WHERE userID = ? AND postNum = ?`,
         [req.body.posts, req.session.identity, req.body.postNum],
         function (error, results, fields) {
@@ -925,8 +892,7 @@ app.post('/updateTimeline', function (req, res) {
             });
 
         });
-  
-      });
+});
 
 app.post('/updateAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
@@ -941,13 +907,13 @@ app.post('/updateAdmin', function (req, res) {
                 status: "success",
                 msg: "Recorded updated."
             });
-  
-      });
+
+        });
 });
 
 app.post('/deleteAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
-  
+
     connection.query('DELETE FROM bby14_users WHERE ID = ?',
         [req.body.id],
         function (error, results, fields) {
@@ -958,8 +924,8 @@ app.post('/deleteAdmin', function (req, res) {
                 status: "success",
                 msg: "Recorded updated."
             });
-  
-      });
+
+        });
 });
 
 
@@ -978,7 +944,7 @@ app.get("/admin-users", function (req, res) {
 
                 const usersProfiles = profileDOM.window.document.createElement("div");
                 const createButton = profileDOM.window.document.createElement("div");
-                let create = "<a href='/register'><button class='option' id='create1'>Create User</button></a><a><button id='edit' class='option'>Edit Users</button></a>";
+                let create = "<a href='/register'><button class='option' id='create1'>Create User</button></a><br><a><button id='edit' class='option'>Edit Users</button></a>";
                 profileDOM.window.document.getElementById("create").appendChild(createButton);
                 usersProfiles.innerHTML += create;
                 let users;
@@ -1035,15 +1001,16 @@ app.get("/friendFinder", function (req, res) {
 
         let userProfilePics = [];
 
-        connection.query('SELECT * FROM userphotos;', 
-        function(error, results, fields) {
-            if (error)
-                throw error;
-            for (let i = 0; i < results.length; i++) {
-                userProfilePics[i] = results[i];
-                console.log(userProfilePics[i].userID);
-            }
-        }); 
+
+        connection.query('SELECT * FROM userphotos;',
+            function (error, results, fields) {
+                if (error)
+                    throw error;
+                for (let i = 0; i < results.length; i++) {
+                    userProfilePics[i] = results[i];
+                    console.log(userProfilePics[i].userID);
+                }
+            });
 
         let listFriends = [];
 
@@ -1128,10 +1095,7 @@ app.get("/friendFinder", function (req, res) {
                         }
                     }
                 }
-
-
-
-
+                
                 const usersProfiles = profileDOM.window.document.createElement("div");
                 let users;
 
@@ -1151,7 +1115,7 @@ app.get("/friendFinder", function (req, res) {
                         '</div>' +
                         '<div class="img">' +
 
-                        '<img src="./avatar/avatar_' + results[i].ID + '.jpg">' +
+                        '<img src="./avatar/avatar_' + newResults[i].ID + '.jpg">' +
                         // imageProf +
                         '</div>' +
                         '<div class="bio">' +
@@ -1193,7 +1157,7 @@ app.get("/friendFinder", function (req, res) {
 
 
                 if (places.length == 0) {
-                    users = 'No users to be added.';
+                    users = '<p id="alone">No users to be added.</p>';
                     usersProfiles.innerHTML += users;
                 }
 
@@ -1222,7 +1186,7 @@ app.get("/friendFinder", function (req, res) {
 
 app.post('/updateFriends', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
-  
+
     connection.query('INSERT INTO Friends VALUES (?, ?)',
         [req.session.identity, req.body.id],
         function (error, results, fields) {
@@ -1235,8 +1199,7 @@ app.post('/updateFriends', function (req, res) {
             });
 
         });
-  
-      });
+});
 
 
 
@@ -1287,6 +1250,7 @@ app.get("/main", function (req, res) {
 
 app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
+
     // Checks if user typed in matching email and password
     const loginInfo = `USE ${dbName}; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
 
@@ -1330,7 +1294,6 @@ app.get("/logout", function (req, res) {
             if (error) {
                 res.status(400).send("Cannot log out")
             } else {
-                sessionStorage.clear();
                 res.redirect("/");
             }
         });
@@ -1389,15 +1352,16 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
     for (let i = 0; i < req.files.length; i++) {
         req.files[i].filename = req.files[i].originalname;
     }
+
     if (!req.files[0].filename) {
         console.log("No file upload");
     } else {
 
         let imgsrc = "avatar_" + req.session.identity + "." + req.files[0].originalname.split(".").pop();
         let updateData = `DELETE FROM userphotos WHERE userID = ${req.session.identity}; INSERT INTO userphotos (userID, imageID) VALUES (?, ?);`
-        
-        connection.query(updateData, [req.session.identity, imgsrc], function(err, result) {
-          
+
+        connection.query(updateData, [req.session.identity, imgsrc], function (err, result) {
+
             if (err) throw err
             console.log("file uploaded")
         })
@@ -1412,10 +1376,10 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
 
 
 app.post('/upload-post-images', uploadPostImages.array("files"), function (req, res) {
-        if (req.files.length > 0) {
-            for(let i = 0; i < req.files.length; i++) {
-                req.files[i].filename = req.files[i].originalname;
-            
+    if (req.files.length > 0) {
+        for (let i = 0; i < req.files.length; i++) {
+            req.files[i].filename = req.files[i].originalname;
+
 
             connection.query('INSERT INTO postphotos (userID, imageID) VALUES (?, ?)',
                 [req.session.identity, imgPath],
@@ -1523,9 +1487,9 @@ app.get("/chatGlobalSelect", function (req, res) {
     }
 });
 
-// const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
-// server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
 // code for one-to-one chat; work in progress
@@ -1630,6 +1594,5 @@ app.get("/gabChat", function (req, res) {
 
 //For Heroku deployment
 // app.listen(process.env.PORT || 3000);
-
 
 
