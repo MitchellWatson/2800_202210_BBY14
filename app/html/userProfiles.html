@@ -18,6 +18,15 @@
 
         <div id="content">
 
+            <div id="popUp" class="pop">
+            
+                <div class="pop-content">
+                    <span class="close">&times;</span>
+                    <p id="quote"></p>
+                </div>
+            
+            </div>
+
             <div class="picture">
                 <img id="avatar" src="/avatar/avatar_2.jpg">
                 <form id="upload-images-form" action="/" method="post">
@@ -45,10 +54,7 @@
                           <div id="bio"></div>
                 <input id="hobbiesInput" type="text" required="required"
                        placeholder="Hobbies (ie. Walking, Cooking)"><br />
-                <input id="location" type="button" value="Set Location">
-                <p>Make sure to set Location before saving!</p>
-                <input id="submit" type="button" value="Save Info">
-                <br>
+                <input id="submit" type="button" value="Save Info">                <input id="location" type="button" value="Set Location">
                 <a href="/logout"><input  type="button" value="Logout"></a>
             </form>
 

@@ -22,19 +22,71 @@ function ajaxPOST(url, callback, data) {
     xhr.send(params);
 }
 
+
+
 let latitude = 0
 let longitude = 0;
-document.getElementById("location").addEventListener("click", function () {
+
+var popUp = document.getElementById("popUp");
+var btn = document.getElementById("location");
+
+var span = document.getElementsByClassName("close")[0];
+var quote = document.getElementById("quote").innerHTML = 'Location has been sucessfully reset.<span class="material-symbols-outlined">done</span>';
+
+  btn.addEventListener("click", function() {
     if (navigator.geolocation) {
+        console.log("here2")
         navigator.geolocation.getCurrentPosition(showPosition);
     }
     
 function showPosition(position) {
   latitude = position.coords.latitude;
   longitude = position.coords.longitude;
+  popUp.style.display = "block";
+  let queryString = "latitude=" + latitude + "&longitude=" + longitude;
+  ajaxPOST("/updateLocation", function (data) {
+      if (data) {
+          let dataParsed = JSON.parse(data);
+
+          if (dataParsed.status == "fail") {
+              document.getElementById("errorMsg").innerHTML = dataParsed.msg;
+          }
+      }
+
+  }, queryString);
 }
 })
 
+span.onclick = function() {
+    popUp.style.display = "none";
+}
+
+window.onclick = function(event) {
+  if (event.target == popUp) {
+    popUp.style.display = "none";
+  }
+}
+
+let saved = localStorage.getItem("saved");
+  document.addEventListener("DOMContentLoaded", function() {
+    var quote = document.getElementById("quote").innerHTML = 'Profile information succesfully saved.<span class="material-symbols-outlined">done</span>';
+      if (saved == 0) {
+        saved++;
+        localStorage.setItem("saved", saved);
+        popUp.style.display = "block";
+      }
+     })
+
+
+span.onclick = function() {
+    popUp.style.display = "none";
+}
+
+window.onclick = function(event) {
+  if (event.target == popUp) {
+    popUp.style.display = "none";
+  }
+}
 
 document.getElementById("submit").addEventListener("click", function (e) {
     
@@ -46,7 +98,8 @@ document.getElementById("submit").addEventListener("click", function (e) {
     let age = document.getElementById("ageInput");
     let bio = document.getElementById("bioInput");
     let hobbies = document.getElementById("hobbiesInput");
-    let queryString = "email=" + email.value + "&password=" + password.value + "&first_name=" + first.value + "&last_name=" + last.value + "&latitude=" + latitude + "&longitude=" + longitude + "&age=" + age.value + "&bio=" + bio.value + "&hobbies=" + hobbies.value;
+    let queryString = "email=" + email.value + "&password=" + password.value + "&first_name=" + first.value + "&last_name=" + last.value + "&age=" + age.value + "&bio=" + bio.value + "&hobbies=" + hobbies.value;
+    localStorage.setItem("saved", 0);
     ajaxPOST("/updateUser", function (data) {
         if (data) {
             let dataParsed = JSON.parse(data);
@@ -62,5 +115,9 @@ document.getElementById("submit").addEventListener("click", function (e) {
     }, queryString);
 });
 
-
-
+function saveAlert() {
+    alert("Information Saved!");
+  }
+function logoutAlert() {
+    alert("You have logged out!");
+  }

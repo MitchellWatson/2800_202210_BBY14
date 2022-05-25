@@ -369,7 +369,7 @@ app.get("/schedule", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "passwordSQL",
+            password: password,
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -468,7 +468,7 @@ app.get("/incoming", function (req, res) {
         const connection = mysql.createConnection({
             host: "127.0.0.1",
             user: "root",
-            password: "passwordSQL",
+            password: password,
             database: "comp2800",
             multipleStatements: "true"
         });
@@ -701,11 +701,19 @@ app.get("/userProfiles", function (req, res) {
         profileDOM.window.document.querySelector("#passwordInput").setAttribute('value', req.session.password);
         profileDOM.window.document.querySelector("#firstNameInput").setAttribute('value', req.session.first_name);
         profileDOM.window.document.querySelector("#lastNameInput").setAttribute('value', req.session.last_name);
-        profileDOM.window.document.querySelector("#ageInput").setAttribute('value', req.session.age);
-        profileDOM.window.document.querySelector("#hobbiesInput").setAttribute('value', req.session.hobbies);  
+        if (req.session.age != null) {
+            profileDOM.window.document.querySelector("#ageInput").setAttribute('value', req.session.age);
+        }
+        if (req.session.hobbies != null) {
+            profileDOM.window.document.querySelector("#hobbiesInput").setAttribute('value', req.session.hobbies);
+        }
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
         const usersProfiles = profileDOM.window.document.createElement("div");
-        usersProfiles.innerHTML = '<textarea rows="4" id="bioInput" value="" type="text" required="required" maxlength="100" placeholder="Tell us about yourself!">' + req.session.bio +'</textarea>';
+        if (req.session.bio != null) {
+            usersProfiles.innerHTML = '<textarea rows="4" id="bioInput" value="" type="text" required="required" maxlength="100" placeholder="Tell us about yourself!">' + req.session.bio +'</textarea>';
+        } else {
+            usersProfiles.innerHTML = '<textarea rows="4" id="bioInput" value="" type="text" required="required" maxlength="100" placeholder="Tell us about yourself!"></textarea>';
+        }
         profileDOM.window.document.getElementById("bio").appendChild(usersProfiles);
 
         let img = profileDOM.window.document.querySelector('#avatar');
@@ -858,7 +866,7 @@ app.post('/create', function (req, res) {
     let connection = mysql.createConnection({
         host: "127.0.0.1",
         user: "root",
-        password: "passwordSQL",
+        password: password,
         database: "comp2800",
         multipleStatements: "true"
     });
@@ -876,6 +884,30 @@ app.post('/create', function (req, res) {
       });
     });
 
+    app.post('/updateLocation', function (req, res) {
+        res.setHeader('Content-Type', 'application/json');
+      
+        let connection = mysql.createConnection({
+            host: "127.0.0.1",
+            user: "root",
+            password: password,
+            database: "comp2800",
+            multipleStatements: "true"
+        });
+        connection.connect();
+        connection.query('UPDATE bby14_users SET latitude = ?, longitude = ? WHERE ID = ?',
+          [req.body.latitude, req.body.longitude, req.session.identity],
+          function (error, results, fields) {
+            if (error) {
+              console.log(error);
+            }
+            res.send({
+              status: "success",
+              msg: "Recorded updated."
+            });
+          });
+        });
+
 app.post('/updateUser', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
   
@@ -887,8 +919,8 @@ app.post('/updateUser', function (req, res) {
         multipleStatements: "true"
     });
     connection.connect();
-    connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, latitude = ?, longitude = ?, age = ?, bio = ?, hobbies = ? WHERE ID = ?',
-      [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.latitude, req.body.longitude, req.body.age, req.body.bio, req.body.hobbies, req.session.identity],
+    connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, age = ?, bio = ?, hobbies = ? WHERE ID = ?',
+      [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.age, req.body.bio, req.body.hobbies, req.session.identity],
       function (error, results, fields) {
         if (error) {
           console.log(error);
@@ -899,6 +931,7 @@ app.post('/updateUser', function (req, res) {
         });
       });
 
+      
 
       const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
       connection.query(loginInfo, function (error, results, fields) {
