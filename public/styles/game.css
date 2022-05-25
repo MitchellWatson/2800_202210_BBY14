@@ -96,4 +96,9 @@ h1 {
         height: 100%;
         margin: 2em;
     }
+    .btn-grid{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: repeat(2, 1fr);
+    }
 }

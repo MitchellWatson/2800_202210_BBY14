@@ -61,6 +61,8 @@ input {
     margin-right: 1em;
     margin-left: 1em;
     margin-bottom: 1em;
+
+    
 }
 
 textarea {
@@ -154,5 +156,18 @@ textarea {
         width: 50%;
         margin: auto;
         margin-bottom: 1em;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 72% 28%;
+        max-width: 650px;
+        max-width: 650px;
+    }
+    .register3{
+        grid-column: 1/3;
+        grid-row: 2/3;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+        margin: auto;
     }
 }

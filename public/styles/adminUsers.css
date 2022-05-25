@@ -6,6 +6,15 @@
     padding: 10px;
     margin: 2vh;
     font-size: 3vh;
+    
+}
+
+
+
+#create1{
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
 }
 
 .content {
@@ -15,6 +24,7 @@
     grid-template-columns: 1fr;
     grid-gap: 1em;
     margin: 0.5em;
+    padding-bottom: 85px;
 }
 
 .card {
@@ -29,6 +39,7 @@
     overflow-wrap: break-word;
     display: grid;
     font-size: 3vh;
+    text-align: center;
 }
 
 #options {
@@ -80,17 +91,11 @@
     align-items: center;
 }
 
-/* @media only screen and (min-width: 1025px) {
-    .content {
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: 1fr;
-        grid-gap: 1em;
-        margin: 0.5em;
-        height: 100%;
-        margin: 2em;
-    }
-    .card{
-        height: 85%;
-    }
-} */
+@media only screen and (min-width: 600px) {
+.card{
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 25px;
+}
+}

@@ -54,7 +54,7 @@ app.use(bodyparser.urlencoded({
     extended: true
 }))
 
-const password = "password";
+const password = "";
 
 const connection = mysql.createConnection({
     host: "127.0.0.1",
@@ -329,18 +329,18 @@ app.get("/timeline", function (req, res) {
                     '<div id="drop">' +
                     '<div class="card2">' +
                         '<div class="can">' +
-                            '<p>Choose Friend</p>' +
+                            '<p style="text-decoration: underline;">Choose Friend</p>' +
                             '<select type="date" id="personInput" placeholder="Select Friend">';
                             for (let i = 0; i < finalUsers.length; i++) {
                                 users += '<option value="' + finalUsers[i].ID + '">' + finalUsers[i].first_name + ' ' + finalUsers[i].last_name + '</option>';
                             }
                             users +=
                             '</select>' +
-                            '<p>When</p>' +
+                            '<p style="text-decoration: underline;">When</p>' +
                             '<input type="datetime-local" id="dateInput">' +
-                            '<p>Where</p>' +
+                            '<p style="text-decoration: underline;">Where</p>' +
                             '<input type="text" id="placeInput" placeholder="Address or Location">' +
-                            '<p>Occasion</p>' +
+                            '<p style="text-decoration: underline;">Occasion</p>' +
                             '<input type="text" id="reasonInput" placeholder="Reason for outing">' +
                             '<a href=""><button id="request" class="option">Request</button></a>' +
                         '</div>' +
@@ -1090,7 +1090,7 @@ app.get("/admin-users", function (req, res) {
 
                 const usersProfiles = profileDOM.window.document.createElement("div");
                 const createButton = profileDOM.window.document.createElement("div");
-                let create = "<a href='/register'><button class='option'>Create User</button></a>";
+                let create = "<a href='/register'><button class='option' id='create1'>Create User</button></a>";
                 profileDOM.window.document.getElementById("create").appendChild(createButton);
                 usersProfiles.innerHTML += create;
                 let users;
