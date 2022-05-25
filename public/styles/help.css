@@ -30,3 +30,11 @@
     grid-row: 2;
     grid-column: 1;
 }
+
+@media only screen and (min-width: 1025px) {
+    .content1{
+        margin-left: 500px;
+        margin-right: 500px;
+        margin-top: 25px;
+    }
+}

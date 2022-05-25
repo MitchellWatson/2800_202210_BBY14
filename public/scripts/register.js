@@ -58,6 +58,9 @@ window.onclick = function(event) {
   }
 }
 
+document.getElementById("question").addEventListener("click", function () {
+    document.getElementById("answer").style.display = "block";
+})
 
 document.getElementById("submit").addEventListener("click", function (e) {
     
@@ -85,6 +88,3 @@ document.getElementById("submit").addEventListener("click", function (e) {
     }, queryString);
 });
 
-function regAlert() {
-    alert("Register Complete!");
-  }

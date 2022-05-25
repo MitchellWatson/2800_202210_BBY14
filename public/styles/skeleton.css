@@ -8,7 +8,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Quicksand', sans-serif;
-    background-color: #FAEBEFFF;
+    background-color: rgb(228, 228, 228);
     height: 100vh;
     
 }
@@ -27,7 +27,7 @@ body {
     position: fixed;
     width: 100%;
     height: 84px;
-    background-color: rgb(157, 171, 255);
+    background-color: rgb(255, 255, 255);
     text-align: center;
     align-items: center;
     border-radius: 0 0 10px 10px;
@@ -64,7 +64,7 @@ body {
     width: 100%;
     height: 84px;
     bottom: 0;
-    background-color: rgb(157, 171, 255);
+    background-color: rgb(255, 255, 255);
     text-align: center;
     border-radius: 10px 10px 0 0;
 }
@@ -87,7 +87,7 @@ body {
     justify-content: center;
     width: 100%;
     height: 100%;
-    color: rgb(0, 0, 0);
+    color: blue;
 }
 
 /* alignment for icon and label */
@@ -108,7 +108,7 @@ a {
 /* hover for icon and label */
 #header a:hover,
 #footer a:hover {
-    background-color: #FC766AFF;
+    background-color: rgb(192, 220, 255);
     cursor: pointer;
     align-items: center;
 }

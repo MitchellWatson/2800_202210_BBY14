@@ -62,6 +62,10 @@ h2 {
     grid-row: 2;
 }
 
+#user_table {
+    text-align: center;
+}
+
 .card p {
     margin: 0;
     padding-left: 2vh;
@@ -125,17 +129,13 @@ h2 {
     filter: brightness(100%);
 }
 
-/* @media only screen and (min-width: 1025px) {
-    .content {
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: 1fr;
-        grid-gap: 1em;
-        margin: 0.5em;
-        height: 100%;
-        margin: 2em;
+@media only screen and (min-width: 430px) {
+    #new{
+        width: 435px;
+        margin: auto;
     }
-    .card{
-        height: 85%;
+    .card2{
+        width: 473px;
+        margin: auto;
     }
-} */
+}

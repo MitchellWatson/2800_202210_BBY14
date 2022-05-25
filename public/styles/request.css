@@ -3,7 +3,7 @@
 }
 
 .option {
-    background-color: rgb(255, 106, 0);
+    background-color: rgb(255, 0, 0);
     border: 2px none;
     border-radius: 5px;
     color: rgb(255, 255, 255);
@@ -66,7 +66,7 @@
 
 .card2 p {
     margin: 0;
-    padding-left: 2vh;
+    /* padding-left: 2vh; */
     padding-top: 2vh;
 }
 
@@ -83,7 +83,7 @@
 }
 
 .card2 input {
-    margin-left: 2vh;
+    /* margin-left: 2vh; */
     margin-top: 2vh;
     width: 250px;
     display: inline-block;
@@ -95,7 +95,7 @@
 }
 
 .card2 select {
-    margin-left: 2vh;
+    /* margin-left: 2vh; */
     margin-top: 2vh;
     width: 250px;
     display: inline-block;
@@ -133,7 +133,11 @@
     filter: brightness(100%);
 }
 
-/* @media only screen and (min-width: 1025px) {
+.can{
+    text-align: center;
+}
+
+@media only screen and (min-width: 450px) {
     .content {
         display: grid;
         grid-template-columns: 1fr;
@@ -141,9 +145,14 @@
         grid-gap: 1em;
         margin: 0.5em;
         height: 100%;
-        margin: 2em;
+        /* padding-left: 500px;
+        padding-right: 500px; */
+        min-width: 400px;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
     }
     .card{
         height: 85%;
     }
-} */
+}

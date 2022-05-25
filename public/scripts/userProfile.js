@@ -115,9 +115,12 @@ document.getElementById("submit").addEventListener("click", function (e) {
     }, queryString);
 });
 
+<<<<<<< HEAD
 function saveAlert() {
     alert("Information Saved!");
   }
 function logoutAlert() {
     alert("You have logged out!");
   }
+=======
+>>>>>>> 8c10358b9c2155b87eed1d90244f70b4ece42a66

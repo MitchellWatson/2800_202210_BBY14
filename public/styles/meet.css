@@ -31,6 +31,7 @@
     overflow-wrap: break-word;
     display:flex;
     font-size: 3vh;
+    justify-content: center;
 }
 
 .button {
@@ -99,23 +100,21 @@
     padding-left: 2vh;
     padding-top: 2vh;
     font-size: 6vmin;
+    color: black;
 }
 
 .card span {
     font-size: 8vmin;
 }
 
-/* @media only screen and (min-width: 1025px) {
-    .content {
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: 1fr;
-        grid-gap: 1em;
-        margin: 0.5em;
-        height: 100%;
-        margin: 2em;
-    }
-    .card{
-        height: 85%;
-    }
-} */
+@media only screen and (min-width: 1025px) {
+.card {
+    /* min-width: 700px;
+    max-width: 700px; */
+    width: 750px;
+    margin: auto;
+}
+.content{
+    grid-gap: 50px;
+}
+}

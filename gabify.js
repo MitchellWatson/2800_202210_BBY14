@@ -33,7 +33,17 @@ const {
     exitRoom,
     newUser,
     getIndividualRoomUsers
-  } = require('./helpers/userHelper');
+} = require('./helpers/userHelper');
+
+// const server = http.createServer(app);
+// const io = socketio(server);
+
+const {
+    userJoin,
+    getCurrentUser,
+    userLeave,
+    getRoomUsers
+} = require('./helpers/users');
 
 
 app.use("/html", express.static("./app/html"));
@@ -56,7 +66,8 @@ app.use(bodyparser.urlencoded({
     extended: true
 }))
 
-const password = "password";
+let password = "password";
+
 
 const connection = mysql.createConnection({
     host: "127.0.0.1",
@@ -186,7 +197,7 @@ app.get("/timeline", function (req, res) {
         
 
         connection.query(
-            "SELECT * FROM bby14_users INNER JOIN posts ON bby14_users.ID = posts.userID LEFT JOIN postphotos ON posts.userID = postphotos.userID",
+            "SELECT * FROM bby14_users",
             function (error, results, fields) {
                 if (error) {
                     console.log(error);
@@ -331,18 +342,18 @@ app.get("/timeline", function (req, res) {
                     '<div id="drop">' +
                     '<div class="card2">' +
                         '<div class="can">' +
-                            '<p>Choose Friend</p>' +
+                            '<p style="text-decoration: underline;">Choose Friend</p>' +
                             '<select type="date" id="personInput" placeholder="Select Friend">';
                             for (let i = 0; i < finalUsers.length; i++) {
                                 users += '<option value="' + finalUsers[i].ID + '">' + finalUsers[i].first_name + ' ' + finalUsers[i].last_name + '</option>';
                             }
                             users +=
                             '</select>' +
-                            '<p>When</p>' +
+                            '<p style="text-decoration: underline;">When</p>' +
                             '<input type="datetime-local" id="dateInput">' +
-                            '<p>Where</p>' +
+                            '<p style="text-decoration: underline;">Where</p>' +
                             '<input type="text" id="placeInput" placeholder="Address or Location">' +
-                            '<p>Occasion</p>' +
+                            '<p style="text-decoration: underline;">Occasion</p>' +
                             '<input type="text" id="reasonInput" placeholder="Reason for outing">' +
                             '<a href=""><button id="request" class="option">Request</button></a>' +
                         '</div>' +
@@ -656,7 +667,8 @@ app.get("/contact", function (req, res) {
                         '<p>' + finalUsers[i].age + '</p>' +
                         '</div>' +
                         '<div class="img">' +
-                        '<img src="/avatar/avatar_2.jpg">' +
+                        '<img src="./avatar/avatar_' + finalUsers[i].ID + '.jpg">' +
+                        // imageProf +
                         '</div>' +
                         '<div class="bio">' +
                         '<p class="head">Bio</p>' +
@@ -1093,7 +1105,7 @@ app.get("/admin-users", function (req, res) {
 
                 const usersProfiles = profileDOM.window.document.createElement("div");
                 const createButton = profileDOM.window.document.createElement("div");
-                let create = "<a href='/register'><button class='option'>Create User</button></a>";
+                let create = "<a href='/register'><button class='option' id='create1'>Create User</button></a><br><a><button id='edit' class='option'>Edit Users</button></a>";
                 profileDOM.window.document.getElementById("create").appendChild(createButton);
                 usersProfiles.innerHTML += create;
                 let users;
@@ -1105,15 +1117,15 @@ app.get("/admin-users", function (req, res) {
                         '<p style="text-decoration: underline;">ID</p>' +
                         '<p>' + results[i].ID + '</p>' +
                         '<p style="text-decoration: underline;">First Name</p>' +
-                        '<input type="text" id="firstNameInput' + results[i].ID + '" placeholder="e.g. John" value="' + results[i].first_name + '"></input>' +
+                        '<input class="inputs" type="text" id="firstNameInput' + results[i].ID + '" placeholder="e.g. John" value="' + results[i].first_name + '" readonly>' +
                         '<p style="text-decoration: underline;">Last Name</p>' +
-                        '<input type="text" id="lastNameInput' + results[i].ID + '" placeholder="e.g. Smith" value="' + results[i].last_name + '"></input>' +
+                        '<input class="inputs" type="text" id="lastNameInput' + results[i].ID + '" placeholder="e.g. Smith" value="' + results[i].last_name + '" readonly>' +
                         '<p style="text-decoration: underline;">Email</p>' +
-                        '<input type="text" id="emailInput' + results[i].ID + '" placeholder="e.g. bob@gmail.com" value="' + results[i].email + '"></input>' +
+                        '<input class="inputs" type="text" id="emailInput' + results[i].ID + '" placeholder="e.g. bob@gmail.com" value="' + results[i].email + '" readonly>' +
                         '<p style="text-decoration: underline;">Password</p>' +
-                        '<input type="text" id="passwordInput' + results[i].ID + '" placeholder="" value="' + results[i].password + '"></input>' +
+                        '<input class="inputs" type="text" id="passwordInput' + results[i].ID + '" placeholder="" value="' + results[i].password + '" readonly>' +
                         '<p style="text-decoration: underline;">Admin</p>' +
-                        '<input type="number" id="adminInput' + results[i].ID + '" placeholder="0 for user/1 for admin" min="0" max="1" value="' + results[i].is_admin + '"></input>' +
+                        '<input class="inputs" type="number" id="adminInput' + results[i].ID + '" placeholder="0 for user/1 for admin" min="0" max="1" value="' + results[i].is_admin + '" readonly>' +
                         '</div>' +
                         '<div id="options">' +
                         '<a target="' + results[i].ID + '" class="option submit">Save</a>' +
@@ -1187,15 +1199,6 @@ app.get("/admin-users", function (req, res) {
             }
         }
         });
-
-
-
-
-
-
-
-
-       
 
         connection.query(
             "SELECT * FROM bby14_users;",
@@ -1292,8 +1295,13 @@ app.get("/admin-users", function (req, res) {
                         // imageProf +
                         '</div>' +
                         '<div class="bio">' +
-                        '<p class="head" >Bio</p>' +
-                        '<p>' + newResults[i].bio + '</p>' +
+                        '<p class="head" >Bio</p>';                        
+                        if (newResults[i].bio != null) {
+                            users += '<p>' + newResults[i].bio +'</p>';
+                        } else {
+                            users += '<p>No bio listed</p>';
+                        }
+                        users +=
                         '</div>' +
                         '<div class="hobbies">' +
                         '<p class="head" >Hobbies</p>';
@@ -1595,44 +1603,74 @@ app.post('/upload-post-images', uploadPostImages.array("files"), function (req, 
 
  
 
-//////////////////////////////////////////////////
-/////// code adapted from youtube tutorial ///////
-/////////// and socket.io documentation //////////
-//////////////////////////////////////////////////
+/**
+ * Global live chat room.
+ * Block of code adapted from Youtube tutorials.
+ * 
+ * @author Web Dev Simplified
+ * @see https://www.youtube.com/watch?v=ZKEqqIO7n-k
+ * @see https://www.youtube.com/watch?v=rxzOqP9YwmM
+ * @author Traversy Media
+ * @see https://www.youtube.com/watch?v=jD7FnbI76Hg
+ */
+
+const botName = 'Gabify Bot';
+
+// Run when client connects
+io.on('connection', socket => {
+  socket.on('joinRoom', ({ username, room }) => {
+    const user = userJoin(socket.id, username, room);
+
+    socket.join(user.room);
+
+    // Welcome current user
+    socket.emit('message', formatMessage(botName, 'Welcome to Gabify Chat!'));
+
+    // Broadcast when a user connects
+    socket.broadcast
+      .to(user.room)
+      .emit(
+        'message',
+        formatMessage(botName, `${user.username} has joined the chat!`)
+      );
+
+    // Send users and room info
+    io.to(user.room).emit('roomUsers', {
+      room: user.room,
+      users: getRoomUsers(user.room)
+    });
+  });
 
 
-// io.on('connection', socket => {
-//     socket.on('new-user', name => {
-//         users[socket.id] = name
-//         socket.broadcast.emit('user-connected', name)
-//     });
-//     socket.on('send-chat-message', message => {
-//         socket.broadcast.emit('chat-message', { message: message, name: users[socket.id] })
-//     });
-//     socket.on('disconnect', () => {
-//         socket.broadcast.emit('user-disconnected', users[socket.id])
-//         delete users[socket.id]
-//     });
-// });
 
-// app.get("/chat", function (req, res) {
-//     if (req.session.loggedIn) {
-//         let profile = fs.readFileSync("./app/html/chat.html", "utf8");
-//         let profileDOM = new JSDOM(profile);
-//         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-//         let navBarDOM = new JSDOM(navBar);
-//         let string = `Chat`;
-//         let t = navBarDOM.window.document.createTextNode(string);
-//         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-//         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-//         res.send(profileDOM.serialize());
-//     }
-//     else {
-//         let doc = fs.readFileSync("./app/html/login.html", "utf8");
-//         res.send(doc);
-//     }
-// });
 
+
+
+  // Listen for chatMessage
+  socket.on('chatMessage', msg => {
+    const user = getCurrentUser(socket.id);
+
+    io.to(user.room).emit('message', formatMessage(user.username, msg));
+  });
+
+  // Runs when client disconnects
+  socket.on('disconnect', () => {
+    const user = userLeave(socket.id);
+
+    if (user) {
+      io.to(user.room).emit(
+        'message',
+        formatMessage(botName, `${user.username} has left the chat!`)
+      );
+
+      // Send users and room info
+      io.to(user.room).emit('roomUsers', {
+        room: user.room,
+        users: getRoomUsers(user.room)
+      });
+    }
+  });
+});
 
 app.get("/gabChat", function (req, res) {
     if (req.session.loggedIn) {
@@ -1653,6 +1691,9 @@ app.get("/gabChat", function (req, res) {
     }
 });
 
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
 // code for one-to-one chat; work in progress
@@ -1722,8 +1763,8 @@ io.on('connection', socket => {
 
 
 
-app.set('port', process.env.PORT || 3000);
-server.listen(app.get('port'));
+// app.set('port', process.env.PORT || 3000);
+// server.listen(app.get('port'));
 
 
 

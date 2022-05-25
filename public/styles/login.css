@@ -6,7 +6,7 @@
 }
 
 body {
-    background-color: #FAEBEFFF;
+    background-color: rgb(222, 222, 222);
     color: rgb(78, 78, 78);
     font-family: 'Muli', sans-serif;
     display: flex;
@@ -16,6 +16,10 @@ body {
     height: 100vh;
     margin: 0%;
     font-family: 'Quicksand', sans-serif;
+}
+
+#answer {
+    display: none;
 }
 
 h2 {
