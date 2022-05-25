@@ -1,10 +1,14 @@
 .orange {
-    color: rgb(255, 111, 0);
+    color: rgb(255, 0, 0);
     text-decoration: underline;
 }
 
 #decline {
     background-color: rgb(234, 0, 0);
+}
+
+#user_table {
+    text-align: center;
 }
 
 .option {

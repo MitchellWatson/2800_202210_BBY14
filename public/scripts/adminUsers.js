@@ -22,7 +22,13 @@ function ajaxPOST(url, callback, data) {
     xhr.send(params);
 }
 
+let inputs = document.getElementsByClassName('inputs');
 
+document.getElementById("edit").addEventListener("click", function () {
+    for (let i = 0; i < inputs.length; i++) {
+        inputs[i].readOnly = false;
+    }
+})
 
 
 let buttonUpdate = document.getElementsByClassName("submit");

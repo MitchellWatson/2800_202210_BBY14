@@ -9,7 +9,7 @@ body {
     overflow-y: auto;
 }
 
-h1 {
+h1.title {
     font-size: 1.5em;
 }
 
@@ -41,13 +41,13 @@ h1 {
 }
 
 #score {
-    background-color: rgb(191, 0, 216);;
+    background-color: rgb(255, 255, 255);;
     padding: 0px auto;
     justify-content: center;
     border: 2px transparent;
     border-radius: 5px;
     padding: 2%;
-    color: white;
+    color: rgb(0, 0, 0);
     margin: 2%;
     font-size: 120%;
 }
