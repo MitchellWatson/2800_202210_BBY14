@@ -59,6 +59,25 @@ window.onclick = function(event) {
 }
 
 
+let saved = localStorage.getItem("saved");
+
+document.getElementById("submit").addEventListener("click", function (e) {
+    var quote = document.getElementById("quote").innerHTML = 'Registered successfully.<span class="material-symbols-outlined">done</span>';
+        popUp.style.display = "block";
+      
+    });
+
+
+span.onclick = function() {
+    popUp.style.display = "none";
+}
+
+window.onclick = function(event) {
+  if (event.target == popUp) {
+    popUp.style.display = "none";
+  }
+}
+
 document.getElementById("submit").addEventListener("click", function (e) {
     
     
@@ -78,13 +97,10 @@ document.getElementById("submit").addEventListener("click", function (e) {
                 document.getElementById("errorMsg").innerHTML = dataParsed.msg;
             } else {
                 localStorage.setItem("email", email.value);
-                window.location.replace("/");
+                // window.location.replace("/");
             }
         }
 
     }, queryString);
 });
 
-function regAlert() {
-    alert("Register Complete!");
-  }

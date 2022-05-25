@@ -77,6 +77,3 @@ for (let i = 0; i < buttonUpdate.length; i++) {
     }, queryString);
 }
 
-function postAlert() {
-    alert("Memory Added!");
-  }
