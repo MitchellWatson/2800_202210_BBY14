@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 const mysql = require('mysql2');
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
-
+const socketio = require('socket.io');
 const bodyparser = require('body-parser');
 const path = require('path');
 const { connect } = require("http2");
@@ -19,12 +19,14 @@ const multer = require('multer');
 const { Blob } = require("buffer");
 
 const http = require('http');
+// const server = http.createServer(app);
+// const { Server } = require("socket.io");
+// const io = new Server(server);
 const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
+const io = socketio(server);
 const formatMessage = require('./helpers/formatDate')
 
-const users = {};
+let seshUser;
 
 const {
     getActiveUser,
@@ -643,10 +645,11 @@ app.get("/contact", function (req, res) {
                 
                 for (let i = 0; i < finalUsers.length; i++) {
                     users =
+                        '<div name="username" id="username" class="' + req.session.first_name + '"></div>' +
                         '<div class="card">' +
                         '<div class="name">' +
                         '<p class="head" >Name</p>' +
-                        '<p>' + finalUsers[i].first_name + ' ' + finalUsers[i].last_name + '</p>' +
+                        '<p id="name">' + finalUsers[i].first_name + ' ' + finalUsers[i].last_name + '</p>' +
                         '</div>' +
                         '<div class="age">' +
                         '<p class="head">Age</p>' +
@@ -669,7 +672,7 @@ app.get("/contact", function (req, res) {
                         users += '</div>'
                         users += 
                         '<div class="button">' +
-                        '<a target="' + finalUsers[i].ID + '" class="option add"><span class="material-symbols-outlined">sms</span>Chat</a>' +
+                        '<a href= "/gabChat" target="' + finalUsers[i].ID + '" class="option add"><span class="material-symbols-outlined">sms</span>Chat</a>' +
                         '</div>' +
                         '</div>';
                         usersProfiles.innerHTML += users;
@@ -1391,7 +1394,7 @@ app.get("/main", function (req, res) {
             let string = `Admin`;
             let t = navBarDOM.window.document.createTextNode(string);
             navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
+           
             profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
             res.send(profileDOM.serialize());
 
@@ -1462,6 +1465,8 @@ app.post("/login", function (req, res) {
             req.session.bio = validUserInfo.bio;
             req.session.hobbies = validUserInfo.hobbies;
             req.session.userType = validUserInfo.is_admin;
+            seshUser = req.session.first_name;
+            
             req.session.save(function (err) {
                 // session saved. for analytics we could record this in db
             })
@@ -1476,6 +1481,7 @@ app.get("/logout", function (req, res) {
             if (error) {
                 res.status(400).send("Cannot log out")
             } else {
+                sessionStorage.clear();
                 res.redirect("/");
             }
         });
@@ -1595,104 +1601,23 @@ app.post('/upload-post-images', uploadPostImages.array("files"), function (req, 
 //////////////////////////////////////////////////
 
 
-io.on('connection', socket => {
-    socket.on('new-user', name => {
-        users[socket.id] = name
-        socket.broadcast.emit('user-connected', name)
-    });
-    socket.on('send-chat-message', message => {
-        socket.broadcast.emit('chat-message', { message: message, name: users[socket.id] })
-    });
-    socket.on('disconnect', () => {
-        socket.broadcast.emit('user-disconnected', users[socket.id])
-        delete users[socket.id]
-    });
-});
-
-app.get("/chat", function (req, res) {
-    if (req.session.loggedIn) {
-        let profile = fs.readFileSync("./app/html/chat.html", "utf8");
-        let profileDOM = new JSDOM(profile);
-        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-        let navBarDOM = new JSDOM(navBar);
-        let string = `Chat`;
-        let t = navBarDOM.window.document.createTextNode(string);
-        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-        res.send(profileDOM.serialize());
-    }
-    else {
-        let doc = fs.readFileSync("./app/html/login.html", "utf8");
-        res.send(doc);
-    }
-});
-
-
-
-//code for one-to-one chat; work in progress
 // io.on('connection', socket => {
-//     socket.on('joinRoom', ({ username, room }) => {
-//       const user = newUser(socket.id, username, room);
-  
-//       socket.join(user.room);
-  
-//       // General welcome
-//       socket.emit('message', formatMessage("WebCage", 'Messages are limited to this room! '));
-  
-//       // Broadcast everytime users connects
-//       socket.broadcast
-//         .to(user.room)
-//         .emit(
-//           'message',
-//           formatMessage("WebCage", `${user.username} has joined the room`)
-//         );
-  
-//       // Current active users and room name
-//       io.to(user.room).emit('roomUsers', {
-//         room: user.room,
-//         users: getIndividualRoomUsers(user.room)
-//       });
+//     socket.on('new-user', name => {
+//         users[socket.id] = name
+//         socket.broadcast.emit('user-connected', name)
 //     });
-  
-//     // Listen for client message
-//     socket.on('chatMessage', msg => {
-//       const user = getActiveUser(socket.id);
-  
-//       io.to(user.room).emit('message', formatMessage(user.username, msg));
+//     socket.on('send-chat-message', message => {
+//         socket.broadcast.emit('chat-message', { message: message, name: users[socket.id] })
 //     });
-  
-//     // Runs when client disconnects
 //     socket.on('disconnect', () => {
-//       const user = exitRoom(socket.id);
-  
-//       if (user) {
-//         io.to(user.room).emit(
-//           'message',
-//           formatMessage("WebCage", `${user.username} has left the room`)
-//         );
-  
-//         // Current active users and room name
-//         io.to(user.room).emit('roomUsers', {
-//           room: user.room,
-//           users: getIndividualRoomUsers(user.room)
-//         });
-//       }
+//         socket.broadcast.emit('user-disconnected', users[socket.id])
+//         delete users[socket.id]
 //     });
-//   });
-  
+// });
 
-
-
-
-
-
-
-
-
-
-// app.get("/gabChat", function (req, res) {
+// app.get("/chat", function (req, res) {
 //     if (req.session.loggedIn) {
-//         let profile = fs.readFileSync("./app/html/gabChat.html", "utf8");
+//         let profile = fs.readFileSync("./app/html/chat.html", "utf8");
 //         let profileDOM = new JSDOM(profile);
 //         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
 //         let navBarDOM = new JSDOM(navBar);
@@ -1707,6 +1632,90 @@ app.get("/chat", function (req, res) {
 //         res.send(doc);
 //     }
 // });
+
+
+app.get("/gabChat", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/gabChat.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+        // let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+        // let navBarDOM = new JSDOM(navBar);
+        // let string = `Chat`;
+        // let t = navBarDOM.window.document.createTextNode(string);
+        // navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+        // profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+        
+        res.send(profileDOM.serialize());
+    }
+    else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
+
+
+
+// code for one-to-one chat; work in progress
+io.on('connection', socket => {
+    socket.on('joinRoom', ({ seshUser, room }) => {
+      const user = newUser(socket.id, seshUser, room);
+  
+      socket.join(user.room);
+  
+      // General welcome
+      socket.emit('message', formatMessage("GabChat", 'Messages are limited to this room!'));
+  
+      // Broadcast everytime users connects
+      socket.broadcast
+        .to(user.room)
+        .emit(
+          'message',
+          formatMessage("GabChat", `${user.seshUser} has joined the room`)
+        );
+  
+      // Current active users and room name
+      io.to(user.room).emit('roomUsers', {
+        room: user.room,
+        users: getIndividualRoomUsers(user.room)
+      });
+    });
+  
+    // Listen for client message
+    socket.on('chatMessage', msg => {
+      const user = getActiveUser(socket.id);
+  
+      io.to(user.room).emit('message', formatMessage(user.seshUser, msg));
+    });
+  
+    // Runs when client disconnects
+    socket.on('disconnect', () => {
+      const user = exitRoom(socket.id);
+  
+      if (user) {
+        io.to(user.room).emit(
+          'message',
+          formatMessage("WebCage", `${user.seshUser} has left the room`)
+        );
+  
+        // Current active users and room name
+        io.to(user.room).emit('roomUsers', {
+          room: user.room,
+          users: getIndividualRoomUsers(user.room)
+        });
+      }
+    });
+  });
+  
+
+
+
+
+
+
+
+
+
+
 
 
 
