@@ -5,8 +5,11 @@
     grid-template-columns: 1fr;
     grid-gap: 1em;
     margin: 0.5em;
-    padding-top: 10vmax;
     padding-bottom: 10vh;
+}
+
+img {
+    border-radius: 10px;
 }
 
 .card {
@@ -64,11 +67,21 @@ img {
     grid-row: 5;
 }
 
+.option {
+    background-color: rgb(51, 0, 255);
+    border: 2px none;
+    border-radius: 5px;
+    color: rgb(255, 255, 255);
+    padding: 10px;
+    margin: 2vh;
+    font-size: 3vh;
+}
+
 .card .button {
     grid-column: 2;
     grid-row: 6;
     vertical-align: bottom;
-    text-align: right;
+    text-align: center;
 }
 
 .head {
