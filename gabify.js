@@ -1,4 +1,6 @@
 // Code to do server side is adapted from a COMP 1537 assignment.
+
+
 "use strict";
 const express = require("express");
 const session = require("express-session");
@@ -163,9 +165,10 @@ app.get("/timeline", function (req, res) {
             multipleStatements: "true"
         });
         connection.connect();
+        
 
         connection.query(
-            "SELECT * FROM posts ORDER BY postDate ASC",
+            "SELECT * FROM bby14_users INNER JOIN posts ON bby14_users.ID = posts.userID LEFT JOIN postphotos ON posts.userID = postphotos.userID",
             function (error, results, fields) {
                 if (error) {
                     console.log(error);
@@ -184,6 +187,12 @@ app.get("/timeline", function (req, res) {
                 // usersProfiles.innerHTML += create;
                 let users;
                 var old = "";
+                // var upload_image = `<form id="upload-images-form" action="/" method="post">
+                //                     <input id="image-upload" type="file" value="Upload Image" 
+                //                     accept="image/png, image/gif, image/jpeg" multiple="multiple" />
+                //                     <input id="submit2" type="submit" class="option" value="Upload photo" />
+                //                     </form>`
+
                 for (let i = 0; i < newResults.length; i++) {
                     let dob = newResults[i].postDate
                     var dobArr = dob.toDateString().split(' ');
@@ -197,9 +206,12 @@ app.get("/timeline", function (req, res) {
                         '<div class="card">' +
                         '<div class="can">' +
                         '<p style="text-decoration: underline;" value="' + newResults[i].postNum + '" id="numInput' + newResults[i].userID + '" >Memory #' + (newResults.length - i) + '</p>' +
-                        '<p style="text-decoration: underline;">Descrition</p>' +
+                        '<p style="text-decoration: underline;">Description</p>' +
                         '<input type="text" id="descInput' + newResults[i].postNum + '" placeholder="e.g. John" value="' + newResults[i].posts + '"></input>' +
                         '<p>Posted at: ' + newResults[i].postTime + '</p>' +
+                        
+                        '<img src="' + newResults[i].imageID + '"/>' + 
+                       
                         '</div>' +
                         '<div id="options">' +
                         '<a target="' + newResults[i].postNum + '" class="option update">Update</a>' +
@@ -703,6 +715,10 @@ app.get("/userProfiles", function (req, res) {
         }
         profileDOM.window.document.getElementById("bio").appendChild(usersProfiles);
 
+        let img = profileDOM.window.document.querySelector('#avatar');
+       img.src = './avatar/avatar_' + req.session.identity + '.jpg';
+       
+
         const mysql3 = require("mysql2");
 
             const database = mysql3.createConnection({
@@ -740,6 +756,18 @@ app.get("/userProfiles", function (req, res) {
 
         });
 
+        // let imageURL;
+        // database.query(`SELECT * FROM userphotos WHERE userID = ${req.session.identity}`,
+        // function(error,results, fields) {
+        //     if (error)
+        //         throw error;
+        //     if (results.length > 0) {
+        //         imageURL = './avatar/avatar_' + req.session.identity + '.jpg';
+        //     } else {
+        //         imageURL = './avatar/placeholder.jpg';
+        //     }
+        //     img.src = imageURL;
+        // });
 
         res.send(profileDOM.serialize());
     } 
@@ -815,8 +843,8 @@ app.post('/create', function (req, res) {
         multipleStatements: "true"
     });
     connection.connect();
-    connection.query('INSERT INTO posts VALUES (?, ?, ?, ?, ?)',
-      [req.session.identity, req.body.unknown, req.body.posts, req.body.postDate, req.body.postTime],
+    connection.query('INSERT INTO posts VALUES (?, ?, ?, ?, ?, ?)',
+      [req.session.identity, req.body.unknown, req.body.posts, req.body.postDate, req.body.postTime, req.body.image],
       function (error, results, fields) {
         if (error) {
           console.log(error);
@@ -1127,6 +1155,40 @@ app.get("/admin-users", function (req, res) {
         }
         });
 
+
+
+
+
+
+
+
+        // Reading the image from the userPhotos table
+        let userImages = [];
+
+     
+        connection.query('SELECT * FROM userphotos;',
+            function (error, photoresults, fields) {
+                if(error) {
+                    throw(error);
+                }
+
+                for (var i = 0; i < photoresults.length; i++) {
+
+                    if(photoresults[i].imageID) {
+                        let buff = Buffer.from(photoresults[i].imageID);
+
+                        // let blob = new Blob([buff]);
+                        // var img_file = URL.createObjectURL(blob);
+                        // console.log(img_file);
+                    }
+                }
+            });
+
+            // ([JSON.stringify(buff)], {
+            //     type: 'application/json',
+            // });
+
+
         connection.query(
             "SELECT * FROM bby14_users;",
             function (error, results, fields) {
@@ -1196,6 +1258,8 @@ app.get("/admin-users", function (req, res) {
                     }
                 }
 
+            
+
                 const usersProfiles = profileDOM.window.document.createElement("div");
                 let users;
                 
@@ -1217,7 +1281,9 @@ app.get("/admin-users", function (req, res) {
                         '</p>' +
                         '</div>' +
                         '<div class="img">' +
-                        '<img src="/avatar/avatar_2.jpg">' +
+
+
+                        '<img src="/avatar/avatar_' + results[i].ID + '.jpg">' +
                         '</div>' +
                         '<div class="bio">' +
                         '<p class="head" >Bio</p>' +
@@ -1246,6 +1312,7 @@ app.get("/admin-users", function (req, res) {
                         '</div>' +
                         '</div>';
                         usersProfiles.innerHTML += users;
+               
                 }
                 if (places.length == 0) {
                     users = 'No users to be added.';
@@ -1360,6 +1427,7 @@ app.post("/login", function (req, res) {
     connection.connect();
     // Checks if user typed in matching email and password
     const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
+
     connection.query(loginInfo, function (error, results, fields) {
         /* If there is an error, alert user of error
         *  If the length of results array is 0, then there was no matches in database
@@ -1390,7 +1458,6 @@ app.post("/login", function (req, res) {
             res.send({ status: "success", msg: "Logged in." });
         }
     })
-
 });
 
 app.get("/logout", function (req, res) {
@@ -1484,7 +1551,35 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
 
 
 
+app.post('/upload-post-images', uploadPostImages.array("files"), function (req, res) {
+    connection.connect();
+        if (req.files.length > 0) {
+            for(let i = 0; i < req.files.length; i++) {
+                req.files[i].filename = req.files[i].originalname;
+            
 
+            connection.query('INSERT INTO postphotos (userID, imageID) VALUES (?, ?)',
+                [req.session.identity, imgPath],
+                function (error, results, fields) {});
+        }
+        res.send({
+            status: "success",
+            msg: "Image information added to database."
+        });
+        req.session.save(function (err) {});
+    } else {
+        connection.query('INSERT INTO postphotos (userID, imageID) VALUES (?, ?)',
+            [req.session.identity, null],
+            function (error, results, fields) {});
+        res.send({
+            status: "success",
+            msg: "No image has been uploaded"
+        });
+        req.session.save(function (err) {});
+    }
+});
+
+ 
 
 //////////////////////////////////////////////////
 /////// code adapted from youtube tutorial ///////
@@ -1541,9 +1636,9 @@ server.listen(app.get('port'));
 
 
 // //For Milestone hand-ins:
-// let port = 8000;
-// app.listen(port, function () {
-// });
+let port = 8000;
+app.listen(port, function () {
+});
 
 //For Heroku deployment
 // app.listen(process.env.PORT || 3000);
