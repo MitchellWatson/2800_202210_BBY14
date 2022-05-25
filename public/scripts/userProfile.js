@@ -115,9 +115,3 @@ document.getElementById("submit").addEventListener("click", function (e) {
     }, queryString);
 });
 
-function saveAlert() {
-    alert("Information Saved!");
-  }
-function logoutAlert() {
-    alert("You have logged out!");
-  }

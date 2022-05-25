@@ -62,6 +62,10 @@ h2 {
     grid-row: 2;
 }
 
+#user_table {
+    text-align: center;
+}
+
 .card p {
     margin: 0;
     padding-left: 2vh;

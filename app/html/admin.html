@@ -17,74 +17,80 @@
 
         <div id="header"></div>
 
+
         <div id="content">
-            <div class="card" id="friendFinder">
+
+            <div id="popUp" class="pop">
+            
+                <div class="pop-content">
+                    <span class="close">&times;</span>
+                    <p id="quote"></p>
+                </div>
+            
+            </div>
+
+            <a href="/friendFinder" class="card" id="friendFinder">
                 <div class="can">
-                    <a href="/friendFinder"><b>Friend <br/> Finder</b></a>
+                    <b>Friend Finder</b>
                 </div>
                 <span class="material-symbols-outlined" style="color: rgb(7, 207, 0);">
                     group_add
-                </span>
-            </div>
+                </span></a>
 
-            <div class="card" id="meet">
+            <a href="/meet" class="card" id="meet">
                 <div class="can">
-                    <a href="/meet"><b>Meet-Up</b></a>
+                    <b>Meet-Up</b>
                 </div>
-                <span class="material-symbols-outlined logo" style="color: rgb(255, 106, 0);">
+                <span class="material-symbols-outlined logo" style="color: rgb(255, 0, 0);">
                     <span class="material-symbols-outlined">
                         person_pin_circle
                     </span>
                 </span>
-            </div>
+            </a>
 
-            <div class="card" id="timeline">
+            <a href="/timeline" class="card" id="timeline">
                 <div class="can">
-                    <a href="/timeline"><b>Journal</b></a>
+                    <b>Journal</b>
                 </div>
                 <span class="material-symbols-outlined" style="color: rgb(205, 78, 0);">
                     <span class="material-symbols-outlined">
                         collections_bookmark
                     </span>
                 </span>
-            </div>
+            </a>
 
-            <div class="card" id="game">
+            <a href="/admin-users" class="card" id="game">
                 <div class="can">
-                    <a href="/admin-users"><b>Manage Users</b></a>
+                    <b>Manage Users</b>
                 </div>
                 <span class="material-symbols-outlined" style="color: rgb(100, 0, 207);">
                     <span class="material-symbols-outlined">
                         manage_accounts
                     </span>
                 </span>
-            </div>
+            </a>
 
-            <div class="card" id="profile">
+            <a href="/userProfiles" class="card" id="profile">
                 <div class="can">
-                    <a href="/userProfiles"><b>Profile</b></a>
+                    <b>Profile</b>
                 </div>
                 <span class="material-symbols-outlined logo" style="color: rgb(0, 128, 255);">
-                    <span class="material-symbols-outlined">
                         <span class="material-symbols-outlined">
                             account_circle
                         </span>
-                    </span>
                 </span>
-            </div>
+            </a>
 
-            <div class="card" id="chat">
+            <a href="/chat" class="card" id="chat">
                 <div class="can">
-                    <a href="#"><b>Placeholder</b></a>
+                    <b>Chat</b>
                 </div>
-                <span class="material-symbols-outlined logo" style="color: rgb(0, 128, 255);">
-                    <span class="material-symbols-outlined">
+                <span class="material-symbols-outlined logo" style="color: rgb(255, 149, 0);">
                         <span class="material-symbols-outlined">
-                            error
+                            chat
                         </span>
                     </span>
-                </span>
-            </div>
+                </a>
 
         </div>
 
@@ -92,6 +98,7 @@
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="/scripts/skeleton.js"></script>
+        <script src="/scripts/admin.js"></script>
 
     </body>
 

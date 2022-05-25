@@ -1,4 +1,6 @@
 // Code to do server side is adapted from a COMP 1537 assignment.
+
+
 "use strict";
 const express = require("express");
 const session = require("express-session");
@@ -14,6 +16,23 @@ const bodyparser = require('body-parser');
 const path = require('path');
 const { connect } = require("http2");
 const multer = require('multer');
+const { Blob } = require("buffer");
+
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
+const formatMessage = require('./helpers/formatDate')
+
+const users = {};
+
+const {
+    getActiveUser,
+    exitRoom,
+    newUser,
+    getIndividualRoomUsers
+  } = require('./helpers/userHelper');
+
 
 app.use("/html", express.static("./app/html"));
 app.use("/avatar", express.static("./app/avatar"));
@@ -163,9 +182,10 @@ app.get("/timeline", function (req, res) {
             multipleStatements: "true"
         });
         connection.connect();
+        
 
         connection.query(
-            "SELECT * FROM posts ORDER BY postDate ASC",
+            "SELECT * FROM bby14_users",
             function (error, results, fields) {
                 if (error) {
                     console.log(error);
@@ -184,6 +204,12 @@ app.get("/timeline", function (req, res) {
                 // usersProfiles.innerHTML += create;
                 let users;
                 var old = "";
+                // var upload_image = `<form id="upload-images-form" action="/" method="post">
+                //                     <input id="image-upload" type="file" value="Upload Image" 
+                //                     accept="image/png, image/gif, image/jpeg" multiple="multiple" />
+                //                     <input id="submit2" type="submit" class="option" value="Upload photo" />
+                //                     </form>`
+
                 for (let i = 0; i < newResults.length; i++) {
                     let dob = newResults[i].postDate
                     var dobArr = dob.toDateString().split(' ');
@@ -197,9 +223,12 @@ app.get("/timeline", function (req, res) {
                         '<div class="card">' +
                         '<div class="can">' +
                         '<p style="text-decoration: underline;" value="' + newResults[i].postNum + '" id="numInput' + newResults[i].userID + '" >Memory #' + (newResults.length - i) + '</p>' +
-                        '<p style="text-decoration: underline;">Descrition</p>' +
+                        '<p style="text-decoration: underline;">Description</p>' +
                         '<input type="text" id="descInput' + newResults[i].postNum + '" placeholder="e.g. John" value="' + newResults[i].posts + '"></input>' +
                         '<p>Posted at: ' + newResults[i].postTime + '</p>' +
+                        
+                        '<img src="' + newResults[i].imageID + '"/>' + 
+                       
                         '</div>' +
                         '<div id="options">' +
                         '<a target="' + newResults[i].postNum + '" class="option update">Update</a>' +
@@ -703,6 +732,10 @@ app.get("/userProfiles", function (req, res) {
         }
         profileDOM.window.document.getElementById("bio").appendChild(usersProfiles);
 
+        let img = profileDOM.window.document.querySelector('#avatar');
+       img.src = './avatar/avatar_' + req.session.identity + '.jpg';
+       
+
         const mysql3 = require("mysql2");
 
             const database = mysql3.createConnection({
@@ -740,6 +773,18 @@ app.get("/userProfiles", function (req, res) {
 
         });
 
+        // let imageURL;
+        // database.query(`SELECT * FROM userphotos WHERE userID = ${req.session.identity}`,
+        // function(error,results, fields) {
+        //     if (error)
+        //         throw error;
+        //     if (results.length > 0) {
+        //         imageURL = './avatar/avatar_' + req.session.identity + '.jpg';
+        //     } else {
+        //         imageURL = './avatar/placeholder.jpg';
+        //     }
+        //     img.src = imageURL;
+        // });
 
         res.send(profileDOM.serialize());
     } 
@@ -815,8 +860,8 @@ app.post('/create', function (req, res) {
         multipleStatements: "true"
     });
     connection.connect();
-    connection.query('INSERT INTO posts VALUES (?, ?, ?, ?, ?)',
-      [req.session.identity, req.body.unknown, req.body.posts, req.body.postDate, req.body.postTime],
+    connection.query('INSERT INTO posts VALUES (?, ?, ?, ?, ?, ?)',
+      [req.session.identity, req.body.unknown, req.body.posts, req.body.postDate, req.body.postTime, req.body.image],
       function (error, results, fields) {
         if (error) {
           console.log(error);
@@ -1112,6 +1157,20 @@ app.get("/admin-users", function (req, res) {
         });
         connection.connect();
 
+        let userProfilePics = [];
+
+
+
+        connection.query('SELECT * FROM userphotos;', 
+        function(error, results, fields) {
+            if (error)
+                throw error;
+            for (let i = 0; i < results.length; i++) {
+                userProfilePics[i] = results[i];
+                console.log(userProfilePics[i].userID);
+            }
+        }); 
+
         let listFriends = [];
 
         connection.query('SELECT * FROM friends;',
@@ -1196,10 +1255,16 @@ app.get("/admin-users", function (req, res) {
                     }
                 }
 
+                
+            
+
                 const usersProfiles = profileDOM.window.document.createElement("div");
                 let users;
                 
                 for (let i = 0; i < newResults.length; i++) {
+                    let age = (newResults[i].age ? '<p>' + newResults[i].age +'</p>' : '<p>Age not listed</p>');
+                    // let imageProf = (userProfilePics.indexOf(newResults[i].ID) !== -1 ? '<img src="./avatar/' + userProfilePics[i].imageID + '>' : '<img src="./avatar/placeholder.jpg">');
+                    
                     users =
                         '<div class="card">' +
                         '<div class="name">' +
@@ -1208,20 +1273,21 @@ app.get("/admin-users", function (req, res) {
                         '</div>' +
                         '<div class="age">' +
                         '<p class="head" >Age</p>' +
-                        '<p>'; 
-                        if (newResults[i].age != null) {
-                            users += '<p>' + newResults[i].age +'</p>';
-                        } else {
-                            users += '<p>Age not listed</p>'
-                        }
-                        '</p>' +
-                        '</div>' +
+                        age +
+                        '</div>' + 
                         '<div class="img">' +
-                        '<img src="/avatar/avatar_2.jpg">' +
+                    
+                        '<img src="./avatar/avatar_' + results[i].ID + '.jpg">' +
+                        // imageProf +
                         '</div>' +
                         '<div class="bio">' +
-                        '<p class="head" >Bio</p>' +
-                        '<p>' + newResults[i].bio + '</p>' +
+                        '<p class="head" >Bio</p>';                        
+                        if (newResults[i].bio != null) {
+                            users += '<p>' + newResults[i].bio +'</p>';
+                        } else {
+                            users += '<p>No bio listed</p>';
+                        }
+                        users +=
                         '</div>' +
                         '<div class="hobbies">' +
                         '<p class="head" >Hobbies</p>';
@@ -1246,12 +1312,20 @@ app.get("/admin-users", function (req, res) {
                         '</div>' +
                         '</div>';
                         usersProfiles.innerHTML += users;
+                  
+                   
                 }
+
+   
+
                 if (places.length == 0) {
                     users = 'No users to be added.';
                     usersProfiles.innerHTML += users;
                 }
 
+                
+
+                 
 
             profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
 
@@ -1360,6 +1434,7 @@ app.post("/login", function (req, res) {
     connection.connect();
     // Checks if user typed in matching email and password
     const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
+
     connection.query(loginInfo, function (error, results, fields) {
         /* If there is an error, alert user of error
         *  If the length of results array is 0, then there was no matches in database
@@ -1390,7 +1465,6 @@ app.post("/login", function (req, res) {
             res.send({ status: "success", msg: "Logged in." });
         }
     })
-
 });
 
 app.get("/logout", function (req, res) {
@@ -1406,35 +1480,6 @@ app.get("/logout", function (req, res) {
 });
 
 
-app.get("/redirectToUsers", function (req, res) {
-    if (req.session.loggedIn) {
-        if(req.session.userType) {
-            connection.connect();
-             const getUsers = `USE comp2800; SELECT * FROM bby_users;`;
-            let doc = fs.readFileSync("./app/html/userProfiles.html", "utf8");
-            let adminDoc = new JSDOM(doc);
-
-            let cardDoc = fs.readFileSync("./app/html/profileCards.html", "utf8");
-            let cardDOM = new JSDOM(cardDoc);
-
-
-            let numUsers = 9;
-
-
-            for (let x = 0; x < numUsers; x++) {
-                adminDoc.window.document.querySelector("#main").innerHTML
-                    += cardDOM.window.document.querySelector(".card").innerHTML;
-                //     let usersList = adminDoc.window.document.querySelector("#main").innerHTML;
-                //     let userCards = cardDOM.window.document.querySelector(".card").innerHTML;
-                //    usersList.insertAdjacentElement("beforeend", userCards);
-            }
-            res.send(adminDoc.serialize());
-        }
-    } else {
-        let redirect = fs.readFileSync("./app/html/login.html", "utf8");
-        res.send(redirect);
-    }
-});
 
 // Code to upload an image.
 // Adapted from Mutler and COMP 2537 example.
@@ -1453,6 +1498,33 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+// code to store images as posts for users. 
+const postStorage = multer.diskStorage({
+    destination: function (req, file, callback) {
+        callback(null, "./app/posts/")
+    },
+    filename: function (req, file, callback) {
+        let count=0;
+        callback(null, "posts_" + count++ + ".jpg");
+    }
+});
+
+const uploadPostImages = multer({
+    storage: postStorage
+});
+
+
+
+
+
+app.get('/', function (req, res) {
+    let doc = fs.readFileSync('./app/html/index.html', "utf8");
+    res.send(doc);
+
+});
+
+
 
 app.post('/upload-images', upload.array("files"), function (req, res) {
 
@@ -1484,18 +1556,41 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
 
 
 
+app.post('/upload-post-images', uploadPostImages.array("files"), function (req, res) {
+    connection.connect();
+        if (req.files.length > 0) {
+            for(let i = 0; i < req.files.length; i++) {
+                req.files[i].filename = req.files[i].originalname;
+            
 
+            connection.query('INSERT INTO postphotos (userID, imageID) VALUES (?, ?)',
+                [req.session.identity, imgPath],
+                function (error, results, fields) {});
+        }
+        res.send({
+            status: "success",
+            msg: "Image information added to database."
+        });
+        req.session.save(function (err) {});
+    } else {
+        connection.query('INSERT INTO postphotos (userID, imageID) VALUES (?, ?)',
+            [req.session.identity, null],
+            function (error, results, fields) {});
+        res.send({
+            status: "success",
+            msg: "No image has been uploaded"
+        });
+        req.session.save(function (err) {});
+    }
+});
+
+ 
 
 //////////////////////////////////////////////////
 /////// code adapted from youtube tutorial ///////
 /////////// and socket.io documentation //////////
 //////////////////////////////////////////////////
-const http = require('http');
-const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
 
-const users = {};
 
 io.on('connection', socket => {
     socket.on('new-user', name => {
@@ -1529,6 +1624,92 @@ app.get("/chat", function (req, res) {
     }
 });
 
+
+
+//code for one-to-one chat; work in progress
+// io.on('connection', socket => {
+//     socket.on('joinRoom', ({ username, room }) => {
+//       const user = newUser(socket.id, username, room);
+  
+//       socket.join(user.room);
+  
+//       // General welcome
+//       socket.emit('message', formatMessage("WebCage", 'Messages are limited to this room! '));
+  
+//       // Broadcast everytime users connects
+//       socket.broadcast
+//         .to(user.room)
+//         .emit(
+//           'message',
+//           formatMessage("WebCage", `${user.username} has joined the room`)
+//         );
+  
+//       // Current active users and room name
+//       io.to(user.room).emit('roomUsers', {
+//         room: user.room,
+//         users: getIndividualRoomUsers(user.room)
+//       });
+//     });
+  
+//     // Listen for client message
+//     socket.on('chatMessage', msg => {
+//       const user = getActiveUser(socket.id);
+  
+//       io.to(user.room).emit('message', formatMessage(user.username, msg));
+//     });
+  
+//     // Runs when client disconnects
+//     socket.on('disconnect', () => {
+//       const user = exitRoom(socket.id);
+  
+//       if (user) {
+//         io.to(user.room).emit(
+//           'message',
+//           formatMessage("WebCage", `${user.username} has left the room`)
+//         );
+  
+//         // Current active users and room name
+//         io.to(user.room).emit('roomUsers', {
+//           room: user.room,
+//           users: getIndividualRoomUsers(user.room)
+//         });
+//       }
+//     });
+//   });
+  
+
+
+
+
+
+
+
+
+
+
+// app.get("/gabChat", function (req, res) {
+//     if (req.session.loggedIn) {
+//         let profile = fs.readFileSync("./app/html/gabChat.html", "utf8");
+//         let profileDOM = new JSDOM(profile);
+//         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+//         let navBarDOM = new JSDOM(navBar);
+//         let string = `Chat`;
+//         let t = navBarDOM.window.document.createTextNode(string);
+//         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+//         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+//         res.send(profileDOM.serialize());
+//     }
+//     else {
+//         let doc = fs.readFileSync("./app/html/login.html", "utf8");
+//         res.send(doc);
+//     }
+// });
+
+
+
+
+
+
 app.set('port', process.env.PORT || 3000);
 server.listen(app.get('port'));
 
@@ -1547,4 +1728,6 @@ server.listen(app.get('port'));
 
 //For Heroku deployment
 // app.listen(process.env.PORT || 3000);
+
+
 
