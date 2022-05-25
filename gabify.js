@@ -31,7 +31,17 @@ const {
     exitRoom,
     newUser,
     getIndividualRoomUsers
-  } = require('./helpers/userHelper');
+} = require('./helpers/userHelper');
+
+// const server = http.createServer(app);
+// const io = socketio(server);
+
+const {
+    userJoin,
+    getCurrentUser,
+    userLeave,
+    getRoomUsers
+} = require('./helpers/users');
 
 
 app.use("/html", express.static("./app/html"));
@@ -54,7 +64,7 @@ app.use(bodyparser.urlencoded({
     extended: true
 }))
 
-let password = "passwordSQL"
+let password = ""
 
 
 const connection = mysql.createConnection({
@@ -1586,29 +1596,73 @@ app.post('/upload-post-images', uploadPostImages.array("files"), function (req, 
 
  
 
-//////////////////////////////////////////////////
-/////// code adapted from youtube tutorial ///////
-/////////// and socket.io documentation //////////
-//////////////////////////////////////////////////
+/**
+ * Global live chat room.
+ * Block of code adapted from Youtube tutorials.
+ * 
+ * @author Web Dev Simplified
+ * @see https://www.youtube.com/watch?v=ZKEqqIO7n-k
+ * @see https://www.youtube.com/watch?v=rxzOqP9YwmM
+ * @author Traversy Media
+ * @see https://www.youtube.com/watch?v=jD7FnbI76Hg
+ */
 
+const botName = 'Gabify Bot';
 
+// Run when client connects
 io.on('connection', socket => {
-    socket.on('new-user', name => {
-        users[socket.id] = name
-        socket.broadcast.emit('user-connected', name)
+  socket.on('joinRoom', ({ username, room }) => {
+    const user = userJoin(socket.id, username, room);
+
+    socket.join(user.room);
+
+    // Welcome current user
+    socket.emit('message', formatMessage(botName, 'Welcome to Gabify Chat!'));
+
+    // Broadcast when a user connects
+    socket.broadcast
+      .to(user.room)
+      .emit(
+        'message',
+        formatMessage(botName, `${user.username} has joined the chat!`)
+      );
+
+    // Send users and room info
+    io.to(user.room).emit('roomUsers', {
+      room: user.room,
+      users: getRoomUsers(user.room)
     });
-    socket.on('send-chat-message', message => {
-        socket.broadcast.emit('chat-message', { message: message, name: users[socket.id] })
-    });
-    socket.on('disconnect', () => {
-        socket.broadcast.emit('user-disconnected', users[socket.id])
-        delete users[socket.id]
-    });
+  });
+
+  // Listen for chatMessage
+  socket.on('chatMessage', msg => {
+    const user = getCurrentUser(socket.id);
+
+    io.to(user.room).emit('message', formatMessage(user.username, msg));
+  });
+
+  // Runs when client disconnects
+  socket.on('disconnect', () => {
+    const user = userLeave(socket.id);
+
+    if (user) {
+      io.to(user.room).emit(
+        'message',
+        formatMessage(botName, `${user.username} has left the chat!`)
+      );
+
+      // Send users and room info
+      io.to(user.room).emit('roomUsers', {
+        room: user.room,
+        users: getRoomUsers(user.room)
+      });
+    }
+  });
 });
 
 app.get("/chat", function (req, res) {
     if (req.session.loggedIn) {
-        let profile = fs.readFileSync("./app/html/chat.html", "utf8");
+        let profile = fs.readFileSync("./app/html/chatGlobalSelect.html", "utf8");
         let profileDOM = new JSDOM(profile);
         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
         let navBarDOM = new JSDOM(navBar);
@@ -1624,6 +1678,9 @@ app.get("/chat", function (req, res) {
     }
 });
 
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
 //code for one-to-one chat; work in progress
@@ -1710,8 +1767,8 @@ app.get("/chat", function (req, res) {
 
 
 
-app.set('port', process.env.PORT || 3000);
-server.listen(app.get('port'));
+// app.set('port', process.env.PORT || 3000);
+// server.listen(app.get('port'));
 
 
 
