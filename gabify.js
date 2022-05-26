@@ -69,7 +69,7 @@ app.use(bodyparser.urlencoded({
 // local db
 const dbHost = "127.0.0.1";
 const dbUser = "root";
-const dbPassword = "passwordSQL";
+const dbPassword = "";
 const dbName = "comp2800";
 
 // heroku db
@@ -1451,7 +1451,7 @@ io.on('connection', socket => {
             .to(user.room)
             .emit(
                 'messageG',
-                formatMessage(botName, `${user.username} has joined the chat!`)
+                formatMessage(botName, `${chatUser} has joined the chat!`)
             );
 
         // Send users and room info
@@ -1465,7 +1465,7 @@ io.on('connection', socket => {
     socket.on('chatMessageG', msg => {
         const user = getCurrentUser(socket.id);
 
-        io.to(user.room).emit('messageG', formatMessage(user.username, msg));
+        io.to(user.room).emit('messageG', formatMessage(chatUser, msg));
     });
 
     // Runs when client disconnects
@@ -1475,7 +1475,7 @@ io.on('connection', socket => {
         if (user) {
             io.to(user.room).emit(
                 'messageG',
-                formatMessage(botName, `${user.username} has left the chat!`)
+                formatMessage(botName, `${chatUser} has left the chat!`)
             );
 
             // Send users and room info
@@ -1485,6 +1485,7 @@ io.on('connection', socket => {
             });
         }
     });
+    
 });
 
 app.get("/chatGlobalSelect", function (req, res) {
