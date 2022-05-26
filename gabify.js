@@ -1,4 +1,13 @@
+/** The following code contains server-side used to read and write changes into the database 
+ *      as well as changes to the front-end using Javascript and the DOM. 
+* @author   Mitchell Watson
+* @author   Jackie Ma
+* @author   Basillio Kim
+* @author   Ryan Chau
+*/
 "use strict";
+
+//List of all modules and dependencies installed through node.js
 const express = require("express");
 const session = require("express-session");
 const fs = require("fs");
@@ -14,26 +23,18 @@ const path = require('path');
 const { connect } = require("http2");
 const multer = require('multer');
 const { Blob } = require("buffer");
-
 const http = require('http');
-// const server = http.createServer(app);
-// const { Server } = require("socket.io");
-// const io = new Server(server);
 const server = http.createServer(app);
 const io = socketio(server);
 const formatMessage = require('./helpers/formatDate')
 
-let seshUser;
-
+// Custom imported modules used as helper methods for the chat features. 
 const {
     getActiveUser,
     exitRoom,
     newUser,
     getIndividualRoomUsers
 } = require('./helpers/userHelper');
-
-// const server = http.createServer(app);
-// const io = socketio(server);
 
 const {
     userJoin,
@@ -42,13 +43,13 @@ const {
     getRoomUsers
 } = require('./helpers/users');
 
-
+//Static paths used through Express.js
 app.use("/html", express.static("./app/html"));
 app.use("/avatar", express.static("./app/avatar"));
 app.use("/images", express.static("./public/images"));
 app.use("/styles", express.static("./public/styles"));
 app.use("/scripts", express.static("./public/scripts"));
-
+//Initialization of the session.
 app.use(session(
     {
         secret: "$zw+qzKh+&?b9}-v",
@@ -63,13 +64,14 @@ app.use(bodyparser.urlencoded({
     extended: true
 }))
 
+
 // local db
 // const dbHost = "127.0.0.1";
 // const dbUser = "root";
 // const dbPassword = "";
 // const dbName = "comp2800";
 
-// heroku db
+// 
 const dbHost = "us-cdbr-east-05.cleardb.net";
 const dbUser = "b959a83957277c";
 const dbPassword = "5e9f74c2";
@@ -204,18 +206,8 @@ app.get("/timeline", function (req, res) {
                     }
                 }
                 const usersProfiles = profileDOM.window.document.createElement("div");
-                // const createButton = profileDOM.window.document.createElement("div");
-                // let create = "<a href=''><button class='option'>Add Memory</button></a>";
-                // profileDOM.window.document.getElementById("create").appendChild(createButton);
-                // usersProfiles.innerHTML += create;
                 let users;
                 var old = "";
-                // var upload_image = `<form id="upload-images-form" action="/" method="post">
-                //                     <input id="image-upload" type="file" value="Upload Image" 
-                //                     accept="image/png, image/gif, image/jpeg" multiple="multiple" />
-                //                     <input id="submit2" type="submit" class="option" value="Upload photo" />
-                //                     </form>`
-
                 for (let i = 0; i < newResults.length; i++) {
                     let dob = newResults[i].postDate
                     var dobArr = dob.toDateString().split(' ');
@@ -248,7 +240,7 @@ app.get("/timeline", function (req, res) {
 
                 let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
                 let navBarDOM = new JSDOM(navBar);
-                let string = `Timeline`;
+                let string = `Journal`;
                 let t = navBarDOM.window.document.createTextNode(string);
                 navBarDOM.window.document.querySelector("#welcome").appendChild(t);
 
@@ -619,7 +611,6 @@ app.get("/contact", function (req, res) {
                                 '</div>' +
                                 '<div class="img">' +
                                 '<img src="./avatar/avatar_' + finalUsers[i].ID + '.jpg">' +
-                                // imageProf +
                                 '</div>' +
                                 '<div class="bio">' +
                                 '<p class="head">Bio</p>' +
@@ -728,20 +719,6 @@ app.get("/userProfiles", function (req, res) {
                 profileDOM.window.document.getElementById("timeline").innerHTML += userPosts;
 
             });
-
-        // let imageURL;
-        // database.query(`SELECT * FROM userphotos WHERE userID = ${req.session.identity}`,
-        // function(error,results, fields) {
-        //     if (error)
-        //         throw error;
-        //     if (results.length > 0) {
-        //         imageURL = './avatar/avatar_' + req.session.identity + '.jpg';
-        //     } else {
-        //         imageURL = './avatar/placeholder.jpg';
-        //     }
-        //     img.src = imageURL;
-        // });
-
         res.send(profileDOM.serialize());
     }
     else {
@@ -1304,12 +1281,11 @@ app.get("/logout", function (req, res) {
     }
 });
 
-
-
-// Code to upload an image.
-// Adapted from Mutler and COMP 2537 example.
-// start of upload-app.js
-
+/**
+ * Block of code to upload an image.
+ * Adapted from Multer and COMP 2537 example.
+ * start of code
+ */
 const storage = multer.diskStorage({
     destination: function (req, file, callback) {
         callback(null, "./app/avatar/")
@@ -1339,18 +1315,6 @@ const uploadPostImages = multer({
     storage: postStorage
 });
 
-
-
-
-
-app.get('/', function (req, res) {
-    let doc = fs.readFileSync('./app/html/index.html', "utf8");
-    res.send(doc);
-
-});
-
-
-
 app.post('/upload-images', upload.array("files"), function (req, res) {
 
     for (let i = 0; i < req.files.length; i++) {
@@ -1372,12 +1336,9 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
     }
 
 });
-
-
-
-// end of upload-app.js
-
-
+/**
+ * end of code
+ */
 
 app.post('/upload-post-images', uploadPostImages.array("files"), function (req, res) {
     if (req.files.length > 0) {
@@ -1550,13 +1511,6 @@ app.get("/gabChat", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/gabChat.html", "utf8");
         let profileDOM = new JSDOM(profile);
-        // let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-        // let navBarDOM = new JSDOM(navBar);
-        // let string = `Chat`;
-        // let t = navBarDOM.window.document.createTextNode(string);
-        // navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-        // profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-
         res.send(profileDOM.serialize());
     }
     else {
