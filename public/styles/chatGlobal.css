@@ -49,6 +49,8 @@ a {
 	background: #fff;
 	margin: 10px;
 	overflow: hidden;
+    border-radius: 10px;
+    
 }
 
 .text {
@@ -111,11 +113,12 @@ a {
 
 .chat-messages {
 	padding: 30px;
-	max-height: 500px;
+	height: 55vh;
 	overflow-y: scroll;
     background-image: url('../img/chat-bg.jpg');
     background-position: center;
     background-size: contain;
+    border-radius: 10px;
 }
 
 .chat-messages .message {
@@ -193,8 +196,11 @@ i.fas.fa-paper-plane{
 .join-main {
 	padding: 30px 40px;
 	background: var(--dark-color-b);
-    border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
+    margin-top: 50%;
+    margin-bottom: 50%;
+    border-radius: 10px;
+    margin-left: 1em;
+    margin-right: 1em;
 }
 
 .join-main p {
@@ -243,6 +249,7 @@ i.fas.fa-paper-plane{
     display: grid;
     place-content: center;
 }
+
 
 @media (max-width: 700px) {
 	.chat-main {

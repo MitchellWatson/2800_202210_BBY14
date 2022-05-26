@@ -1,5 +1,8 @@
-var coll = document.getElementsByClassName("collapsible");
-var i;
+let coll = document.getElementsByClassName("collapsible");
+let i;
+
+// Code addapted from https://www.w3schools.com/howto/howto_js_collapsible.asp
+// Collapsible for Help page
 
 for (i = 0; i < coll.length; i++) {
   coll[i].addEventListener("click", function() {
