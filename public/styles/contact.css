@@ -9,6 +9,8 @@
 }
 
 img {
+    width: 150px;
+    height: 150px;
     border-radius: 10px;
 }
 
@@ -45,11 +47,6 @@ img {
 .card .img {
     grid-column: 1;
     grid-row: 1 / span 2;
-}
-
-img {
-    width: 30vw;
-    height: 30vw;
 }
 
 .card .bio {
