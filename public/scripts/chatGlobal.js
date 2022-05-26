@@ -83,12 +83,15 @@ function outputRoomName(room) {
     roomName.innerText = room;
 }
 
+let count = 1;
+
 // Add users to DOM
 function outputUsers(users) {
     userList.innerHTML = "";
     users.forEach((user) => {
         const li = document.createElement("li");
-        li.innerText = user.username;
+        // li.innerText = user.username;
+        li.innerText = "senior" + count++;
         userList.appendChild(li);
     });
 }
