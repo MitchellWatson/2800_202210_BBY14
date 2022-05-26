@@ -64,18 +64,18 @@ app.use(bodyparser.urlencoded({
 }))
 
 // local db
-// const dbHost = "127.0.0.1";
-// const dbUser = "root";
-// const dbPassword = "";
-// const dbName = "comp2800";
+const dbHost = "127.0.0.1";
+const dbUser = "root";
+const dbPassword = "passwordSQL";
+const dbName = "comp2800";
 
 // heroku db
-const dbHost = "us-cdbr-east-05.cleardb.net";
-const dbUser = "b959a83957277c";
-const dbPassword = "5e9f74c2";
-const dbName = "heroku_2e384c4e07a3778";
+// const dbHost = "us-cdbr-east-05.cleardb.net";
+// const dbUser = "b959a83957277c";
+// const dbPassword = "5e9f74c2";
+// const dbName = "heroku_2e384c4e07a3778";
 
-const connection = mysql.createConnection({
+const connection = mysql.createPool({
     host: dbHost,
     user: dbUser,
     password: dbPassword,
@@ -190,18 +190,6 @@ app.get("/timeline", function (req, res) {
         let profile = fs.readFileSync("./app/html/timeline.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
-        const mysql = require("mysql2");
-
-        const connection = mysql.createConnection({
-            host: dbHost,
-            user: dbUser,
-            password: dbPassword,
-            database: dbName,
-            multipleStatements: "true"
-        });
-        connection.connect();
-
-
         connection.query(
             "SELECT * FROM posts ORDER BY postDate DESC",
             function (error, results, fields) {
@@ -280,17 +268,6 @@ app.get("/request", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/request.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
-        const mysql = require("mysql2");
-
-        const connection = mysql.createConnection({
-            host: dbHost,
-            user: dbUser,
-            password: dbPassword,
-            database: dbName,
-            multipleStatements: "true"
-        });
-        connection.connect();
 
         let listUsers = [];
 
@@ -395,17 +372,6 @@ app.get("/schedule", function (req, res) {
         let profile = fs.readFileSync("./app/html/schedule.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
-        const mysql = require("mysql2");
-
-        const connection = mysql.createConnection({
-            host: dbHost,
-            user: dbUser,
-            password: dbPassword,
-            database: dbName,
-            multipleStatements: "true"
-        });
-        connection.connect();
-
         let listUsers = [];
 
         connection.query('SELECT * FROM bby14_users;',
@@ -494,17 +460,6 @@ app.get("/incoming", function (req, res) {
         let profile = fs.readFileSync("./app/html/incoming.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
-        const mysql = require("mysql2");
-
-        const connection = mysql.createConnection({
-            host: dbHost,
-            user: dbUser,
-            password: dbPassword,
-            database: dbName,
-            multipleStatements: "true"
-        });
-        connection.connect();
-
         let listUsers = [];
 
         connection.query('SELECT * FROM bby14_users;',
@@ -591,21 +546,10 @@ app.get("/incoming", function (req, res) {
 });
 
 
-app.get("/contact", function (req, res) {
+app.get("/contact", async function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/contact.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
-        const mysql = require("mysql2");
-
-        const connection = mysql.createConnection({
-            host: dbHost,
-            user: dbUser,
-            password: dbPassword,
-            database: dbName,
-            multipleStatements: "true"
-        });
-        connection.connect();
 
         let listUsers = [];
 
@@ -626,6 +570,7 @@ app.get("/contact", function (req, res) {
                 if (error) {
                     console.log(error);
                 }
+                console.log(req.session.identity);
                 let listFriends = [];
                 for (let i = 0; i < results.length; i++) {
                     if (results[i].user == req.session.identity) {
@@ -691,7 +636,7 @@ app.get("/contact", function (req, res) {
                         '</div>';
                     usersProfiles.innerHTML += users;
                 }
-                if (finalUsers.length == 0) {
+                if (friends.length == 0) {
                     users = 'No friends yet.';
                     usersProfiles.innerHTML += users;
                 }
@@ -752,19 +697,7 @@ app.get("/userProfiles", function (req, res) {
         img.src = './avatar/avatar_' + req.session.identity + '.jpg';
 
 
-        const mysql3 = require("mysql2");
-
-        const database = mysql3.createConnection({
-            host: dbHost,
-            user: dbUser,
-            password: dbPassword,
-            database: dbName,
-            multipleStatements: "true"
-        });
-        database.connect();
-
-
-        database.query(`SELECT * FROM posts WHERE userID = ${req.session.identity}`,
+        connection.query(`SELECT * FROM posts WHERE userID = ${req.session.identity}`,
             function (error, results, fields) {
                 if (error) {
                     console.log(error);
@@ -813,14 +746,6 @@ app.get("/userProfiles", function (req, res) {
 app.post('/addRequest', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
-    let connection = mysql.createConnection({
-        host: dbHost,
-        user: dbUser,
-        password: dbPassword,
-        database: dbName,
-        multipleStatements: "true"
-    });
-    connection.connect();
     connection.query('INSERT INTO meet VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
         [req.session.identity, req.body.requestee, req.body.place, req.body.date, req.body.reason, 0, 0, req.body.id],
         function (error, results, fields) {
@@ -833,22 +758,12 @@ app.post('/addRequest', function (req, res) {
             });
 
         });
-    connection.end();
-
 });
 
 
 app.post('/create', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
-    let connection = mysql.createConnection({
-        host: dbHost,
-        user: dbUser,
-        password: dbPassword,
-        database: dbName,
-        multipleStatements: "true"
-    });
-    connection.connect();
     connection.query('INSERT INTO bby14_users VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, req.body.latitude, req.body.longitude, null, null, null, 0],
         function (error, results, fields) {
@@ -861,21 +776,11 @@ app.post('/create', function (req, res) {
             });
 
         });
-    connection.end();
-
 });
 
 app.post('/addTimeline', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
-    let connection = mysql.createConnection({
-        host: dbHost,
-        user: dbUser,
-        password: dbPassword,
-        database: dbName,
-        multipleStatements: "true"
-    });
-    connection.connect();
     connection.query('INSERT INTO posts VALUES (?, ?, ?, ?, ?)',
         [req.session.identity, req.body.unknown, req.body.posts, req.body.postDate, req.body.postTime],
         function (error, results, fields) {
@@ -888,21 +793,11 @@ app.post('/addTimeline', function (req, res) {
             });
 
         });
-    connection.end();
-
 });
 
 app.post('/updateIncoming', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
-    let connection = mysql.createConnection({
-        host: dbHost,
-        user: dbUser,
-        password: dbPassword,
-        database: dbName,
-        multipleStatements: "true"
-    });
-    connection.connect();
     connection.query('UPDATE meet SET accepted = ?, viewed = ? WHERE reqNum = ?',
         [parseInt(req.body.accepted), parseInt(req.body.viewed), parseInt(req.body.reqNum)],
         function (error, results, fields) {
@@ -919,14 +814,6 @@ app.post('/updateIncoming', function (req, res) {
 app.post('/updateLocation', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
-    let connection = mysql.createConnection({
-        host: dbHost,
-        user: dbUser,
-        password: dbPassword,
-        database: dbName,
-        multipleStatements: "true"
-    });
-    connection.connect();
     connection.query('UPDATE bby14_users SET latitude = ?, longitude = ? WHERE ID = ?',
         [req.body.latitude, req.body.longitude, req.session.identity],
         function (error, results, fields) {
@@ -943,14 +830,6 @@ app.post('/updateLocation', function (req, res) {
 app.post('/updateUser', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
-    let connection = mysql.createConnection({
-        host: dbHost,
-        user: dbUser,
-        password: dbPassword,
-        database: dbName,
-        multipleStatements: "true"
-    });
-    connection.connect();
     connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, age = ?, bio = ?, hobbies = ? WHERE ID = ?',
         [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.age, req.body.bio, req.body.hobbies, req.session.identity],
         function (error, results, fields) {
@@ -995,21 +874,12 @@ app.post('/updateUser', function (req, res) {
             })
         }
     })
-    connection.end();
 
 });
 
 app.post('/updateTimeline', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
-    let connection = mysql.createConnection({
-        host: dbHost,
-        user: dbUser,
-        password: dbPassword,
-        database: dbName,
-        multipleStatements: "true"
-    });
-    connection.connect();
     connection.query(`UPDATE posts SET posts = ? WHERE userID = ? AND postNum = ?`,
         [req.body.posts, req.session.identity, req.body.postNum],
         function (error, results, fields) {
@@ -1022,21 +892,11 @@ app.post('/updateTimeline', function (req, res) {
             });
 
         });
-    connection.end();
-
 });
 
 app.post('/updateAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
-    let connection = mysql.createConnection({
-        host: dbHost,
-        user: dbUser,
-        password: dbPassword,
-        database: dbName,
-        multipleStatements: "true"
-    });
-    connection.connect();
     connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, is_admin = ? WHERE ID = ?',
         [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.is_admin, req.body.id],
         function (error, results, fields) {
@@ -1049,21 +909,11 @@ app.post('/updateAdmin', function (req, res) {
             });
 
         });
-    connection.end();
-
 });
 
 app.post('/deleteAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
-    let connection = mysql.createConnection({
-        host: dbHost,
-        user: dbUser,
-        password: dbPassword,
-        database: dbName,
-        multipleStatements: "true"
-    });
-    connection.connect();
     connection.query('DELETE FROM bby14_users WHERE ID = ?',
         [req.body.id],
         function (error, results, fields) {
@@ -1076,8 +926,6 @@ app.post('/deleteAdmin', function (req, res) {
             });
 
         });
-    connection.end();
-
 });
 
 
@@ -1086,17 +934,6 @@ app.get("/admin-users", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/adminUsers.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
-        const mysql = require("mysql2");
-
-        const connection = mysql.createConnection({
-            host: dbHost,
-            user: dbUser,
-            password: dbPassword,
-            database: dbName,
-            multipleStatements: "true"
-        });
-        connection.connect();
 
         connection.query(
             "SELECT * FROM bby14_users",
@@ -1162,19 +999,7 @@ app.get("/friendFinder", function (req, res) {
         let profile = fs.readFileSync("./app/html/friendFinder.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
-        const mysql = require("mysql2");
-
-        const connection = mysql.createConnection({
-            host: dbHost,
-            user: dbUser,
-            password: dbPassword,
-            database: dbName,
-            multipleStatements: "true"
-        });
-        connection.connect();
-
         let userProfilePics = [];
-
 
 
         connection.query('SELECT * FROM userphotos;',
@@ -1270,10 +1095,8 @@ app.get("/friendFinder", function (req, res) {
                         }
                     }
                 }
-
-
-
-
+                console.log(newResults.length)
+                
                 const usersProfiles = profileDOM.window.document.createElement("div");
                 let users;
 
@@ -1365,14 +1188,6 @@ app.get("/friendFinder", function (req, res) {
 app.post('/updateFriends', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
-    let connection = mysql.createConnection({
-        host: dbHost,
-        user: dbUser,
-        password: dbPassword,
-        database: dbName,
-        multipleStatements: "true"
-    });
-    connection.connect();
     connection.query('INSERT INTO Friends VALUES (?, ?)',
         [req.session.identity, req.body.id],
         function (error, results, fields) {
@@ -1385,8 +1200,6 @@ app.post('/updateFriends', function (req, res) {
             });
 
         });
-    connection.end();
-
 });
 
 
@@ -1438,16 +1251,7 @@ app.get("/main", function (req, res) {
 
 app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
-    const mysql = require("mysql2");
-    const connection = mysql.createConnection({
-        host: dbHost,
-        user: dbUser,
-        password: dbPassword,
-        database: dbName,
-        multipleStatements: "true"
-    });
 
-    connection.connect();
     // Checks if user typed in matching email and password
     const loginInfo = `USE ${dbName}; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
 
@@ -1550,7 +1354,6 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
         req.files[i].filename = req.files[i].originalname;
     }
 
-    connection.connect();
     if (!req.files[0].filename) {
         console.log("No file upload");
     } else {
@@ -1558,7 +1361,6 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
         let imgsrc = "avatar_" + req.session.identity + "." + req.files[0].originalname.split(".").pop();
         let updateData = `DELETE FROM userphotos WHERE userID = ${req.session.identity}; INSERT INTO userphotos (userID, imageID) VALUES (?, ?);`
 
-        console.log(imgsrc);
         connection.query(updateData, [req.session.identity, imgsrc], function (err, result) {
 
             if (err) throw err
@@ -1575,7 +1377,6 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
 
 
 app.post('/upload-post-images', uploadPostImages.array("files"), function (req, res) {
-    connection.connect();
     if (req.files.length > 0) {
         for (let i = 0; i < req.files.length; i++) {
             req.files[i].filename = req.files[i].originalname;
@@ -1794,5 +1595,4 @@ app.get("/gabChat", function (req, res) {
 
 //For Heroku deployment
 // app.listen(process.env.PORT || 3000);
-
 
