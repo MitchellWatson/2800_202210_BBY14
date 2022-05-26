@@ -64,16 +64,16 @@ app.use(bodyparser.urlencoded({
 }))
 
 // local db
-// const dbHost = "127.0.0.1";
-// const dbUser = "root";
-// const dbPassword = "";
-// const dbName = "comp2800";
+const dbHost = "127.0.0.1";
+const dbUser = "root";
+const dbPassword = "password";
+const dbName = "comp2800";
 
 // heroku db
-const dbHost = "us-cdbr-east-05.cleardb.net";
-const dbUser = "b959a83957277c";
-const dbPassword = "5e9f74c2";
-const dbName = "heroku_2e384c4e07a3778";
+// const dbHost = "us-cdbr-east-05.cleardb.net";
+// const dbUser = "b959a83957277c";
+// const dbPassword = "5e9f74c2";
+// const dbName = "heroku_2e384c4e07a3778";
 
 const connection = mysql.createPool({
     host: dbHost,
@@ -619,7 +619,7 @@ app.get("/contact", function (req, res) {
                                 '</div>' +
                                 '<div class="img">' +
                                 '<img src="./avatar/avatar_' + finalUsers[i].ID + '.jpg">' +
-                                // imageProf +
+                              
                                 '</div>' +
                                 '<div class="bio">' +
                                 '<p class="head">Bio</p>' +
@@ -647,7 +647,7 @@ app.get("/contact", function (req, res) {
         
         
                         profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
-        
+                      
                         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
                         let navBarDOM = new JSDOM(navBar);
                         let string = `Contact`;
@@ -1251,7 +1251,7 @@ app.get("/main", function (req, res) {
 // database: dbName,
 // multipleStatements: "true"
 
-
+let chatUser;
 app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
 
@@ -1282,11 +1282,12 @@ app.post("/login", function (req, res) {
             req.session.bio = validUserInfo.bio;
             req.session.hobbies = validUserInfo.hobbies;
             req.session.userType = validUserInfo.is_admin;
-            seshUser = req.session.first_name;
+            chatUser = req.session.first_name;
 
             req.session.save(function (err) {
                 // session saved. for analytics we could record this in db
             })
+            console.log(req.session.identity);
             res.send({ status: "success", msg: "Logged in." });
         }
     })
@@ -1370,7 +1371,6 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
             console.log("file uploaded")
         })
     }
-
 });
 
 
@@ -1386,7 +1386,9 @@ app.post('/upload-post-images', uploadPostImages.array("files"), function (req, 
 
             connection.query('INSERT INTO postphotos (userID, imageID) VALUES (?, ?)',
                 [req.session.identity, imgPath],
-                function (error, results, fields) { });
+                function (error, results, fields) {  
+                           
+                });
         }
         res.send({
             status: "success",
@@ -1497,20 +1499,20 @@ server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 // code for one-to-one chat; work in progress
 io.on('connection', socket => {
-    socket.on('joinRoom', ({ seshUser, room }) => {
-        const user = newUser(socket.id, seshUser, room);
+    socket.on('joinRoom', ({ chatUser}) => {
+        const user = newUser(socket.id, chatUser);
 
         socket.join(user.room);
 
         // General welcome
-        socket.emit('message', formatMessage("GabChat", 'Messages are limited to this room!'));
+        socket.emit('message', formatMessage("GabChat", 'Chat messages will be erased upon log out'));
 
         // Broadcast everytime users connects
         socket.broadcast
             .to(user.room)
             .emit(
                 'message',
-                formatMessage("GabChat", `${user.seshUser} has joined the room`)
+                formatMessage("GabChat", 'Your friend has joined the room')
             );
 
         // Current active users and room name
@@ -1524,7 +1526,7 @@ io.on('connection', socket => {
     socket.on('chatMessage', msg => {
         const user = getActiveUser(socket.id);
 
-        io.to(user.room).emit('message', formatMessage(user.seshUser, msg));
+        io.to(user.room).emit('message', formatMessage(chatUser, msg));
     });
 
     // Runs when client disconnects
@@ -1534,7 +1536,7 @@ io.on('connection', socket => {
         if (user) {
             io.to(user.room).emit(
                 'message',
-                formatMessage("WebCage", `${user.seshUser} has left the room`)
+                formatMessage("GabChat", `${chatUser} has left the room`)
             );
 
             // Current active users and room name
@@ -1550,13 +1552,7 @@ app.get("/gabChat", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/gabChat.html", "utf8");
         let profileDOM = new JSDOM(profile);
-        // let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-        // let navBarDOM = new JSDOM(navBar);
-        // let string = `Chat`;
-        // let t = navBarDOM.window.document.createTextNode(string);
-        // navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-        // profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-
+       
         res.send(profileDOM.serialize());
     }
     else {
