@@ -94,15 +94,9 @@ app.get("/", function (req, res) {
 });
 
 app.get("/register", function (req, res) {
-    if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/register.html", "utf8");
         let profileDOM = new JSDOM(profile);
         res.send(profileDOM.serialize());
-    }
-    else {
-        let doc = fs.readFileSync("./app/html/login.html", "utf8");
-        res.send(doc);
-    }
 });
 
 app.get("/game", function (req, res) {
@@ -244,7 +238,6 @@ app.get("/timeline", function (req, res) {
                     usersProfiles.innerHTML += users;
                 }
 
-
                 profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
 
                 let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
@@ -280,86 +273,83 @@ app.get("/request", function (req, res) {
                 for (let i = 0; i < results.length; i++) {
                     listUsers[listUsers.length] = results[i];
                 }
+
+                connection.query(
+                    "SELECT * FROM friends;",
+                    function (error, results, fields) {
+                        if (error) {
+                            console.log(error);
+                        }
+                        console.log(req.session.identity);
+                        let listFriends = [];
+                        for (let i = 0; i < results.length; i++) {
+                            if (results[i].user == req.session.identity) {
+                                listFriends[listFriends.length] = results[i];
+                            }
+                        }
+                        let friends = [];
+                        for (let i = 0; i < listFriends.length; i++) {
+                            for (let k = 0; k < results.length; k++) {
+                                if (listFriends[i].friend == results[k].user & results[k].friend == listFriends[i].user) {
+                                    friends[friends.length] = listFriends[i];
+                                }
+                            }
+                        }
+                        friends = friends.filter(function (e) {
+                            return e != null;
+                        })
+        
+                        let finalUsers = [];
+        
+                        for (let i = 0; i < friends.length; i++) {
+                            for (let k = 0; k < listUsers.length; k++) {
+                                if (friends[i].friend == listUsers[k].ID) {
+                                    finalUsers[finalUsers.length] = listUsers[k];
+                                }
+                            }
+                        }
+                        const usersProfiles = profileDOM.window.document.createElement("div");
+                        let users;
+                        users =
+                            '<div id="drop">' +
+                            '<div class="card2">' +
+                            '<div class="can">' +
+                            '<p style="text-decoration: underline;">Choose Friend</p>' +
+                            '<select type="date" id="personInput" placeholder="Select Friend">';
+                        for (let i = 0; i < finalUsers.length; i++) {
+                            users += '<option value="' + finalUsers[i].ID + '">' + finalUsers[i].first_name + ' ' + finalUsers[i].last_name + '</option>';
+                        }
+                        users +=
+                            '</select>' +
+                            '<p style="text-decoration: underline;">When</p>' +
+                            '<input type="datetime-local" id="dateInput">' +
+                            '<p style="text-decoration: underline;">Where</p>' +
+                            '<input type="text" id="placeInput" placeholder="Address or Location">' +
+                            '<p style="text-decoration: underline;">Occasion</p>' +
+                            '<input type="text" id="reasonInput" placeholder="Reason for outing">' +
+                            '<a href=""><button id="request" class="option">Request</button></a>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>';
+                        usersProfiles.innerHTML += users;
+        
+        
+                        profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+        
+                        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+                        let navBarDOM = new JSDOM(navBar);
+                        let string = `Request`;
+                        let t = navBarDOM.window.document.createTextNode(string);
+                        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+        
+                        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+        
+                        res.send(profileDOM.serialize());
+                    }
+                );
+
             });
-
-        connection.query(
-            "SELECT * FROM friends;",
-            function (error, results, fields) {
-                if (error) {
-                    console.log(error);
-                }
-                console.log(req.session.identity);
-                let listFriends = [];
-                for (let i = 0; i < results.length; i++) {
-                    if (results[i].user == req.session.identity) {
-                        listFriends[listFriends.length] = results[i];
-                    }
-                }
-                let friends = [];
-                for (let i = 0; i < listFriends.length; i++) {
-                    for (let k = 0; k < results.length; k++) {
-                        if (listFriends[i].friend == results[k].user & results[k].friend == listFriends[i].user) {
-                            friends[friends.length] = listFriends[i];
-                        }
-                    }
-                }
-                friends = friends.filter(function (e) {
-                    return e != null;
-                })
-
-                let finalUsers = [];
-
-                for (let i = 0; i < friends.length; i++) {
-                    for (let k = 0; k < listUsers.length; k++) {
-                        if (friends[i].friend == listUsers[k].ID) {
-                            finalUsers[finalUsers.length] = listUsers[k];
-                        }
-                    }
-                }
-                const usersProfiles = profileDOM.window.document.createElement("div");
-                let users;
-                users =
-                    '<div id="drop">' +
-                    '<div class="card2">' +
-                    '<div class="can">' +
-                    '<p style="text-decoration: underline;">Choose Friend</p>' +
-                    '<select type="date" id="personInput" placeholder="Select Friend">';
-                for (let i = 0; i < finalUsers.length; i++) {
-                    users += '<option value="' + finalUsers[i].ID + '">' + finalUsers[i].first_name + ' ' + finalUsers[i].last_name + '</option>';
-                }
-                users +=
-                    '</select>' +
-                    '<p style="text-decoration: underline;">When</p>' +
-                    '<input type="datetime-local" id="dateInput">' +
-                    '<p style="text-decoration: underline;">Where</p>' +
-                    '<input type="text" id="placeInput" placeholder="Address or Location">' +
-                    '<p style="text-decoration: underline;">Occasion</p>' +
-                    '<input type="text" id="reasonInput" placeholder="Reason for outing">' +
-                    '<a href=""><button id="request" class="option">Request</button></a>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>';
-                usersProfiles.innerHTML += users;
-
-                if (friends.length == 0) {
-                    users = 'No friends yet.';
-                    usersProfiles.innerHTML += users;
-                }
-
-
-                profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
-
-                let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-                let navBarDOM = new JSDOM(navBar);
-                let string = `Request`;
-                let t = navBarDOM.window.document.createTextNode(string);
-                navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
-                profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-
-                res.send(profileDOM.serialize());
-            }
-        );
+        
     }
     else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
@@ -383,71 +373,73 @@ app.get("/schedule", function (req, res) {
                 for (let i = 0; i < results.length; i++) {
                     listUsers[listUsers.length] = results[i];
                 }
-            });
 
-        connection.query(
-            "SELECT * FROM meet ORDER BY date ASC;",
-            function (error, results, fields) {
-                if (error) {
-                    console.log(error);
-                }
-                let newResults = []
-
-                for (let i = 0; i < results.length; i++) {
-                    if ((results[i].requestee == req.session.identity || results[i].requestor == req.session.identity) && results[i].viewed == 1 & results[i].accepted == 1) {
-                        newResults[newResults.length] = results[i];
-                    }
-                }
-
-                const usersProfiles = profileDOM.window.document.createElement("div");
-                let users;
-                for (let i = 0; i < newResults.length; i++) {
-                    users =
-                        '<div class="card2">' +
-                        '<div class="can">' +
-                        '<h2>Meet-up</h2>' +
-                        '<p class="orange">Who</p>' +
-                        '<p>';
-                    for (let k = 0; k < listUsers.length; k++) {
-                        if (newResults[i].requestee == listUsers[k].ID && newResults[i].requestee != req.session.identity) {
-                            users += listUsers[k].first_name + ' ' + listUsers[k].last_name;
-                        } else if (newResults[i].requestor == listUsers[k].ID && newResults[i].requestor != req.session.identity) {
-                            users += listUsers[k].first_name + ' ' + listUsers[k].last_name;
+                connection.query(
+                    "SELECT * FROM meet ORDER BY date ASC;",
+                    function (error, results, fields) {
+                        if (error) {
+                            console.log(error);
                         }
+                        let newResults = []
+        
+                        for (let i = 0; i < results.length; i++) {
+                            if ((results[i].requestee == req.session.identity || results[i].requestor == req.session.identity) && results[i].viewed == 1 & results[i].accepted == 1) {
+                                newResults[newResults.length] = results[i];
+                            }
+                        }
+        
+                        const usersProfiles = profileDOM.window.document.createElement("div");
+                        let users;
+                        for (let i = 0; i < newResults.length; i++) {
+                            users =
+                                '<div class="card2">' +
+                                '<div class="can">' +
+                                '<h2>Meet-up</h2>' +
+                                '<p class="orange">Who</p>' +
+                                '<p>';
+                            for (let k = 0; k < listUsers.length; k++) {
+                                if (newResults[i].requestee == listUsers[k].ID && newResults[i].requestee != req.session.identity) {
+                                    users += listUsers[k].first_name + ' ' + listUsers[k].last_name;
+                                } else if (newResults[i].requestor == listUsers[k].ID && newResults[i].requestor != req.session.identity) {
+                                    users += listUsers[k].first_name + ' ' + listUsers[k].last_name;
+                                }
+                            }
+                            users +=
+                                '</p>' +
+                                '<p class="orange">When</p>' +
+                                '<p>' + newResults[i].date + '</p>' +
+                                '<p class="orange">Where</p>' +
+                                '<p>' + newResults[i].place + '</p>' +
+                                '<p class="orange">Occasion</p>' +
+                                '<p>' + newResults[i].reason + '</p>' +
+                                '</div>' +
+                                '</div>';
+                            usersProfiles.innerHTML += users;
+                        }
+        
+        
+                        if (newResults.length == 0) {
+                            users = 'No meet-ups scheduled.';
+                            usersProfiles.innerHTML += users;
+                        }
+        
+        
+                        profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+        
+                        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+                        let navBarDOM = new JSDOM(navBar);
+                        let string = `Schedule`;
+                        let t = navBarDOM.window.document.createTextNode(string);
+                        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+        
+                        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+        
+                        res.send(profileDOM.serialize());
                     }
-                    users +=
-                        '</p>' +
-                        '<p class="orange">When</p>' +
-                        '<p>' + newResults[i].date + '</p>' +
-                        '<p class="orange">Where</p>' +
-                        '<p>' + newResults[i].place + '</p>' +
-                        '<p class="orange">Occasion</p>' +
-                        '<p>' + newResults[i].reason + '</p>' +
-                        '</div>' +
-                        '</div>';
-                    usersProfiles.innerHTML += users;
-                }
+                );
 
-
-                if (newResults.length == 0) {
-                    users = 'No requests yet.';
-                    usersProfiles.innerHTML += users;
-                }
-
-
-                profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
-
-                let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-                let navBarDOM = new JSDOM(navBar);
-                let string = `Schedule`;
-                let t = navBarDOM.window.document.createTextNode(string);
-                navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
-                profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-
-                res.send(profileDOM.serialize());
-            }
-        );
+            });
+        
     }
     else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
@@ -471,73 +463,75 @@ app.get("/incoming", function (req, res) {
                 for (let i = 0; i < results.length; i++) {
                     listUsers[listUsers.length] = results[i];
                 }
-            });
 
-        connection.query(
-            "SELECT * FROM meet ORDER BY date ASC;",
-            function (error, results, fields) {
-                if (error) {
-                    console.log(error);
-                }
-                let newResults = []
-
-                for (let i = 0; i < results.length; i++) {
-                    if (results[i].requestee == req.session.identity && results[i].viewed == 0) {
-                        newResults[newResults.length] = results[i];
-                    }
-                }
-
-                const usersProfiles = profileDOM.window.document.createElement("div");
-                let users;
-                for (let i = 0; i < newResults.length; i++) {
-                    users =
-                        '<div id="drop">' +
-                        '<div class="card2">' +
-                        '<div class="can">' +
-                        '<h2>Meet-up Request</h2>' +
-                        '<p style="text-decoration: underline;">Who</p>' +
-                        '<p>';
-                    for (let k = 0; k < listUsers.length; k++) {
-                        if (newResults[i].requestor == listUsers[k].ID) {
-                            users += listUsers[k].first_name + ' ' + listUsers[k].last_name;
+                connection.query(
+                    "SELECT * FROM meet ORDER BY date ASC;",
+                    function (error, results, fields) {
+                        if (error) {
+                            console.log(error);
                         }
+                        let newResults = []
+        
+                        for (let i = 0; i < results.length; i++) {
+                            if (results[i].requestee == req.session.identity && results[i].viewed == 0) {
+                                newResults[newResults.length] = results[i];
+                            }
+                        }
+        
+                        const usersProfiles = profileDOM.window.document.createElement("div");
+                        let users;
+                        for (let i = 0; i < newResults.length; i++) {
+                            users =
+                                '<div id="drop">' +
+                                '<div class="card2">' +
+                                '<div class="can">' +
+                                '<h2>Meet-up Request</h2>' +
+                                '<p style="text-decoration: underline;">Who</p>' +
+                                '<p>';
+                            for (let k = 0; k < listUsers.length; k++) {
+                                if (newResults[i].requestor == listUsers[k].ID) {
+                                    users += listUsers[k].first_name + ' ' + listUsers[k].last_name;
+                                }
+                            }
+                            users +=
+                                '</p>' +
+                                '<p style="text-decoration: underline;">When</p>' +
+                                '<p>' + newResults[i].date + '</p>' +
+                                '<p style="text-decoration: underline;">Where</p>' +
+                                '<p>' + newResults[i].place + '</p>' +
+                                '<p style="text-decoration: underline;">Occasion</p>' +
+                                '<p>' + newResults[i].reason + '</p>' +
+                                '<a id="accept" target="' + newResults[i].reqNum + '" class="option">Accept</a>' +
+                                '<a id="decline" target="' + newResults[i].reqNum + '" class="option">Decline</a>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>';
+                            usersProfiles.innerHTML += users;
+                        }
+        
+        
+                        if (newResults.length == 0) {
+                            users = 'No requests yet.';
+                            usersProfiles.innerHTML += users;
+                        }
+        
+        
+                        profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+        
+                        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+                        let navBarDOM = new JSDOM(navBar);
+                        let string = `Incoming`;
+                        let t = navBarDOM.window.document.createTextNode(string);
+                        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+        
+                        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+        
+                        res.send(profileDOM.serialize());
                     }
-                    users +=
-                        '</p>' +
-                        '<p style="text-decoration: underline;">When</p>' +
-                        '<p>' + newResults[i].date + '</p>' +
-                        '<p style="text-decoration: underline;">Where</p>' +
-                        '<p>' + newResults[i].place + '</p>' +
-                        '<p style="text-decoration: underline;">Occasion</p>' +
-                        '<p>' + newResults[i].reason + '</p>' +
-                        '<a id="accept" target="' + newResults[i].reqNum + '" class="option">Accept</a>' +
-                        '<a id="decline" target="' + newResults[i].reqNum + '" class="option">Decline</a>' +
-                        '</div>' +
-                        '</div>' +
-                        '</div>';
-                    usersProfiles.innerHTML += users;
-                }
+                );
 
-
-                if (newResults.length == 0) {
-                    users = 'No requests yet.';
-                    usersProfiles.innerHTML += users;
-                }
-
-
-                profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
-
-                let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-                let navBarDOM = new JSDOM(navBar);
-                let string = `Incoming`;
-                let t = navBarDOM.window.document.createTextNode(string);
-                navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
-                profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-
-                res.send(profileDOM.serialize());
-            }
-        );
+            });
+        
     }
     else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
@@ -562,99 +556,101 @@ app.get("/contact", async function (req, res) {
                 for (let i = 0; i < results.length; i++) {
                     listUsers[listUsers.length] = results[i];
                 }
+
+                connection.query(
+                    "SELECT * FROM friends;",
+                    function (error, results, fields) {
+                        if (error) {
+                            console.log(error);
+                        }
+                        console.log(req.session.identity);
+                        let listFriends = [];
+                        for (let i = 0; i < results.length; i++) {
+                            if (results[i].user == req.session.identity) {
+                                listFriends[listFriends.length] = results[i];
+                            }
+                        }
+                        let friends = [];
+                        for (let i = 0; i < listFriends.length; i++) {
+                            for (let k = 0; k < results.length; k++) {
+                                if (listFriends[i].friend == results[k].user & results[k].friend == listFriends[i].user) {
+                                    friends[friends.length] = listFriends[i];
+                                }
+                            }
+                        }
+                        friends = friends.filter(function (e) {
+                            return e != null;
+                        })
+        
+                        let finalUsers = [];
+        
+                        for (let i = 0; i < friends.length; i++) {
+                            for (let k = 0; k < listUsers.length; k++) {
+                                if (friends[i].friend == listUsers[k].ID) {
+                                    finalUsers[finalUsers.length] = listUsers[k];
+                                }
+                            }
+                        }
+                        const usersProfiles = profileDOM.window.document.createElement("div");
+                        let users;
+        
+                        for (let i = 0; i < finalUsers.length; i++) {
+                            users =
+                                '<div name="username" id="username" class="' + req.session.first_name + '"></div>' +
+                                '<div class="card">' +
+                                '<div class="name">' +
+                                '<p class="head" >Name</p>' +
+                                '<p id="name">' + finalUsers[i].first_name + ' ' + finalUsers[i].last_name + '</p>' +
+                                '</div>' +
+                                '<div class="age">' +
+                                '<p class="head">Age</p>' +
+                                '<p>' + finalUsers[i].age + '</p>' +
+                                '</div>' +
+                                '<div class="img">' +
+                                '<img src="./avatar/avatar_' + finalUsers[i].ID + '.jpg">' +
+                                // imageProf +
+                                '</div>' +
+                                '<div class="bio">' +
+                                '<p class="head">Bio</p>' +
+                                '<p>' + finalUsers[i].bio + '</p>' +
+                                '</div>' +
+                                '<div class="hobbies">' +
+                                '<p class="head">Hobbies</p>';
+                            if (finalUsers[i].hobbies != null) {
+                                users += '<p>' + finalUsers[i].hobbies + '</p>';
+                            } else {
+                                users += '<p>No hobbies listed</p>'
+                            }
+                            users += '</div>'
+                            users +=
+                                '<div class="button">' +
+                                '<a href= "/gabChat" target="' + finalUsers[i].ID + '" class="option add"><span class="material-symbols-outlined">sms</span>Chat</a>' +
+                                '</div>' +
+                                '</div>';
+                            usersProfiles.innerHTML += users;
+                        }
+                        if (friends.length == 0) {
+                            users = 'No friends yet.';
+                            usersProfiles.innerHTML += users;
+                        }
+        
+        
+                        profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+        
+                        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+                        let navBarDOM = new JSDOM(navBar);
+                        let string = `Contact`;
+                        let t = navBarDOM.window.document.createTextNode(string);
+                        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+        
+                        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+        
+                        res.send(profileDOM.serialize());
+                    }
+                );
+
             });
-
-        connection.query(
-            "SELECT * FROM friends;",
-            function (error, results, fields) {
-                if (error) {
-                    console.log(error);
-                }
-                console.log(req.session.identity);
-                let listFriends = [];
-                for (let i = 0; i < results.length; i++) {
-                    if (results[i].user == req.session.identity) {
-                        listFriends[listFriends.length] = results[i];
-                    }
-                }
-                let friends = [];
-                for (let i = 0; i < listFriends.length; i++) {
-                    for (let k = 0; k < results.length; k++) {
-                        if (listFriends[i].friend == results[k].user & results[k].friend == listFriends[i].user) {
-                            friends[friends.length] = listFriends[i];
-                        }
-                    }
-                }
-                friends = friends.filter(function (e) {
-                    return e != null;
-                })
-
-                let finalUsers = [];
-
-                for (let i = 0; i < friends.length; i++) {
-                    for (let k = 0; k < listUsers.length; k++) {
-                        if (friends[i].friend == listUsers[k].ID) {
-                            finalUsers[finalUsers.length] = listUsers[k];
-                        }
-                    }
-                }
-                const usersProfiles = profileDOM.window.document.createElement("div");
-                let users;
-
-                for (let i = 0; i < finalUsers.length; i++) {
-                    users =
-                        '<div name="username" id="username" class="' + req.session.first_name + '"></div>' +
-                        '<div class="card">' +
-                        '<div class="name">' +
-                        '<p class="head" >Name</p>' +
-                        '<p id="name">' + finalUsers[i].first_name + ' ' + finalUsers[i].last_name + '</p>' +
-                        '</div>' +
-                        '<div class="age">' +
-                        '<p class="head">Age</p>' +
-                        '<p>' + finalUsers[i].age + '</p>' +
-                        '</div>' +
-                        '<div class="img">' +
-                        '<img src="./avatar/avatar_' + finalUsers[i].ID + '.jpg">' +
-                        // imageProf +
-                        '</div>' +
-                        '<div class="bio">' +
-                        '<p class="head">Bio</p>' +
-                        '<p>' + finalUsers[i].bio + '</p>' +
-                        '</div>' +
-                        '<div class="hobbies">' +
-                        '<p class="head">Hobbies</p>';
-                    if (finalUsers[i].hobbies != null) {
-                        users += '<p>' + finalUsers[i].hobbies + '</p>';
-                    } else {
-                        users += '<p>No hobbies listed</p>'
-                    }
-                    users += '</div>'
-                    users +=
-                        '<div class="button">' +
-                        '<a href= "/gabChat" target="' + finalUsers[i].ID + '" class="option add"><span class="material-symbols-outlined">sms</span>Chat</a>' +
-                        '</div>' +
-                        '</div>';
-                    usersProfiles.innerHTML += users;
-                }
-                if (friends.length == 0) {
-                    users = 'No friends yet.';
-                    usersProfiles.innerHTML += users;
-                }
-
-
-                profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
-
-                let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-                let navBarDOM = new JSDOM(navBar);
-                let string = `Contact`;
-                let t = navBarDOM.window.document.createTextNode(string);
-                navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
-                profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-
-                res.send(profileDOM.serialize());
-            }
-        );
+        
     }
     else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
@@ -751,12 +747,16 @@ app.post('/addRequest', function (req, res) {
         function (error, results, fields) {
             if (error) {
                 console.log(error);
-            }
+                res.send({
+                    status: "fail",
+                    msg: "Recorded not updated."
+                });
+            } else {
             res.send({
                 status: "success",
                 msg: "Recorded updated."
             });
-
+        }
         });
 });
 
@@ -769,12 +769,16 @@ app.post('/create', function (req, res) {
         function (error, results, fields) {
             if (error) {
                 console.log(error);
+                res.send({
+                    status: "fail",
+                    msg: "Recorded failed."
+                });
+            } else {
+                res.send({
+                    status: "success",
+                    msg: "Recorded updated."
+                });
             }
-            res.send({
-                status: "success",
-                msg: "Recorded updated."
-            });
-
         });
 });
 
@@ -840,40 +844,40 @@ app.post('/updateUser', function (req, res) {
                 status: "success",
                 msg: "Recorded updated."
             });
+
+            const loginInfo = `USE ${dbName}; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
+    
+            connection.query(loginInfo, function (error, results, fields) {
+                /* If there is an error, alert user of error
+                *  If the length of results array is 0, then there was no matches in database
+                *  If no error, then it is valid login and save info for session
+                */
+                if (error) {
+                    // change this to notify user of error
+                } else if (results[1].length == 0) {
+                    res.send({ status: "fail", msg: "Incorrect email or password!" });
+                } else {
+                    let validUserInfo = results[1][0];
+                    req.session.loggedIn = true;
+                    req.session.email = validUserInfo.email;
+                    req.session.first_name = validUserInfo.first_name;
+                    req.session.last_name = validUserInfo.last_name;
+                    req.session.password = validUserInfo.password;
+                    req.session.identity = validUserInfo.ID;
+                    req.session.longitude = validUserInfo.longitude;
+                    req.session.latitude = validUserInfo.latitude;
+                    req.session.age = validUserInfo.age;
+                    req.session.bio = validUserInfo.bio;
+                    req.session.hobbies = validUserInfo.hobbies;
+                    req.session.userType = validUserInfo.is_admin;
+        
+                    req.session.save(function (err) {
+                        // session saved. for analytics we could record this in db
+                    });
+                }
+            });
+
         });
-
-
-
-    const loginInfo = `USE ${dbName}; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
-    connection.query(loginInfo, function (error, results, fields) {
-        /* If there is an error, alert user of error
-        *  If the length of results array is 0, then there was no matches in database
-        *  If no error, then it is valid login and save info for session
-        */
-        if (error) {
-            // change this to notify user of error
-        } else if (results[1].length == 0) {
-            res.send({ status: "fail", msg: "Incorrect email or password!" });
-        } else {
-            let validUserInfo = results[1][0];
-            req.session.loggedIn = true;
-            req.session.email = validUserInfo.email;
-            req.session.first_name = validUserInfo.first_name;
-            req.session.last_name = validUserInfo.last_name;
-            req.session.password = validUserInfo.password;
-            req.session.identity = validUserInfo.ID;
-            req.session.longitude = validUserInfo.longitude;
-            req.session.latitude = validUserInfo.latitude;
-            req.session.age = validUserInfo.age;
-            req.session.bio = validUserInfo.bio;
-            req.session.hobbies = validUserInfo.hobbies;
-            req.session.userType = validUserInfo.is_admin;
-
-            req.session.save(function (err) {
-                // session saved. for analytics we could record this in db
-            })
-        }
-    })
 
 });
 
@@ -1001,7 +1005,6 @@ app.get("/friendFinder", function (req, res) {
 
         let userProfilePics = [];
 
-
         connection.query('SELECT * FROM userphotos;',
             function (error, results, fields) {
                 if (error)
@@ -1010,175 +1013,172 @@ app.get("/friendFinder", function (req, res) {
                     userProfilePics[i] = results[i];
                     console.log(userProfilePics[i].userID);
                 }
+
+                connection.query('SELECT * FROM friends WHERE user = ?;',
+                    req.session.identity,
+                    function (error, results, fields) {
+                        if (error) {
+                            console.log(error);
+                        }
+
+                        for (let i = 0; i < results.length; i++) {
+                            if (results[i].user == req.session.identity) {
+                                listFriends[listFriends.length] = results[i];
+                            }
+                        }
+
+                        connection.query(
+                            "SELECT * FROM bby14_users;",
+                            function (error, results, fields) {
+                                if (error) {
+                                    console.log(error);
+                                }
+                
+                                class Place {
+                                    constructor(ID, distance) {
+                                        this.ID = ID;
+                                        this.distance = distance;
+                                    }
+                
+                                    getId() {
+                                        return this.ID;
+                                    }
+                
+                                    getDistance() {
+                                        return this.distance;
+                                    }
+                                }
+                
+                                let places = [];
+                
+                                function compare(a, b) {
+                                    if (a.distance < b.distance) {
+                                        return -1;
+                                    }
+                                    if (a.distance > b.distance) {
+                                        return 1;
+                                    }
+                                    return 0;
+                                }
+                
+                                function checkIfIn(object) {
+                                    let num = 1;
+                                    for (let i = 0; i < listFriends.length; i++) {
+                                        if (object.ID == listFriends[i].friend) {
+                                            num = 0;
+                                        }
+                                    }
+                                    return num;
+                                }
+                
+                                for (let i = 0; i < results.length; i++) {
+                                    if (results[i].ID != req.session.identity && checkIfIn(results[i])) {
+                                        const first = req.session.latitude * Math.PI / 180;
+                                        const second = results[i].latitude * Math.PI / 180;
+                                        const mid = (results[i].longitude - req.session.longitude) * Math.PI / 180;
+                                        const R = 6371;
+                                        let distance = Math.acos(Math.sin(first) * Math.sin(second) + Math.cos(first) * Math.cos(second) * Math.cos(mid)) * R;
+                                        const place = new Place(results[i].ID, distance);
+                                        places[i] = place;
+                                    }
+                                }
+                                places.sort(compare);
+                                places = places.filter(function (e) {
+                                    return e != null;
+                                })
+                                let newResults = [];
+                
+                                for (let f = 0; f < places.length; f++) {
+                                    for (let k = 0; k < results.length; k++) {
+                                        if (places[f].getId() == results[k].ID) {
+                                            newResults[newResults.length] = results[k];
+                                        }
+                                    }
+                                }
+                
+                                const usersProfiles = profileDOM.window.document.createElement("div");
+                                let users;
+                
+                                for (let i = 0; i < newResults.length; i++) {
+                                    let age = (newResults[i].age ? '<p>' + newResults[i].age + '</p>' : '<p>Age not listed</p>');
+                                    // let imageProf = (userProfilePics.indexOf(newResults[i].ID) !== -1 ? '<img src="./avatar/' + userProfilePics[i].imageID + '>' : '<img src="./avatar/placeholder.jpg">');
+                
+                                    users =
+                                        '<div class="card">' +
+                                        '<div class="name">' +
+                                        '<p class="head" >Name</p>' +
+                                        '<p>' + newResults[i].first_name + ' ' + newResults[i].last_name + '</p>' +
+                                        '</div>' +
+                                        '<div class="age">' +
+                                        '<p class="head" >Age</p>' +
+                                        age +
+                                        '</div>' +
+                                        '<div class="img">' +
+                
+                                        '<img src="./avatar/avatar_' + newResults[i].ID + '.jpg">' +
+                                        // imageProf +
+                                        '</div>' +
+                                        '<div class="bio">' +
+                                        '<p class="head" >Bio</p>';
+                                    if (newResults[i].bio != null) {
+                                        users += '<p>' + newResults[i].bio + '</p>';
+                                    } else {
+                                        users += '<p>No bio listed</p>';
+                                    }
+                                    users +=
+                                        '</div>' +
+                                        '<div class="hobbies">' +
+                                        '<p class="head" >Hobbies</p>';
+                                    if (newResults[i].hobbies != null) {
+                                        users += '<p>' + newResults[i].hobbies + '</p>';
+                                    } else {
+                                        users += '<p>No hobbies listed</p>'
+                                    }
+                                    users += '</div>'
+                                    users += '<div class="distance">' +
+                                        '<p class="head" >Distance</p>' +
+                                        '<p>';
+                                    for (let k = 0; k < places.length; k++) {
+                                        if (places[k].getId() == newResults[i].ID) {
+                                            users += (places[k].getDistance()).toFixed(1) + 'km away';
+                                        }
+                                    }
+                                    users += '</p>' +
+                                        '</div>' +
+                                        '<div class="button">' +
+                                        '<a target="' + newResults[i].ID + '" class="option add">Add Friend</a>' +
+                                        '</div>' +
+                                        '</div>';
+                                    usersProfiles.innerHTML += users;
+                
+                                }
+
+                                if (places.length == 0) {
+                                    users = '<p id="alone">No users to be added.</p>';
+                                    usersProfiles.innerHTML += users;
+                                }
+                
+                                profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+                
+                                let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+                                let navBarDOM = new JSDOM(navBar);
+                                let string = `Nearby`;
+                                let t = navBarDOM.window.document.createTextNode(string);
+                                navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+                
+                                profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+                
+                                res.send(profileDOM.serialize());
+                            }
+                        );
+
+                });
+
             });
 
         let listFriends = [];
 
-        connection.query('SELECT * FROM friends;',
-            function (error, results, fields) {
-                if (error) {
-                    console.log(error);
-                }
-
-                for (let i = 0; i < results.length; i++) {
-                    if (results[i].user == req.session.identity) {
-                        listFriends[listFriends.length] = results[i];
-                    }
-                }
-            });
-
-        connection.query(
-            "SELECT * FROM bby14_users;",
-            function (error, results, fields) {
-                if (error) {
-                    console.log(error);
-                }
-
-                class Place {
-                    constructor(ID, distance) {
-                        this.ID = ID;
-                        this.distance = distance;
-                    }
-
-                    getId() {
-                        return this.ID;
-                    }
-
-                    getDistance() {
-                        return this.distance;
-                    }
-                }
-
-                let places = [];
-
-                function compare(a, b) {
-                    if (a.distance < b.distance) {
-                        return -1;
-                    }
-                    if (a.distance > b.distance) {
-                        return 1;
-                    }
-                    return 0;
-                }
-
-                function checkIfIn(object) {
-                    let num = 1;
-                    for (let i = 0; i < listFriends.length; i++) {
-                        if (object.ID == listFriends[i].friend) {
-                            num = 0;
-                        }
-                    }
-                    return num;
-                }
-
-                for (let i = 0; i < results.length; i++) {
-                    if (results[i].ID != req.session.identity && checkIfIn(results[i])) {
-                        const first = req.session.latitude * Math.PI / 180;
-                        const second = results[i].latitude * Math.PI / 180;
-                        const mid = (results[i].longitude - req.session.longitude) * Math.PI / 180;
-                        const R = 6371;
-                        let distance = Math.acos(Math.sin(first) * Math.sin(second) + Math.cos(first) * Math.cos(second) * Math.cos(mid)) * R;
-                        const place = new Place(results[i].ID, distance);
-                        places[i] = place;
-                    }
-                }
-                places.sort(compare);
-                places = places.filter(function (e) {
-                    return e != null;
-                })
-                let newResults = [];
-
-                for (let f = 0; f < places.length; f++) {
-                    for (let k = 0; k < results.length; k++) {
-                        if (places[f].getId() == results[k].ID) {
-                            newResults[newResults.length] = results[k];
-                        }
-                    }
-                }
-                console.log(newResults.length)
-                
-                const usersProfiles = profileDOM.window.document.createElement("div");
-                let users;
-
-                for (let i = 0; i < newResults.length; i++) {
-                    let age = (newResults[i].age ? '<p>' + newResults[i].age + '</p>' : '<p>Age not listed</p>');
-                    // let imageProf = (userProfilePics.indexOf(newResults[i].ID) !== -1 ? '<img src="./avatar/' + userProfilePics[i].imageID + '>' : '<img src="./avatar/placeholder.jpg">');
-
-                    users =
-                        '<div class="card">' +
-                        '<div class="name">' +
-                        '<p class="head" >Name</p>' +
-                        '<p>' + newResults[i].first_name + ' ' + newResults[i].last_name + '</p>' +
-                        '</div>' +
-                        '<div class="age">' +
-                        '<p class="head" >Age</p>' +
-                        age +
-                        '</div>' +
-                        '<div class="img">' +
-
-                        '<img src="./avatar/avatar_' + newResults[i].ID + '.jpg">' +
-                        // imageProf +
-                        '</div>' +
-                        '<div class="bio">' +
-                        '<p class="head" >Bio</p>';
-                    if (newResults[i].bio != null) {
-                        users += '<p>' + newResults[i].bio + '</p>';
-                    } else {
-                        users += '<p>No bio listed</p>';
-                    }
-                    users +=
-                        '</div>' +
-                        '<div class="hobbies">' +
-                        '<p class="head" >Hobbies</p>';
-                    if (newResults[i].hobbies != null) {
-                        users += '<p>' + newResults[i].hobbies + '</p>';
-                    } else {
-                        users += '<p>No hobbies listed</p>'
-                    }
-                    users += '</div>'
-                    users += '<div class="distance">' +
-                        '<p class="head" >Distance</p>' +
-                        '<p>';
-                    for (let k = 0; k < places.length; k++) {
-                        if (places[k].getId() == newResults[i].ID) {
-                            users += (places[k].getDistance()).toFixed(1) + 'km away';
-                        }
-                    }
-                    users += '</p>' +
-                        '</div>' +
-                        '<div class="button">' +
-                        '<a target="' + newResults[i].ID + '" class="option add">Add Friend</a>' +
-                        '</div>' +
-                        '</div>';
-                    usersProfiles.innerHTML += users;
-
-
-                }
-
-
-
-                if (places.length == 0) {
-                    users = '<p id="alone">No users to be added.</p>';
-                    usersProfiles.innerHTML += users;
-                }
-
-
-
-
-
-                profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
-
-                let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-                let navBarDOM = new JSDOM(navBar);
-                let string = `Nearby`;
-                let t = navBarDOM.window.document.createTextNode(string);
-                navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
-                profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-
-                res.send(profileDOM.serialize());
-            }
-        );
+        
     } else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
@@ -1380,7 +1380,6 @@ app.post('/upload-post-images', uploadPostImages.array("files"), function (req, 
     if (req.files.length > 0) {
         for (let i = 0; i < req.files.length; i++) {
             req.files[i].filename = req.files[i].originalname;
-
 
             connection.query('INSERT INTO postphotos (userID, imageID) VALUES (?, ?)',
                 [req.session.identity, imgPath],

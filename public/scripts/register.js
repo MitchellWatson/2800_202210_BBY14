@@ -41,9 +41,8 @@ var btn = document.getElementById("location");
 
 var span = document.getElementsByClassName("close")[0];
 
-var quote = document.getElementById("quote").innerHTML = 'Location has been sucessfully set.<span class="material-symbols-outlined">done</span>';
-
   btn.addEventListener("click", function() {
+    var quote = document.getElementById("quote").innerHTML = 'Location has been sucessfully set.<span class="material-symbols-outlined">done</span>';
         popUp.style.display = "block";
      })
 
@@ -62,6 +61,17 @@ document.getElementById("question").addEventListener("click", function () {
     document.getElementById("answer").style.display = "block";
 })
 
+let result = localStorage.getItem("result");
+let success = localStorage.getItem("success");
+  document.addEventListener("DOMContentLoaded", function() {
+      if (result == 1 && success == 0) {
+        popUp.style.display = "block";
+        document.getElementById("quote").innerHTML = 'Account was not registered. Please try again.<span class="material-symbols-outlined">close</span>';
+        localStorage.setItem("success", 0)
+        localStorage.setItem("result", 0)
+      }
+     })
+
 document.getElementById("submit").addEventListener("click", function (e) {
     
     e.preventDefault();
@@ -75,11 +85,15 @@ document.getElementById("submit").addEventListener("click", function (e) {
         if (data) {
             let dataParsed = JSON.parse(data);
 
-            if (dataParsed.status == "fail") {
-                document.getElementById("errorMsg").innerHTML = dataParsed.msg;
-            } else {
-                localStorage.setItem("email", email.value);
+            if (dataParsed.status == "success") {
+                localStorage.setItem("success", 1)
+                localStorage.setItem("result", 1)
                 window.location.replace("/");
+            } else {
+                localStorage.setItem("success", 0)
+                localStorage.setItem("result", 1)
+                window.location.replace("/register");
+
             }
         }
 

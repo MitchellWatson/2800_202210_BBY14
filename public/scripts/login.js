@@ -1,5 +1,6 @@
 // Code to do client side is adapted from a COMP 1537 assignment.
 "use strict";
+
 ready(function () {
     console.log("Client script loaded.");
 
@@ -38,6 +39,35 @@ ready(function () {
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         xhr.send(params);
     }
+
+var popUp = document.getElementById("popUp");
+
+var span = document.getElementsByClassName("close")[0];
+
+span.onclick = function() {
+    popUp.style.display = "none";
+}
+
+window.onclick = function(event) {
+  if (event.target == popUp) {
+    popUp.style.display = "none";
+  }
+}
+
+    let result = localStorage.getItem("result");
+    let success = localStorage.getItem("success");
+    console.log(result)
+    console.log(success)
+    window.addEventListener("load", function () {
+        console.log("here")
+        if (result == 1 && success == 1) {
+            console.log("here2")
+            popUp.style.display = "block";
+            document.getElementById("quote").innerHTML = 'Account successfully registered. <span class="material-symbols-outlined">done</span>';
+        }
+        localStorage.setItem("success", 0)
+        localStorage.setItem("result", 0)
+    })
 
     document.querySelector("#submit").addEventListener("click", function (e) {
         localStorage.setItem("value", 0);
