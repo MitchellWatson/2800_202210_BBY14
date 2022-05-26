@@ -23,11 +23,11 @@ const path = require('path');
 const { connect } = require("http2");
 const multer = require('multer');
 const { Blob } = require("buffer");
-
 const http = require('http');
 const server = http.createServer(app);
 const io = socketio(server);
 const formatMessage = require('./helpers/formatDate')
+let chatUser;
 
 // Custom imported modules used as helper methods for the chat features. 
 const {
@@ -72,7 +72,7 @@ app.use(bodyparser.urlencoded({
 // const dbPassword = "";
 // const dbName = "comp2800";
 
-// heroku db
+// --- Heroku hosting ---
 const dbHost = "us-cdbr-east-05.cleardb.net";
 const dbUser = "b959a83957277c";
 const dbPassword = "5e9f74c2";
@@ -87,7 +87,6 @@ const connection = mysql.createPool({
 });
 
 // Session redirect.
-// Will fetch skeleton nav and footer and assign page title
 // If logged in, depending on user type, will divert to main pahe
 // Of not logged in, will divert to login page
 app.get("/", function (req, res) {
@@ -108,19 +107,17 @@ app.get("/register", function (req, res) {
 });
 
 // Session redirect.
-// Will fetch skeleton nav and footer and assign page title
 // Will check if logged in, then rediect to game page
 app.get("/game", function (req, res) {
     if (req.session.loggedIn) {
+        // Will fetch skeleton nav and footer and assign page title
         let profile = fs.readFileSync("./app/html/game.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
         let navBarDOM = new JSDOM(navBar);
         let string = `Game`;
         let t = navBarDOM.window.document.createTextNode(string);
         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
         res.send(profileDOM.serialize());
     }
@@ -131,19 +128,17 @@ app.get("/game", function (req, res) {
 });
 
 // Session redirect.
-// Will fetch skeleton nav and footer and assign page title
 // If logged in, will redirect to help page, if not, back to login
 app.get("/help", function (req, res) {
     if (req.session.loggedIn) {
+        // Will fetch skeleton nav and footer and assign page title
         let profile = fs.readFileSync("./app/html/help.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
         let navBarDOM = new JSDOM(navBar);
         let string = `Help`;
         let t = navBarDOM.window.document.createTextNode(string);
         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
         res.send(profileDOM.serialize());
     }
@@ -154,19 +149,17 @@ app.get("/help", function (req, res) {
 });
 
 // Session redirect.
-// Will fetch skeleton nav and footer and assign page title
 // If logged in, will redirect to meet-ups menu page, if not, back to login
 app.get("/meet", function (req, res) {
     if (req.session.loggedIn) {
+        // Will fetch skeleton nav and footer and assign page title
         let profile = fs.readFileSync("./app/html/meet.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
         let navBarDOM = new JSDOM(navBar);
         let string = `Meet-Up`;
         let t = navBarDOM.window.document.createTextNode(string);
         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
         res.send(profileDOM.serialize());
     }
@@ -177,7 +170,6 @@ app.get("/meet", function (req, res) {
 });
 
 // Session redirect.
-// Will fetch skeleton nav and footer and assign page title
 // If logged in, will redirect to timeline page, if not, back to login
 app.get("/timeline", function (req, res) {
     if (req.session.loggedIn) {
@@ -236,14 +228,13 @@ app.get("/timeline", function (req, res) {
                 }
                 profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
 
+                // Will fetch skeleton nav and footer and assign page title
                 let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
                 let navBarDOM = new JSDOM(navBar);
                 let string = `Journal`;
                 let t = navBarDOM.window.document.createTextNode(string);
                 navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
                 profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-
                 res.send(profileDOM.serialize());
             }
         );
@@ -255,7 +246,6 @@ app.get("/timeline", function (req, res) {
 
 
 // Session redirect.
-// Will fetch skeleton nav and footer and assign page title
 // If logged in, will redirect to request page in meet-up, if not, back to login
 app.get("/request", function (req, res) {
     if (req.session.loggedIn) {
@@ -346,13 +336,13 @@ app.get("/request", function (req, res) {
                         usersProfiles.innerHTML += users;
                         profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
 
+                        // Will fetch skeleton nav and footer and assign page title
                         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
                         let navBarDOM = new JSDOM(navBar);
                         let string = `Request`;
                         let t = navBarDOM.window.document.createTextNode(string);
                         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
                         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-
                         res.send(profileDOM.serialize());
                     }
                 );
@@ -365,7 +355,6 @@ app.get("/request", function (req, res) {
 });
 
 // Session redirect.
-// Will fetch skeleton nav and footer and assign page title
 // If logged in, will redirect to schedule page in meet-up, if not, back to login
 app.get("/schedule", function (req, res) {
     if (req.session.loggedIn) {
@@ -438,6 +427,7 @@ app.get("/schedule", function (req, res) {
                         }
                         profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
 
+                        // Will fetch skeleton nav and footer and assign page title
                         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
                         let navBarDOM = new JSDOM(navBar);
                         let string = `Schedule`;
@@ -456,7 +446,6 @@ app.get("/schedule", function (req, res) {
 });
 
 // Session redirect.
-// Will fetch skeleton nav and footer and assign page title
 // If logged in, will redirect to incoming page in meet-up, if not, back to login
 app.get("/incoming", function (req, res) {
     if (req.session.loggedIn) {
@@ -531,6 +520,7 @@ app.get("/incoming", function (req, res) {
                         }
                         profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
 
+                        // Will fetch skeleton nav and footer and assign page title
                         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
                         let navBarDOM = new JSDOM(navBar);
                         let string = `Incoming`;
@@ -549,7 +539,6 @@ app.get("/incoming", function (req, res) {
 });
 
 // Session redirect.
-// Will fetch skeleton nav and footer and assign page title
 // If logged in, will redirect to contact page, if not, back to login
 app.get("/contact", async function (req, res) {
     if (req.session.loggedIn) {
@@ -656,6 +645,7 @@ app.get("/contact", async function (req, res) {
                         }
                         profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
 
+                        // Will fetch skeleton nav and footer and assign page title
                         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
                         let navBarDOM = new JSDOM(navBar);
                         let string = `Contact`;
@@ -1202,9 +1192,12 @@ app.get("/friendFinder", function (req, res) {
     }
 })
 
+// Database insert.
+// Insert new friends relationship into friend table
 app.post('/updateFriends', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
+    // Insert both current user and selected friend from client side
     connection.query('INSERT INTO Friends VALUES (?, ?)',
         [req.session.identity, req.body.id],
         function (error, results, fields) {
@@ -1219,36 +1212,30 @@ app.post('/updateFriends', function (req, res) {
         });
 });
 
-
-
+// Session redirect.
+// If logged in, ad if user will redirect to user main page, if not user, to admin main page
 app.get("/main", function (req, res) {
-
     if (req.session.loggedIn) {
         if (req.session.userType) {
-
+            // Will fetch skeleton nav and footer and assign page title
             let profile = fs.readFileSync("./app/html/admin.html", "utf8");
             let profileDOM = new JSDOM(profile);
-
             let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
             let navBarDOM = new JSDOM(navBar);
             let string = `Admin`;
             let t = navBarDOM.window.document.createTextNode(string);
             navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
             profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
             res.send(profileDOM.serialize());
-
         } else {
+            // Will fetch skeleton nav and footer and assign page title
             let profile = fs.readFileSync("./app/html/main.html", "utf8");
             let profileDOM = new JSDOM(profile);
-
             let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
             let navBarDOM = new JSDOM(navBar);
             let string = `Home`;
-
             let t = navBarDOM.window.document.createTextNode(string);
             navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
             profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
             res.send(profileDOM.serialize());
         }
@@ -1257,21 +1244,10 @@ app.get("/main", function (req, res) {
     }
 });
 
-
-
-// host: dbHost,
-// user: dbUser,
-// password: "",
-// database: dbName,
-// multipleStatements: "true"
-
-let chatUser;
 app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
-
     // Checks if user typed in matching email and password
     const loginInfo = `USE ${dbName}; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
-
     connection.query(loginInfo, function (error, results, fields) {
         /* If there is an error, alert user of error
         *  If the length of results array is 0, then there was no matches in database
@@ -1283,7 +1259,6 @@ app.post("/login", function (req, res) {
             res.send({ status: "fail", msg: "Incorrect email or password!" });
         } else {
             let validUserInfo = results[1][0];
-
             req.session.loggedIn = true;
             req.session.email = validUserInfo.email;
             req.session.first_name = validUserInfo.first_name;
@@ -1307,6 +1282,7 @@ app.post("/login", function (req, res) {
     })
 });
 
+// Logs user out of session and destroies their cookies
 app.get("/logout", function (req, res) {
     if (req.session) {
         req.session.destroy(function (error) {
@@ -1319,27 +1295,23 @@ app.get("/logout", function (req, res) {
     }
 });
 
-
-
 // Code to upload an image.
 // Adapted from Mutler and COMP 2537 example.
 // start of upload-app.js
-
 const storage = multer.diskStorage({
     destination: function (req, file, callback) {
         callback(null, "./app/avatar/")
     },
     filename: function (req, file, callback) {
-        // // callback(null, "avatar_" + file.originalname.split('/').pop().trim());
         const sessionID = "" + req.session.identity;
-        // callback(null, "avatar_" + sessionID + "." + file.originalname.split(".").pop());
         callback(null, "avatar_" + sessionID + ".jpg");
     }
 });
 
+// Constant multer image upload variable
 const upload = multer({ storage: storage });
 
-// code to store images as posts for users. 
+// Code to store images as posts for users. 
 const postStorage = multer.diskStorage({
     destination: function (req, file, callback) {
         callback(null, "./app/posts/")
@@ -1350,77 +1322,34 @@ const postStorage = multer.diskStorage({
     }
 });
 
+// Multer storing posted image
 const uploadPostImages = multer({
     storage: postStorage
 });
 
-
-
-
-
-app.get('/', function (req, res) {
-    let doc = fs.readFileSync('./app/html/index.html', "utf8");
-    res.send(doc);
-
-});
-
-
-
+// Database insert.
+// Using Multer, images are stored in the database under the BLOB data type
 app.post('/upload-images', upload.array("files"), function (req, res) {
 
+    // Appends all filenames to original name
     for (let i = 0; i < req.files.length; i++) {
         req.files[i].filename = req.files[i].originalname;
     }
 
+    // Check for if file is there
     if (!req.files[0].filename) {
         console.log("No file upload");
     } else {
-
         let imgsrc = "avatar_" + req.session.identity + "." + req.files[0].originalname.split(".").pop();
+
+        // Deletes then reinserts new image into user photos table
         let updateData = `DELETE FROM userphotos WHERE userID = ${req.session.identity}; INSERT INTO userphotos (userID, imageID) VALUES (?, ?);`
-
         connection.query(updateData, [req.session.identity, imgsrc], function (err, result) {
-
             if (err) throw err
             console.log("file uploaded")
         })
     }
 });
-
-
-
-// end of upload-app.js
-
-
-
-app.post('/upload-post-images', uploadPostImages.array("files"), function (req, res) {
-    if (req.files.length > 0) {
-        for (let i = 0; i < req.files.length; i++) {
-            req.files[i].filename = req.files[i].originalname;
-
-            connection.query('INSERT INTO postphotos (userID, imageID) VALUES (?, ?)',
-                [req.session.identity, imgPath],
-                function (error, results, fields) {
-
-                });
-        }
-        res.send({
-            status: "success",
-            msg: "Image information added to database."
-        });
-        req.session.save(function (err) { });
-    } else {
-        connection.query('INSERT INTO postphotos (userID, imageID) VALUES (?, ?)',
-            [req.session.identity, null],
-            function (error, results, fields) { });
-        res.send({
-            status: "success",
-            msg: "No image has been uploaded"
-        });
-        req.session.save(function (err) { });
-    }
-});
-
 
 
 /**
@@ -1488,8 +1417,11 @@ io.on('connection', socket => {
     
 });
 
+// Session redirect.
+// If logged in, will redirect to global chat, if not, back to login
 app.get("/chatGlobalSelect", function (req, res) {
     if (req.session.loggedIn) {
+        // Will fetch skeleton nav and footer and assign page title
         let profile = fs.readFileSync("./app/html/chatGlobalSelect.html", "utf8");
         let profileDOM = new JSDOM(profile);
         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
@@ -1498,7 +1430,6 @@ app.get("/chatGlobalSelect", function (req, res) {
         let t = navBarDOM.window.document.createTextNode(string);
         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-
         res.send(profileDOM.serialize());
     }
     else {
@@ -1506,11 +1437,6 @@ app.get("/chatGlobalSelect", function (req, res) {
         res.send(doc);
     }
 });
-
-const PORT = process.env.PORT || 3000;
-
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
 
 // code for one-to-one chat; work in progress
 io.on('connection', socket => {
@@ -1563,11 +1489,12 @@ io.on('connection', socket => {
     });
 });
 
+// Session redirect.
+// If logged in, will redirect to private chat, if not, back to login
 app.get("/gabChat", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/gabChat.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
         res.send(profileDOM.serialize());
     }
     else {
@@ -1576,30 +1503,8 @@ app.get("/gabChat", function (req, res) {
     }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// app.set('port', process.env.PORT || 3000);
-// server.listen(app.get('port'));
-
-
-
-
-
-
-
-
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 // //For Milestone hand-ins:
 // let port = 8000;
@@ -1608,4 +1513,3 @@ app.get("/gabChat", function (req, res) {
 
 //For Heroku deployment
 // app.listen(process.env.PORT || 3000);
-
