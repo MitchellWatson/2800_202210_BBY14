@@ -1,6 +1,6 @@
 const chatForm = document.getElementById('chat-form');
 const chatMessages = document.querySelector('.chat-messages');
-const roomName = document.getElementById('room-name');
+const roomName = "Your chat";
 const userList = document.getElementById('users');
 
 // Get username and room from URL
@@ -73,10 +73,11 @@ function outputRoomName(room) {
 // Add users to DOM
 function outputUsers(users) {
  console.log({users})
+ let count = 1;
   userList.innerHTML = '';
   users.forEach((user) => {
     const li = document.createElement('li');
-    li.innerText = user.username;
+    li.innerText = '';
     userList.appendChild(li);
   });
 }
@@ -85,7 +86,32 @@ function outputUsers(users) {
 document.getElementById('leave-btn').addEventListener('click', () => {
   const leaveRoom = confirm('Are you sure you want to leave the chatroom?');
   if (leaveRoom) {
-    window.location = '../index.html';
+    window.location = '../main.html';
   } else {
   }
 });
+
+
+let buttonUpdate = document.getElementsByClassName("add");
+buttonUpdate.addEventListener("click", update);
+
+
+
+function update() {
+  // e.preventDefault();
+  let id = this.target;
+  
+  let queryString = "id=" + id;
+  ajaxPOST("/updateFriends", function (data) {
+      if (data) {
+          let dataParsed = JSON.parse(data);
+
+          if (dataParsed.status == "fail") {
+              document.getElementById("errorMsg").innerHTML = dataParsed.msg;
+          } else {
+              window.location.replace("/friendFinder");
+          }
+      }
+
+  }, queryString);
+}
