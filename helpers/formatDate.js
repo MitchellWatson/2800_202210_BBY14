@@ -5,6 +5,7 @@ function formatMessage(username, text) {
         username,
         text,
         time: moment().format('h:mm a')
+        // time: moment().tz("America/Los_Angeles").format('h:mm a')
     };
 }
 

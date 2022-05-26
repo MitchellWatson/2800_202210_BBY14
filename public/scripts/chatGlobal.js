@@ -16,7 +16,10 @@ const roomName = document.getElementById("room-name");
 const userList = document.getElementById("users");
 
 
-const username = "delta";
+// Get username and room from URL
+const { username, room } = Qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+});
 
 const socket = io();
 
