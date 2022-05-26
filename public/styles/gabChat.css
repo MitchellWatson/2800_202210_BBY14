@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 
 :root {
 	--dark-color-a: #000000;
@@ -12,13 +11,7 @@
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
-}
 
-body {
-	font-family: 'Roboto', sans-serif;
-	font-size: 16px;
-	background: var(--light-color);
-	margin: 20px;
 }
 
 ul {
@@ -42,18 +35,23 @@ a {
 /* Chat Page */
 
 .chat-container {
-	max-width: 1100px;
+	max-width: 94vw;
 	background: #fff;
-	margin: 30px auto;
+	margin: 10px;
 	overflow: hidden;
-	height: 100vh;
+    border-radius: 10px;
+    
+}
+
+.text {
+	word-wrap: break-word;
 }
 
 .chat-header {
 	background: var(--dark-color-a);
-	color: rgb(246, 245, 245);
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
+	color: #fff;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
 	padding: 15px;
 	display: flex;
 	align-items: center;
@@ -92,7 +90,6 @@ a {
 .chat-sidebar::-webkit-scrollbar {
     width: 1em;
 }
-
  
 .chat-sidebar::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
@@ -106,11 +103,12 @@ a {
 
 .chat-messages {
 	padding: 30px;
-	max-height: 500px;
+	height: 55vh;
 	overflow-y: scroll;
     background-image: url('../img/chat-bg.jpg');
     background-position: center;
     background-size: contain;
+    border-radius: 10px;
 }
 
 .chat-messages .message {
@@ -137,6 +135,8 @@ a {
 .chat-form-container {
 	padding: 20px 30px;
 	background-color: var(--dark-color-a);
+    border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
 }
 
 .chat-form-container form {
@@ -171,7 +171,7 @@ i.fas.fa-paper-plane{
 /* Join Page */
 .join-container {
 	max-width: 500px;
-	margin: 80px auto;
+	margin: auto;
 	color: #fff;
 }
 
@@ -179,15 +179,18 @@ i.fas.fa-paper-plane{
 	text-align: center;
 	padding: 20px;
 	background: var(--dark-color-a);
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
 }
 
 .join-main {
 	padding: 30px 40px;
 	background: var(--dark-color-b);
-    border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
+    margin-top: 50%;
+    margin-bottom: 50%;
+    border-radius: 10px;
+    margin-left: 1em;
+    margin-right: 1em;
 }
 
 .join-main p {
@@ -209,7 +212,6 @@ i.fas.fa-paper-plane{
 	height: 40px;
 	width: 100%;
     border-radius: 3px;
-
 }
 
 .join-main input[type='email']  {
@@ -231,12 +233,14 @@ i.fas.fa-paper-plane{
 	margin-top: 20px;
 	width: 100%;
     border: none;
-
 }
+
 .flex{
     display: grid;
     place-content: center;
 }
+
+
 @media (max-width: 700px) {
 	.chat-main {
 		display: block;

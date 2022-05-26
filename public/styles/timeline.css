@@ -11,6 +11,7 @@ h2 {
     padding: 10px;
     margin: 2vh;
     font-size: 3vh;
+    cursor: pointer;
 }
 
 .content {
@@ -132,7 +133,8 @@ h2 {
 @media only screen and (min-width: 430px) {
     #new{
         width: 435px;
-        margin: auto;
+        margin-left: auto;
+        margin-right: auto;
     }
     .card2{
         width: 473px;
