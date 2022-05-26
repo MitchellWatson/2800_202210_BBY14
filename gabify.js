@@ -1,4 +1,13 @@
+/** The following code contains server-side used to read and write changes into the database 
+ *      as well as changes to the front-end using Javascript and the DOM. 
+* @author   Mitchell Watson
+* @author   Jackie Ma
+* @author   Basillio Kim
+* @author   Ryan Chau
+*/
 "use strict";
+
+//List of all modules and dependencies installed through node.jsconst express = require("express");
 const express = require("express");
 const session = require("express-session");
 const fs = require("fs");
@@ -16,24 +25,17 @@ const multer = require('multer');
 const { Blob } = require("buffer");
 
 const http = require('http');
-// const server = http.createServer(app);
-// const { Server } = require("socket.io");
-// const io = new Server(server);
 const server = http.createServer(app);
 const io = socketio(server);
 const formatMessage = require('./helpers/formatDate')
 
-let seshUser;
-
+// Custom imported modules used as helper methods for the chat features. 
 const {
     getActiveUser,
     exitRoom,
     newUser,
     getIndividualRoomUsers
 } = require('./helpers/userHelper');
-
-// const server = http.createServer(app);
-// const io = socketio(server);
 
 const {
     userJoin,
@@ -42,13 +44,14 @@ const {
     getRoomUsers
 } = require('./helpers/users');
 
-
+//Static paths used through Express.js
 app.use("/html", express.static("./app/html"));
 app.use("/avatar", express.static("./app/avatar"));
 app.use("/images", express.static("./public/images"));
 app.use("/styles", express.static("./public/styles"));
 app.use("/scripts", express.static("./public/scripts"));
 
+//Initialization of the session.
 app.use(session(
     {
         secret: "$zw+qzKh+&?b9}-v",
@@ -83,7 +86,10 @@ const connection = mysql.createPool({
     multipleStatements: "true"
 });
 
-
+// Session redirect.
+// Will fetch skeleton nav and footer and assign page title
+// If logged in, depending on user type, will divert to main pahe
+// Of not logged in, will divert to login page
 app.get("/", function (req, res) {
     if (req.session.loggedIn) {
         res.redirect("/main");
@@ -93,12 +99,17 @@ app.get("/", function (req, res) {
     }
 });
 
+// Session redirect.
+// Will redirect to register page
 app.get("/register", function (req, res) {
-        let profile = fs.readFileSync("./app/html/register.html", "utf8");
-        let profileDOM = new JSDOM(profile);
-        res.send(profileDOM.serialize());
+    let profile = fs.readFileSync("./app/html/register.html", "utf8");
+    let profileDOM = new JSDOM(profile);
+    res.send(profileDOM.serialize());
 });
 
+// Session redirect.
+// Will fetch skeleton nav and footer and assign page title
+// Will check if logged in, then rediect to game page
 app.get("/game", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/game.html", "utf8");
@@ -119,6 +130,9 @@ app.get("/game", function (req, res) {
     }
 });
 
+// Session redirect.
+// Will fetch skeleton nav and footer and assign page title
+// If logged in, will redirect to help page, if not, back to login
 app.get("/help", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/help.html", "utf8");
@@ -139,26 +153,9 @@ app.get("/help", function (req, res) {
     }
 });
 
-app.get("/user", function (req, res) {
-    if (req.session.loggedIn) {
-        let profile = fs.readFileSync("./app/html/userProfiles.html", "utf8");
-        let profileDOM = new JSDOM(profile);
-
-        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-        let navBarDOM = new JSDOM(navBar);
-        let string = `Profile`;
-        let t = navBarDOM.window.document.createTextNode(string);
-        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
-        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-        res.send(profileDOM.serialize());
-    }
-    else {
-        let doc = fs.readFileSync("./app/html/login.html", "utf8");
-        res.send(doc);
-    }
-});
-
+// Session redirect.
+// Will fetch skeleton nav and footer and assign page title
+// If logged in, will redirect to meet-ups menu page, if not, back to login
 app.get("/meet", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/meet.html", "utf8");
@@ -179,11 +176,15 @@ app.get("/meet", function (req, res) {
     }
 });
 
+// Session redirect.
+// Will fetch skeleton nav and footer and assign page title
+// If logged in, will redirect to timeline page, if not, back to login
 app.get("/timeline", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/timeline.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
+        // Queries for all posts in descending order by date
         connection.query(
             "SELECT * FROM posts ORDER BY postDate DESC",
             function (error, results, fields) {
@@ -191,25 +192,20 @@ app.get("/timeline", function (req, res) {
                     console.log(error);
                 }
 
+                // Gets all posts posted by user
                 let newResults = [];
                 for (let i = 0; i < results.length; i++) {
                     if (results[i].userID == req.session.identity) {
                         newResults[newResults.length] = results[i];
                     }
                 }
+
+                // Create dynamic html insert div
                 const usersProfiles = profileDOM.window.document.createElement("div");
-                // const createButton = profileDOM.window.document.createElement("div");
-                // let create = "<a href=''><button class='option'>Add Memory</button></a>";
-                // profileDOM.window.document.getElementById("create").appendChild(createButton);
-                // usersProfiles.innerHTML += create;
                 let users;
                 var old = "";
-                // var upload_image = `<form id="upload-images-form" action="/" method="post">
-                //                     <input id="image-upload" type="file" value="Upload Image" 
-                //                     accept="image/png, image/gif, image/jpeg" multiple="multiple" />
-                //                     <input id="submit2" type="submit" class="option" value="Upload photo" />
-                //                     </form>`
 
+                // Takes date posted and reformats into readble text
                 for (let i = 0; i < newResults.length; i++) {
                     let dob = newResults[i].postDate
                     var dobArr = dob.toDateString().split(' ');
@@ -219,6 +215,7 @@ app.get("/timeline", function (req, res) {
                         users = '<h2>' + dobFormat + '</h2>';
                         usersProfiles.innerHTML += users;
                     }
+                    // Appends all posts into cards for html
                     users =
                         '<div class="card">' +
                         '<div class="can">' +
@@ -237,12 +234,11 @@ app.get("/timeline", function (req, res) {
                     users = '<p>No memories. Start making some today!</p>';
                     usersProfiles.innerHTML += users;
                 }
-
                 profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
 
                 let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
                 let navBarDOM = new JSDOM(navBar);
-                let string = `Timeline`;
+                let string = `Journal`;
                 let t = navBarDOM.window.document.createTextNode(string);
                 navBarDOM.window.document.querySelector("#welcome").appendChild(t);
 
@@ -257,36 +253,44 @@ app.get("/timeline", function (req, res) {
     }
 })
 
+
+// Session redirect.
+// Will fetch skeleton nav and footer and assign page title
+// If logged in, will redirect to request page in meet-up, if not, back to login
 app.get("/request", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/request.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
         let listUsers = [];
 
+        // Selects all users from database
         connection.query('SELECT * FROM bby14_users;',
             function (error, results, fields) {
                 if (error) {
                     console.log(error);
                 }
 
+                // Appends all users to list
                 for (let i = 0; i < results.length; i++) {
                     listUsers[listUsers.length] = results[i];
                 }
 
+                // Selects all friend relationships from database
                 connection.query(
                     "SELECT * FROM friends;",
                     function (error, results, fields) {
                         if (error) {
                             console.log(error);
                         }
-                        console.log(req.session.identity);
+                        // Checks and append if friends are with user
                         let listFriends = [];
                         for (let i = 0; i < results.length; i++) {
                             if (results[i].user == req.session.identity) {
                                 listFriends[listFriends.length] = results[i];
                             }
                         }
+
+                        // Checks if friends have both friended each other
                         let friends = [];
                         for (let i = 0; i < listFriends.length; i++) {
                             for (let k = 0; k < results.length; k++) {
@@ -295,12 +299,14 @@ app.get("/request", function (req, res) {
                                 }
                             }
                         }
+
+                        // Filters out null list appendices
                         friends = friends.filter(function (e) {
                             return e != null;
                         })
-        
+
+                        // References list of users and list of friends
                         let finalUsers = [];
-        
                         for (let i = 0; i < friends.length; i++) {
                             for (let k = 0; k < listUsers.length; k++) {
                                 if (friends[i].friend == listUsers[k].ID) {
@@ -308,6 +314,8 @@ app.get("/request", function (req, res) {
                                 }
                             }
                         }
+
+                        // Creates html div to append request menu to
                         const usersProfiles = profileDOM.window.document.createElement("div");
                         let users;
                         users =
@@ -316,6 +324,8 @@ app.get("/request", function (req, res) {
                             '<div class="can">' +
                             '<p style="text-decoration: underline;">Choose Friend</p>' +
                             '<select type="date" id="personInput" placeholder="Select Friend">';
+
+                        // Gives option to meet for each friend    
                         for (let i = 0; i < finalUsers.length; i++) {
                             users += '<option value="' + finalUsers[i].ID + '">' + finalUsers[i].first_name + ' ' + finalUsers[i].last_name + '</option>';
                         }
@@ -331,25 +341,22 @@ app.get("/request", function (req, res) {
                             '</div>' +
                             '</div>' +
                             '</div>';
+
+                        // Appends menu users card to html id    
                         usersProfiles.innerHTML += users;
-        
-        
                         profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
-        
+
                         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
                         let navBarDOM = new JSDOM(navBar);
                         let string = `Request`;
                         let t = navBarDOM.window.document.createTextNode(string);
                         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-        
                         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-        
+
                         res.send(profileDOM.serialize());
                     }
                 );
-
             });
-        
     }
     else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
@@ -357,37 +364,44 @@ app.get("/request", function (req, res) {
     }
 });
 
+// Session redirect.
+// Will fetch skeleton nav and footer and assign page title
+// If logged in, will redirect to schedule page in meet-up, if not, back to login
 app.get("/schedule", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/schedule.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
         let listUsers = [];
 
+        // Gets list of users from database
         connection.query('SELECT * FROM bby14_users;',
             function (error, results, fields) {
                 if (error) {
                     console.log(error);
                 }
 
+                // Filters and appends users to list
                 for (let i = 0; i < results.length; i++) {
                     listUsers[listUsers.length] = results[i];
                 }
 
+                // Gets meets from database in DESC order
                 connection.query(
                     "SELECT * FROM meet ORDER BY date ASC;",
                     function (error, results, fields) {
                         if (error) {
                             console.log(error);
                         }
+
+                        // Gets all meets that include the user and is today's date or later
                         let newResults = []
-        
                         for (let i = 0; i < results.length; i++) {
                             if ((results[i].requestee == req.session.identity || results[i].requestor == req.session.identity) && results[i].viewed == 1 & results[i].accepted == 1) {
-                                newResults[newResults.length] = results[i];
+                                    newResults[newResults.length] = results[i];
                             }
                         }
-        
+
+                        // Creates div html element to dynamically populate meet cards
                         const usersProfiles = profileDOM.window.document.createElement("div");
                         let users;
                         for (let i = 0; i < newResults.length; i++) {
@@ -416,30 +430,24 @@ app.get("/schedule", function (req, res) {
                                 '</div>';
                             usersProfiles.innerHTML += users;
                         }
-        
-        
+
+                        // If results are none, populate with message
                         if (newResults.length == 0) {
                             users = 'No meet-ups scheduled.';
                             usersProfiles.innerHTML += users;
                         }
-        
-        
                         profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
-        
+
                         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
                         let navBarDOM = new JSDOM(navBar);
                         let string = `Schedule`;
                         let t = navBarDOM.window.document.createTextNode(string);
                         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-        
                         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-        
                         res.send(profileDOM.serialize());
                     }
                 );
-
             });
-        
     }
     else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
@@ -447,37 +455,44 @@ app.get("/schedule", function (req, res) {
     }
 });
 
+// Session redirect.
+// Will fetch skeleton nav and footer and assign page title
+// If logged in, will redirect to incoming page in meet-up, if not, back to login
 app.get("/incoming", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/incoming.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
         let listUsers = [];
 
+        // Select users from database
         connection.query('SELECT * FROM bby14_users;',
             function (error, results, fields) {
                 if (error) {
                     console.log(error);
                 }
 
+                // Append users to list
                 for (let i = 0; i < results.length; i++) {
                     listUsers[listUsers.length] = results[i];
                 }
 
+                // Select meet requests in date asc
                 connection.query(
                     "SELECT * FROM meet ORDER BY date ASC;",
                     function (error, results, fields) {
                         if (error) {
                             console.log(error);
                         }
+
+                        // Appends meet requests to list
                         let newResults = []
-        
                         for (let i = 0; i < results.length; i++) {
                             if (results[i].requestee == req.session.identity && results[i].viewed == 0) {
                                 newResults[newResults.length] = results[i];
                             }
                         }
-        
+
+                        // Create html div to append dynamic cards for user approval
                         const usersProfiles = profileDOM.window.document.createElement("div");
                         let users;
                         for (let i = 0; i < newResults.length; i++) {
@@ -486,7 +501,7 @@ app.get("/incoming", function (req, res) {
                                 '<div class="card2">' +
                                 '<div class="can">' +
                                 '<h2>Meet-up Request</h2>' +
-                                '<p style="text-decoration: underline;">Who</p>' +
+                                '<p class="orange">Who</p>' +
                                 '<p>';
                             for (let k = 0; k < listUsers.length; k++) {
                                 if (newResults[i].requestor == listUsers[k].ID) {
@@ -495,43 +510,37 @@ app.get("/incoming", function (req, res) {
                             }
                             users +=
                                 '</p>' +
-                                '<p style="text-decoration: underline;">When</p>' +
+                                '<p class="orange">When</p>' +
                                 '<p>' + newResults[i].date + '</p>' +
-                                '<p style="text-decoration: underline;">Where</p>' +
+                                '<p class="orange">Where</p>' +
                                 '<p>' + newResults[i].place + '</p>' +
-                                '<p style="text-decoration: underline;">Occasion</p>' +
-                                '<p>' + newResults[i].reason + '</p>' +
-                                '<a id="accept" target="' + newResults[i].reqNum + '" class="option">Accept</a>' +
-                                '<a id="decline" target="' + newResults[i].reqNum + '" class="option">Decline</a>' +
+                                '<p class="orange">Occasion</p>' +
+                                '<p>' + newResults[i].reason + '</p><br>' +
+                                '<a class="accept option" target="' + newResults[i].reqNum + '">Accept</a>' +
+                                '<a class="decline option" target="' + newResults[i].reqNum + '">Decline</a>' +
                                 '</div>' +
                                 '</div>' +
                                 '</div>';
                             usersProfiles.innerHTML += users;
                         }
-        
-        
+
+                        // Appends message for new friend users
                         if (newResults.length == 0) {
                             users = 'No requests yet.';
                             usersProfiles.innerHTML += users;
                         }
-        
-        
                         profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
-        
+
                         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
                         let navBarDOM = new JSDOM(navBar);
                         let string = `Incoming`;
                         let t = navBarDOM.window.document.createTextNode(string);
                         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-        
                         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-        
                         res.send(profileDOM.serialize());
                     }
                 );
-
             });
-        
     }
     else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
@@ -539,37 +548,44 @@ app.get("/incoming", function (req, res) {
     }
 });
 
-
+// Session redirect.
+// Will fetch skeleton nav and footer and assign page title
+// If logged in, will redirect to contact page, if not, back to login
 app.get("/contact", async function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/contact.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
         let listUsers = [];
 
+        // Selects all users from database
         connection.query('SELECT * FROM bby14_users;',
             function (error, results, fields) {
                 if (error) {
                     console.log(error);
                 }
 
+                // Appends users to list
                 for (let i = 0; i < results.length; i++) {
                     listUsers[listUsers.length] = results[i];
                 }
 
+                // Selects all friend request from database
                 connection.query(
                     "SELECT * FROM friends;",
                     function (error, results, fields) {
                         if (error) {
                             console.log(error);
                         }
-                        console.log(req.session.identity);
+
+                        // Appends all friends that include user to list
                         let listFriends = [];
                         for (let i = 0; i < results.length; i++) {
                             if (results[i].user == req.session.identity) {
                                 listFriends[listFriends.length] = results[i];
                             }
                         }
+
+                        // Appends all friends that both users have added eachother
                         let friends = [];
                         for (let i = 0; i < listFriends.length; i++) {
                             for (let k = 0; k < results.length; k++) {
@@ -578,12 +594,14 @@ app.get("/contact", async function (req, res) {
                                 }
                             }
                         }
+
+                        // Filters null values in lists
                         friends = friends.filter(function (e) {
                             return e != null;
                         })
-        
+
+                        // Compares users from database and friend relationships into list
                         let finalUsers = [];
-        
                         for (let i = 0; i < friends.length; i++) {
                             for (let k = 0; k < listUsers.length; k++) {
                                 if (friends[i].friend == listUsers[k].ID) {
@@ -591,9 +609,10 @@ app.get("/contact", async function (req, res) {
                                 }
                             }
                         }
+
+                        // Create div html to append dynamic friend cards
                         const usersProfiles = profileDOM.window.document.createElement("div");
                         let users;
-        
                         for (let i = 0; i < finalUsers.length; i++) {
                             users =
                                 '<div name="username" id="username" class="' + req.session.first_name + '"></div>' +
@@ -608,7 +627,7 @@ app.get("/contact", async function (req, res) {
                                 '</div>' +
                                 '<div class="img">' +
                                 '<img src="./avatar/avatar_' + finalUsers[i].ID + '.jpg">' +
-                              
+
                                 '</div>' +
                                 '<div class="bio">' +
                                 '<p class="head">Bio</p>' +
@@ -629,28 +648,24 @@ app.get("/contact", async function (req, res) {
                                 '</div>';
                             usersProfiles.innerHTML += users;
                         }
+
+                        // Appends message if no friends
                         if (friends.length == 0) {
                             users = 'No friends yet.';
                             usersProfiles.innerHTML += users;
                         }
-        
-        
                         profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
-                      
+
                         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
                         let navBarDOM = new JSDOM(navBar);
                         let string = `Contact`;
                         let t = navBarDOM.window.document.createTextNode(string);
                         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-        
                         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-        
                         res.send(profileDOM.serialize());
                     }
                 );
-
             });
-        
     }
     else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
@@ -658,29 +673,37 @@ app.get("/contact", async function (req, res) {
     }
 });
 
+// Session redirect.
+// If logged in, will redirect to user profile page, if not, back to login
 app.get("/userProfiles", function (req, res) {
     if (req.session.loggedIn) {
-
-
+        // Will fetch skeleton nav and footer and assign page title
         let profile = fs.readFileSync("./app/html/userProfiles.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
         let navBarDOM = new JSDOM(navBar);
         let string = `Profile`;
         let t = navBarDOM.window.document.createTextNode(string);
         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+
+        // Inserts user info from session into input files in profile
         profileDOM.window.document.querySelector("#emailInput").setAttribute('value', req.session.email);
         profileDOM.window.document.querySelector("#passwordInput").setAttribute('value', req.session.password);
         profileDOM.window.document.querySelector("#firstNameInput").setAttribute('value', req.session.first_name);
         profileDOM.window.document.querySelector("#lastNameInput").setAttribute('value', req.session.last_name);
+
+        // Checks if age is not null and so wont input null
         if (req.session.age != null) {
             profileDOM.window.document.querySelector("#ageInput").setAttribute('value', req.session.age);
         }
+
+        // Checks if age is not null so woth input null
         if (req.session.hobbies != null) {
             profileDOM.window.document.querySelector("#hobbiesInput").setAttribute('value', req.session.hobbies);
         }
-        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+
+        // Textarea populating from user session info
         const usersProfiles = profileDOM.window.document.createElement("div");
         if (req.session.bio != null) {
             usersProfiles.innerHTML = '<textarea rows="4" id="bioInput" value="" type="text" required="required" maxlength="100" placeholder="Tell us about yourself!">' + req.session.bio + '</textarea>';
@@ -689,48 +712,9 @@ app.get("/userProfiles", function (req, res) {
         }
         profileDOM.window.document.getElementById("bio").appendChild(usersProfiles);
 
+        // Gets profile picture of user
         let img = profileDOM.window.document.querySelector('#avatar');
         img.src = './avatar/avatar_' + req.session.identity + '.jpg';
-
-
-        connection.query(`SELECT * FROM posts WHERE userID = ${req.session.identity}`,
-            function (error, results, fields) {
-                if (error) {
-                    console.log(error);
-                }
-                const userPosts = profileDOM.window.document.createElement("div");
-                for (let i = 0; i < results.length; i++) {
-                    let posts =
-                        '<div class="card">' +
-                        '<div class="can">' +
-                        '<p style="text-decoration: underline;">' +
-                        'Post' + results[i].postNum + '</p>' +
-                        '<p>' + results[i].posts + '</p>' +
-                        '<p>' + results[i].postDate + '</p>' +
-                        '<p>' + results[i].postTime + '</p>' +
-                        '</div>' +
-                        '</div>';
-                    userPosts.innerHTML += posts;
-                }
-
-
-                profileDOM.window.document.getElementById("timeline").innerHTML += userPosts;
-
-            });
-
-        // let imageURL;
-        // database.query(`SELECT * FROM userphotos WHERE userID = ${req.session.identity}`,
-        // function(error,results, fields) {
-        //     if (error)
-        //         throw error;
-        //     if (results.length > 0) {
-        //         imageURL = './avatar/avatar_' + req.session.identity + '.jpg';
-        //     } else {
-        //         imageURL = './avatar/placeholder.jpg';
-        //     }
-        //     img.src = imageURL;
-        // });
-
         res.send(profileDOM.serialize());
     }
     else {
@@ -739,9 +723,12 @@ app.get("/userProfiles", function (req, res) {
     }
 });
 
+// Database insert.
+// Gets meet-up request from client side
 app.post('/addRequest', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
+    // Adds row to meet table from user inputed request
     connection.query('INSERT INTO meet VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
         [req.session.identity, req.body.requestee, req.body.place, req.body.date, req.body.reason, 0, 0, req.body.id],
         function (error, results, fields) {
@@ -752,18 +739,20 @@ app.post('/addRequest', function (req, res) {
                     msg: "Recorded not updated."
                 });
             } else {
-            res.send({
-                status: "success",
-                msg: "Recorded updated."
-            });
-        }
+                res.send({
+                    status: "success",
+                    msg: "Recorded updated."
+                });
+            }
         });
 });
 
-
+// Database insert.
+// Gets account creation registration from client side
 app.post('/create', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
+    // Adds row to users table from user registration
     connection.query('INSERT INTO bby14_users VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, req.body.latitude, req.body.longitude, null, null, null, 0],
         function (error, results, fields) {
@@ -782,9 +771,12 @@ app.post('/create', function (req, res) {
         });
 });
 
+// Database insert.
+// Gets journal info from client side
 app.post('/addTimeline', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
+    // Adds timeline client side inputed info into posts table
     connection.query('INSERT INTO posts VALUES (?, ?, ?, ?, ?)',
         [req.session.identity, req.body.unknown, req.body.posts, req.body.postDate, req.body.postTime],
         function (error, results, fields) {
@@ -799,9 +791,12 @@ app.post('/addTimeline', function (req, res) {
         });
 });
 
+// Database update.
+// Gets meet-up request answer from client side
 app.post('/updateIncoming', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
+    // Updates row to meet table with acceptation selection
     connection.query('UPDATE meet SET accepted = ?, viewed = ? WHERE reqNum = ?',
         [parseInt(req.body.accepted), parseInt(req.body.viewed), parseInt(req.body.reqNum)],
         function (error, results, fields) {
@@ -815,9 +810,12 @@ app.post('/updateIncoming', function (req, res) {
         });
 });
 
+// Database update.
+// Gets location reset from client side profile
 app.post('/updateLocation', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
+    // Updates row from users to input new location of user
     connection.query('UPDATE bby14_users SET latitude = ?, longitude = ? WHERE ID = ?',
         [req.body.latitude, req.body.longitude, req.session.identity],
         function (error, results, fields) {
@@ -831,9 +829,12 @@ app.post('/updateLocation', function (req, res) {
         });
 });
 
+// Database update.
+// Gets profile input info from client side
 app.post('/updateUser', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
+    // Updates the user row in users with new client info
     connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, age = ?, bio = ?, hobbies = ? WHERE ID = ?',
         [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.age, req.body.bio, req.body.hobbies, req.session.identity],
         function (error, results, fields) {
@@ -845,8 +846,8 @@ app.post('/updateUser', function (req, res) {
                 msg: "Recorded updated."
             });
 
+            // Selects user row from newly updated table
             const loginInfo = `USE ${dbName}; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
-    
             connection.query(loginInfo, function (error, results, fields) {
                 /* If there is an error, alert user of error
                 *  If the length of results array is 0, then there was no matches in database
@@ -857,6 +858,7 @@ app.post('/updateUser', function (req, res) {
                 } else if (results[1].length == 0) {
                     res.send({ status: "fail", msg: "Incorrect email or password!" });
                 } else {
+                    // Renews session variables for future use
                     let validUserInfo = results[1][0];
                     req.session.loggedIn = true;
                     req.session.email = validUserInfo.email;
@@ -870,20 +872,20 @@ app.post('/updateUser', function (req, res) {
                     req.session.bio = validUserInfo.bio;
                     req.session.hobbies = validUserInfo.hobbies;
                     req.session.userType = validUserInfo.is_admin;
-        
                     req.session.save(function (err) {
                         // session saved. for analytics we could record this in db
                     });
                 }
             });
-
         });
-
 });
 
+// Database update.
+// Gets new posts description from client side
 app.post('/updateTimeline', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
+    // Updates row containing old post and inserts new description
     connection.query(`UPDATE posts SET posts = ? WHERE userID = ? AND postNum = ?`,
         [req.body.posts, req.session.identity, req.body.postNum],
         function (error, results, fields) {
@@ -898,9 +900,12 @@ app.post('/updateTimeline', function (req, res) {
         });
 });
 
+// Database update.
+// Gets admin users info from client side
 app.post('/updateAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
+    // Updates user info by taking from input via admin
     connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, is_admin = ? WHERE ID = ?',
         [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.is_admin, req.body.id],
         function (error, results, fields) {
@@ -915,6 +920,8 @@ app.post('/updateAdmin', function (req, res) {
         });
 });
 
+// Database delete.
+// Gets account creation registration from client side
 app.post('/deleteAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
 
@@ -933,12 +940,14 @@ app.post('/deleteAdmin', function (req, res) {
 });
 
 
-
+// Session redirect.
+// Redirects user to admin user list if logged in, to login if not
 app.get("/admin-users", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/adminUsers.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
+        // Selects all users from database
         connection.query(
             "SELECT * FROM bby14_users",
             function (error, results, fields) {
@@ -946,6 +955,7 @@ app.get("/admin-users", function (req, res) {
                     console.log(error);
                 }
 
+                // Creates div html element fron dynamic user card insertion
                 const usersProfiles = profileDOM.window.document.createElement("div");
                 const createButton = profileDOM.window.document.createElement("div");
                 let create = "<a href='/register'><button class='option' id='create1'>Create User</button></a><br><a><button id='edit' class='option'>Edit Users</button></a>";
@@ -953,6 +963,7 @@ app.get("/admin-users", function (req, res) {
                 usersProfiles.innerHTML += create;
                 let users;
 
+                // Populates cards using user info
                 for (let i = 0; i < results.length; i++) {
                     users =
                         '<div class="card">' +
@@ -977,18 +988,15 @@ app.get("/admin-users", function (req, res) {
                         '</div>';
                     usersProfiles.innerHTML += users;
                 }
-
-
                 profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
 
+                // Will fetch skeleton nav and footer and assign page title
                 let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
                 let navBarDOM = new JSDOM(navBar);
                 let string = `Users`;
                 let t = navBarDOM.window.document.createTextNode(string);
                 navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
                 profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-
                 res.send(profileDOM.serialize());
             }
         );
@@ -998,22 +1006,26 @@ app.get("/admin-users", function (req, res) {
     }
 })
 
+// Session redirect.
+// Redirects user to friend finder page if logged in, to login if not
 app.get("/friendFinder", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/friendFinder.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
         let userProfilePics = [];
 
+        // Selects all photos from database
         connection.query('SELECT * FROM userphotos;',
             function (error, results, fields) {
                 if (error)
                     throw error;
+
+                // Appends photos to list
                 for (let i = 0; i < results.length; i++) {
                     userProfilePics[i] = results[i];
-                    console.log(userProfilePics[i].userID);
                 }
 
+                // Selects all friends where user is in relationship
                 connection.query('SELECT * FROM friends WHERE user = ?;',
                     req.session.identity,
                     function (error, results, fields) {
@@ -1021,36 +1033,38 @@ app.get("/friendFinder", function (req, res) {
                             console.log(error);
                         }
 
+                        // Appends friend to list if same ID
                         for (let i = 0; i < results.length; i++) {
                             if (results[i].user == req.session.identity) {
                                 listFriends[listFriends.length] = results[i];
                             }
                         }
 
+                        // Selects all users from database
                         connection.query(
                             "SELECT * FROM bby14_users;",
                             function (error, results, fields) {
                                 if (error) {
                                     console.log(error);
                                 }
-                
+
+                                // Place class to hold distance from logged in user to other friends
                                 class Place {
                                     constructor(ID, distance) {
                                         this.ID = ID;
                                         this.distance = distance;
                                     }
-                
+
                                     getId() {
                                         return this.ID;
                                     }
-                
+
                                     getDistance() {
                                         return this.distance;
                                     }
                                 }
-                
-                                let places = [];
-                
+
+                                // Compare function to sort by distance from friends list
                                 function compare(a, b) {
                                     if (a.distance < b.distance) {
                                         return -1;
@@ -1060,7 +1074,8 @@ app.get("/friendFinder", function (req, res) {
                                     }
                                     return 0;
                                 }
-                
+
+                                // Checks if friends recipient of relationship if in object then appends to list
                                 function checkIfIn(object) {
                                     let num = 1;
                                     for (let i = 0; i < listFriends.length; i++) {
@@ -1070,7 +1085,10 @@ app.get("/friendFinder", function (req, res) {
                                     }
                                     return num;
                                 }
-                
+
+                                // Calculates distance between users using trigonometry
+                                // Then stores in Place object for holding
+                                let places = [];
                                 for (let i = 0; i < results.length; i++) {
                                     if (results[i].ID != req.session.identity && checkIfIn(results[i])) {
                                         const first = req.session.latitude * Math.PI / 180;
@@ -1082,12 +1100,15 @@ app.get("/friendFinder", function (req, res) {
                                         places[i] = place;
                                     }
                                 }
+                                
+                                // Sort and filter list of friends and distances
                                 places.sort(compare);
                                 places = places.filter(function (e) {
                                     return e != null;
                                 })
+
+                                // Appends final friend results to list if ID's match
                                 let newResults = [];
-                
                                 for (let f = 0; f < places.length; f++) {
                                     for (let k = 0; k < results.length; k++) {
                                         if (places[f].getId() == results[k].ID) {
@@ -1095,14 +1116,14 @@ app.get("/friendFinder", function (req, res) {
                                         }
                                     }
                                 }
-                
+
+                                // Creates div html element for dynamic card insertion
                                 const usersProfiles = profileDOM.window.document.createElement("div");
                                 let users;
-                
+
+                                // Goes through all nearby, unfriended users
                                 for (let i = 0; i < newResults.length; i++) {
                                     let age = (newResults[i].age ? '<p>' + newResults[i].age + '</p>' : '<p>Age not listed</p>');
-                                    // let imageProf = (userProfilePics.indexOf(newResults[i].ID) !== -1 ? '<img src="./avatar/' + userProfilePics[i].imageID + '>' : '<img src="./avatar/placeholder.jpg">');
-                
                                     users =
                                         '<div class="card">' +
                                         '<div class="name">' +
@@ -1114,12 +1135,12 @@ app.get("/friendFinder", function (req, res) {
                                         age +
                                         '</div>' +
                                         '<div class="img">' +
-                
                                         '<img src="./avatar/avatar_' + newResults[i].ID + '.jpg">' +
-                                        // imageProf +
                                         '</div>' +
                                         '<div class="bio">' +
                                         '<p class="head" >Bio</p>';
+
+                                    // Checks if bio is null then displays message depending on result    
                                     if (newResults[i].bio != null) {
                                         users += '<p>' + newResults[i].bio + '</p>';
                                     } else {
@@ -1129,6 +1150,8 @@ app.get("/friendFinder", function (req, res) {
                                         '</div>' +
                                         '<div class="hobbies">' +
                                         '<p class="head" >Hobbies</p>';
+
+                                    // Checks if bio is null then displays message depending on result    
                                     if (newResults[i].hobbies != null) {
                                         users += '<p>' + newResults[i].hobbies + '</p>';
                                     } else {
@@ -1138,6 +1161,8 @@ app.get("/friendFinder", function (req, res) {
                                     users += '<div class="distance">' +
                                         '<p class="head" >Distance</p>' +
                                         '<p>';
+
+                                    // Inputs distance of each friend using Place object variables and methods    
                                     for (let k = 0; k < places.length; k++) {
                                         if (places[k].getId() == newResults[i].ID) {
                                             users += (places[k].getDistance()).toFixed(1) + 'km away';
@@ -1150,35 +1175,27 @@ app.get("/friendFinder", function (req, res) {
                                         '</div>' +
                                         '</div>';
                                     usersProfiles.innerHTML += users;
-                
                                 }
 
+                                // If friend options are 0 then replace with message
                                 if (places.length == 0) {
                                     users = '<p id="alone">No users to be added.</p>';
                                     usersProfiles.innerHTML += users;
                                 }
-                
                                 profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
-                
+
+                                // Will fetch skeleton nav and footer and assign page title
                                 let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
                                 let navBarDOM = new JSDOM(navBar);
                                 let string = `Nearby`;
                                 let t = navBarDOM.window.document.createTextNode(string);
                                 navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-                
                                 profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-                
                                 res.send(profileDOM.serialize());
                             }
                         );
-
-                });
-
+                    });
             });
-
-        let listFriends = [];
-
-        
     } else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
@@ -1383,8 +1400,8 @@ app.post('/upload-post-images', uploadPostImages.array("files"), function (req, 
 
             connection.query('INSERT INTO postphotos (userID, imageID) VALUES (?, ?)',
                 [req.session.identity, imgPath],
-                function (error, results, fields) {  
-                           
+                function (error, results, fields) {
+
                 });
         }
         res.send({
@@ -1496,7 +1513,7 @@ server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 // code for one-to-one chat; work in progress
 io.on('connection', socket => {
-    socket.on('joinRoom', ({ chatUser}) => {
+    socket.on('joinRoom', ({ chatUser }) => {
         const user = newUser(socket.id, chatUser);
 
         socket.join(user.room);
@@ -1549,7 +1566,7 @@ app.get("/gabChat", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/gabChat.html", "utf8");
         let profileDOM = new JSDOM(profile);
-       
+
         res.send(profileDOM.serialize());
     }
     else {

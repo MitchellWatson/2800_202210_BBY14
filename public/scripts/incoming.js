@@ -22,7 +22,13 @@ function ajaxPOST(url, callback, data) {
     xhr.send(params);
 }
 
-document.getElementById("decline").addEventListener("click", function () {
+let declines = document.getElementsByClassName("decline");
+
+for (let i = 0; i < declines.length; i++) {
+    declines[i].addEventListener("click", updateDecline);
+}
+
+function updateDecline () {
         // e.preventDefault();
         let id = this.target;
         let queryString = "accepted=" + 0 + "&viewed=" + 1 + "&reqNum=" + id;
@@ -38,10 +44,15 @@ document.getElementById("decline").addEventListener("click", function () {
             }
     
         }, queryString);
-})
+}
 
+let accepts = document.getElementsByClassName("accept");
 
-document.getElementById("accept").addEventListener("click", function () {
+for (let i = 0; i < accepts.length; i++) {
+    accepts[i].addEventListener("click", updateAccept);
+}
+
+function updateAccept () {
     // e.preventDefault();
     let id = this.target;
     console.log("This is the id " + id)
@@ -58,4 +69,4 @@ document.getElementById("accept").addEventListener("click", function () {
         }
 
     }, queryString);
-})
+}

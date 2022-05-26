@@ -3,7 +3,7 @@
     text-decoration: underline;
 }
 
-#decline {
+.option.decline {
     background-color: rgb(234, 0, 0);
 }
 
@@ -17,7 +17,7 @@
     border-radius: 5px;
     color: rgb(255, 255, 255);
     padding: 10px;
-    margin: 2vh;
+    margin-left: 2vh;
     font-size: 3vh;
 }
 
@@ -28,7 +28,6 @@
     grid-template-columns: 1fr;
     grid-gap: 1em;
     margin: 0.5em;
-    padding-top: 6vmax;
     padding-bottom: 10vh;
 }
 
@@ -59,8 +58,7 @@
     text-align: left;
     margin-bottom: 2vh;
     overflow-wrap: break-word;
-    display: grid;
-    grid-template-rows: 80% 20%;
+    display: flex;
     font-size: 3vh;
 }
 
