@@ -1,9 +1,11 @@
-DROP DATABASE IF EXISTS comp2800;
-DROP DATABASE IF EXISTS COMP2800;
+DROP DATABASE IF EXISTS heroku_2e384c4e07a3778;
 
-CREATE DATABASE IF NOT EXISTS comp2800;
+CREATE DATABASE IF NOT EXISTS heroku_2e384c4e07a3778;
 
-USE comp2800;
+USE heroku_2e384c4e07a3778;
+
+SET @@auto_increment_increment=1;
+SET @@auto_increment_offset=1;
 
 CREATE TABLE IF NOT EXISTS bby14_users (
   ID int NOT NULL AUTO_INCREMENT,
@@ -19,6 +21,8 @@ CREATE TABLE IF NOT EXISTS bby14_users (
   is_admin BOOLEAN,
   UNIQUE(email),
   PRIMARY KEY (ID));
+
+ALTER TABLE bby14_users AUTO_INCREMENT=1;
 
 CREATE TABLE IF NOT EXISTS Meet (
 requestor INTEGER,
@@ -42,7 +46,7 @@ FOREIGN KEY (friend) REFERENCES bby14_users(ID));
 
 CREATE TABLE IF NOT EXISTS UserPhotos (
 userID INTEGER,
-imageID VARBINARY(1000),
+imageID VARBINARY(700),
 PRIMARY KEY(userID, imageID),
 FOREIGN KEY (userID) REFERENCES bby14_users(ID));
 
@@ -54,11 +58,7 @@ postDate DATE,
 postTime TIME,
 PRIMARY KEY(userID, postNum),
 KEY (postNum),
-FOREIGN KEY(userID) REFERENCES bby14_users(ID)
-);
-
-
-
+FOREIGN KEY(userID) REFERENCES bby14_users(ID));
 
 INSERT INTO bby14_users (first_name, last_name, email, password, latitude, longitude, age, bio, hobbies, is_admin) VALUES (
     "Alpha", "Admin", "alpha@my.bcit.ca", "admin", 50, -123, 50, "Alpha bio.", "Walking, Hiking, Nature", true);
