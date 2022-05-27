@@ -1,3 +1,8 @@
+/** This file holds the code for incoming requests.
+ * @author Mitchell Watson
+ * 
+ */
+
 "use strict";
 
 function ajaxPOST(url, callback, data) {
@@ -27,6 +32,7 @@ for (let i = 0; i < declines.length; i++) {
     declines[i].addEventListener("click", updateDecline);
 }
 
+//Function that delete
 function updateDecline() {
     let id = this.target;
     let queryString = "accepted=" + 0 + "&viewed=" + 1 + "&reqNum=" + id;

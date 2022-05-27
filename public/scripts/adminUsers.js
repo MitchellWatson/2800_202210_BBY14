@@ -1,5 +1,15 @@
+/** This file contains the client-side javascript code for the admin page.
+ * @author Mitchell Watson
+ */
+
+
 "use strict";
 
+/** Sends an asynchronous http POST request to load data from the server.
+ * @param {*} url as the url string.
+ * @param {*} callback as the callback function
+ * @param {*} data as the information to be sent
+ */
 function ajaxPOST(url, callback, data) {
     let params = typeof data == 'string' ? data : Object.keys(data).map(
         function (k) {
@@ -21,6 +31,7 @@ function ajaxPOST(url, callback, data) {
 
 let inputs = document.getElementsByClassName('inputs');
 
+//Event listener for the edit button
 document.getElementById("edit").addEventListener("click", function () {
     for (let i = 0; i < inputs.length; i++) {
         inputs[i].readOnly = false;
@@ -63,6 +74,7 @@ for (let i = 0; i < buttonDelete.length; i++) {
     buttonDelete[i].addEventListener("click", deleted);
 }
 
+// Function that deletes the target from the back-end.
 function deleted() {
     let id = this.target;
     let queryString = "id=" + id;
