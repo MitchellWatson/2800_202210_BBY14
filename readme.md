@@ -255,10 +255,75 @@ Procfile                Contains the script for Heroku initialization
 
 
 ## VI.   HOW TO USE THE PRODUCT (FEATURES)
-1. Login with provided credentials in assignment 05c & 05d by **BBY-Team 14**
-2. 
+Setup: Login with provided credentials in assignment 05c & 05d by BBY-Team 14 or register an account.
+
+**Friend Finder**
+1. Go to main page.
+2. Go to "Friend Finder" to match with local seniors in your area sorted by location.
+3. Click "Add Friend" on person you want to befriend. Both users must friend each other to be added succesfully.
+
+**Meet-up**
+1. Go to main page.
+2. Click on "Meet-up" to manage friend meet-ups.
+3. You can click "Request meet-up", which allows you to ask a friend for a custom meet-up. 
+4. View "Incoming requests", which allows you to see if anyone has sent you a meet-up request
+5. View your "Meet-up schedule", which shows what planned and accepted meet-ups you have coming up. 
+
+**Private friend chat messaging**
+1. Go to any page.
+2. Click "Contact" in the bottom navbar.
+3. Here you can see your friends where you both have friended each other. You can click "Chat" to go to a private chat room with that friend.
+4. Type message into bottom chat input textbox and click the "Enter" key or click the send icon.
+
+**Global chat messaging**
+1. Go to main page.
+2. Click on "Chat" to view preset, global chatrooms of popular topics. 
+3. Select preset topic, click "Join Chat" to start talking with others.
+4. Type message into bottom chat input textbox and click the "Enter" key or click the send icon.
+
+**Journal**
+1. Go to main page
+2. Click on "Journal". Here you can view your added memories.
+3. Click "Add Memory" to add a memory. 
+4. Choose the date it happend and a brief description of the memory.  
+5. Click "Done" to save memory.
+6. Edit memories by clicking on the description textbox, changing input, then click "Update" to save changes.
+
+**Profile**
+1. Go to main page.
+2. Click "Profile". This will show you your account information.
+3. To upload new profile photo, click "Choose files", choose your file, then click "Upload photo"
+4. To update account information, edit input text fields then click "Save Info" at bottom of the form.
+5. To reset location, click "Set Location" at bottom of the form.
+6. To logout, click "Logout" at bottom of the form.
+
+**Help**
+1. Go to any page.
+2. Click on "Help" in top navbar.
+3. Browse through FAQs and read corresponding solutions and helpful links.
+
+**Featured Game (User only)**
+1. Go to main page.
+2. Click on "Featured Game".
+3. Click "Start" to play the Gabify's featured game which is 60's and 70's trivia.
+
+**Manage Users (Admin only)**
+1. Go to main page.
+2. Click on "Manage Users".
+3. To create user, click "Create User" at top.
+4. To edit prexisting user data, click "Edit Users" at top to open text input for editing.
+5. Edit user information then click "Save" on user card once done.
+6. To delete user, go to specified user and click "Delete".
 
 ## VII.  CREDITS, REFERENCES, & LICENSES
+
+**Calculating distance between user coordinates**
+https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
+
+**Trivia Game**
+https://www.youtube.com/watch?v=riDzcEQbX6k&ab_channel=WebDevSimplified
+
+
 ## VIII. CONTACT INFORMATION
 Basillio Kim      bkim128@my.bcit.ca  
 Mitchell Watson   mwatson75@my.bcit.ca  

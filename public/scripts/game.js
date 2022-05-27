@@ -1,106 +1,110 @@
-/** This file contains the client-side Javascript for the featured game which is a simple trivia gam
+/** This file contains the client-side Javascript for the featured game which is a simple trivia game
  *      designed for seniors.
  * 
  * @author Mitchell Watson
  * 
  */
 "use strict";
-const num = document.getElementById('score')
-const result = document.getElementById('status')
+const num = document.getElementById('score');
+const result = document.getElementById('status');
 
-let score = 0
-let unique = true
-let increment = true
-num.innerHTML = "Score: " + score
-let shuffle, index
+let score = 0;
+let unique = true;
+let increment = true;
+num.innerHTML = "Score: " + score;
+let shuffle, index;
 
-const start = document.getElementById('start')
-const next = document.getElementById('next')
-const question = document.getElementById('questions')
-const questionElement = document.getElementById('question')
-const answerElement = document.getElementById('answer')
-start.addEventListener('click', startGame)
+const startBtn = document.getElementById('start');
+const next = document.getElementById('next');
+const question = document.getElementById('questions');
+const questionButton = document.getElementById('question');
+const answerButton = document.getElementById('answer');
+startBtn.addEventListener('click', start);
 next.addEventListener('click', () => {
     increment = true;
-    index++
-  setNextQuestion()
+    index++;
+  setQuestion();
 })
 
 // Start game
-function startGame() {
+function start() {
   score = 0;
-  num.innerHTML = "Score: " + score
-  start.classList.add('hidden')
-  shuffle = questions.sort(() => Math.random() - 0.5)
-  index = 0
-  question.classList.remove('hidden')
-  setNextQuestion()
-}
-// Shows the next question randomly
-function setNextQuestion() {
-  resetState()
-  showQuestion(shuffle[index])
-}
-// Displays Question and answers
-function showQuestion(question) {
-  questionElement.innerText = question.question
-  question.answers.forEach(answer => {
-    const button = document.createElement('button')
-    button.innerText = answer.text
-    button.classList.add('btn')
-    if (answer.correct) {
-      button.dataset.correct = answer.correct
-    }
-    button.addEventListener('click', selectAnswer)
-    answerElement.appendChild(button)
-  })
+  num.innerHTML = "Score: " + score;
+  startBtn.classList.add('hidden');
+  shuffle = questions.sort(() => Math.random() - 0.5);
+  index = 0;
+  question.classList.remove('hidden');
+  setQuestion();
 }
 
-function resetState() {
-  result.innerText = ""
-  clearStatusClass(document.body)
-  next.classList.add('hidden')
-  while (answerElement.firstChild) {
-    answerElement.removeChild(answerElement.firstChild)
-  }
-}
 // Allert users if wrong or right when answering the game
-function selectAnswer(e) {
-  const selectedButton = e.target
-  const correct = selectedButton.dataset.correct
+function select(e) {
+  const button = e.target;
+  const correct = button.dataset.correct;
   if (correct && increment) {
-      score += 10
-      num.innerHTML = "Score: " + score
-      result.innerHTML = "Correct! <span class='material-symbols-outlined'> done </span>"
+      score += 10;
+      num.innerHTML = "Score: " + score;
+      result.innerHTML = "Correct! <span class='material-symbols-outlined'> done </span>";
   } else {
-      result.innerHTML = "Inccorect. <span class='material-symbols-outlined'> close </span>"
+      result.innerHTML = "Inccorect. <span class='material-symbols-outlined'> close </span>";
   }
-  setStatusClass(document.body, correct)
-  Array.from(answerElement.children).forEach(button => {
-    setStatusClass(button, button.dataset.correct)
+  setButton(document.body, correct);
+  Array.from(answerButton.children).forEach(button => {
+    setButton(button, button.dataset.correct);
   })
   if (shuffle.length > index + 1) {
-    next.classList.remove('hidden')
+    next.classList.remove('hidden');
   } else {
-    start.innerText = 'Restart'
-    start.style.backgroundColor = "#efb800"
-    start.style.color = "'white'"
-    start.classList.remove('hidden')
+    startBtn.innerText = 'Restart Trivia';
+    startBtn.style.backgroundColor = "#efb800";
+    startBtn.style.color = "'white'";
+    startBtn.classList.remove('hidden');
   }
 }
 
-function setStatusClass(element, correct) {
-  clearStatusClass(element)
-  if (correct) {
-    element.classList.add('success')
-  } else {
-    element.classList.add('incorrect')
+// Shows the next question randomly
+function setQuestion() {
+  reset();
+  show(shuffle[index]);
+}
+
+// Resets question for next round
+function reset() {
+  result.innerText = "";
+  clearButton(document.body);
+  next.classList.add('hidden');
+  while (answerButton.firstChild) {
+    answerButton.removeChild(answerButton.firstChild);
   }
 }
 
-function clearStatusClass(element) {
-  element.classList.remove('success')
-  element.classList.remove('incorrect')
+// Displays Question and answers
+function show(questionArray) {
+  questionButton.innerText = questionArray.question;
+  questionArray.answers.forEach(answer => {
+    const selected = document.createElement('button');
+    selected.innerText = answer.text;
+    selected.classList.add('btn');
+    if (answer.correct) {
+      selected.dataset.correct = answer.correct;
+    }
+    selected.addEventListener('click', select);
+    answerButton.appendChild(selected);
+  })
+}
+
+function setButton(button, success) {
+  clearButton(button);
+  if (success) {
+    button.classList.add('success');
+  } else {
+    button.classList.add('incorrect');
+  }
+}
+
+function clearButton(button) {
+  button.classList.remove('success');
+  button.classList.remove('incorrect');
 }
 
 // List of questions and answers

@@ -66,17 +66,13 @@ app.use(bodyparser.urlencoded({
     extended: true
 }))
 
-/**
- * Local Hosting
- */
+// --- Local hosting ---
 // const dbHost = "127.0.0.1";
 // const dbUser = "root";
 // const dbPassword = "";
 // const dbName = "comp2800";
 
-/**
- * Heroku Hosting
- */
+// --- Heroku hosting ---
 const dbHost = "us-cdbr-east-05.cleardb.net";
 const dbUser = "b959a83957277c";
 const dbPassword = "5e9f74c2";
@@ -636,7 +632,7 @@ app.get("/contact", async function (req, res) {
                             users += '</div>'
                             users +=
                                 '<div class="button">' +
-                                '<a href= "/gabChat" target="' + finalUsers[i].ID + '" class="option add">Chat</a>' +
+                                '<a href= "/gabChat" target="' + finalUsers[i].ID + '" class="option add"><span class="material-symbols-outlined">sms</span>Chat</a>' +
                                 '</div>' +
                                 '</div>';
                             usersProfiles.innerHTML += users;
@@ -1439,7 +1435,7 @@ app.get("/chatGlobalSelect", function (req, res) {
     }
 });
 
-// code for one-to-one chat;
+// code for one-to-one chat; work in progress
 io.on('connection', socket => {
     socket.on('joinRoom', ({ chatUser }) => {
         const user = newUser(socket.id, chatUser);
@@ -1506,3 +1502,11 @@ app.get("/gabChat", function (req, res) {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT);
+
+// //For Milestone hand-ins:
+// let port = 8000;
+// app.listen(port, function () {
+// });
+
+//For Heroku deployment
+// app.listen(process.env.PORT || 3000);
