@@ -46,7 +46,7 @@ function select(e) {
       num.innerHTML = "Score: " + score;
       result.innerHTML = "Correct! <span class='material-symbols-outlined'> done </span>";
   } else {
-      result.innerHTML = "Inccorect. <span class='material-symbols-outlined'> close </span>";
+      result.innerHTML = "Incorrect. <span class='material-symbols-outlined'> close </span>";
   }
   setButton(document.body, correct);
   Array.from(answerButton.children).forEach(button => {
@@ -110,7 +110,7 @@ function clearButton(button) {
 // List of questions and answers
 const questions = [
   {
-    question: 'What year did Evlis Presley release his great hit \'Hound Dog\'?',
+    question: 'What year did Elvis Presley release his great hit \'Hound Dog\'?',
     answers: [
       { text: '1968', correct: false },
       { text: '1964', correct: false },

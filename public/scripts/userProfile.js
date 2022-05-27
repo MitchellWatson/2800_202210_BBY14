@@ -100,7 +100,7 @@ document.getElementById("submit").addEventListener("click", function (e) {
     let age = document.getElementById("ageInput");
     let bio = document.getElementById("bioInput");
     let hobbies = document.getElementById("hobbiesInput");
-    let queryString = "email=" + email.value + "&password=" + password.value + "&first_name=" + first.value + "&last_name=" + last.value + "&age=" + age.value + "&bio=" + bio.value + "&hobbies=" + hobbies.value;
+    let queryString = "email=" + email.value.trim() + "&password=" + password.value.trim() + "&first_name=" + first.value.trim() + "&last_name=" + last.value.trim() + "&age=" + age.value + "&bio=" + bio.value.trim() + "&hobbies=" + hobbies.value.trim();
     localStorage.setItem("saved", 0);
     ajaxPOST("/updateUser", function (data) {
         if (data) {

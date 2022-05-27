@@ -83,7 +83,7 @@ document.getElementById("submit").addEventListener("click", function (e) {
     let first = document.getElementById("firstNameInput");
     let last = document.getElementById("lastNameInput");
     localStorage.setItem("register", 0)
-    let queryString = "email=" + email.value + "&password=" + password.value + "&first_name=" + first.value + "&last_name=" + last.value + "&latitude=" + latitude + "&longitude=" + longitude;
+    let queryString = "email=" + email.value.trim() + "&password=" + password.value.trim() + "&first_name=" + first.value.trim() + "&last_name=" + last.value.trim() + "&latitude=" + latitude + "&longitude=" + longitude;
     ajaxPOST("/create", function (data) {
         if (data) {
             let dataParsed = JSON.parse(data);

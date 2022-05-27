@@ -71,7 +71,7 @@ app.use(bodyparser.urlencoded({
  */
 // const dbHost = "127.0.0.1";
 // const dbUser = "root";
-// const dbPassword = "";
+// const dbPassword = "passwordSQL";
 // const dbName = "comp2800";
 
 /**
@@ -1061,15 +1061,22 @@ app.get("/friendFinder", function (req, res) {
 
                                 // Compare function to sort by distance from friends list
                                 function compare(a, b) {
-                                    if (a.distance < b.distance) {
-                                        return -1;
+                                    // equal items sort equally
+                                    if (a.getDistance() === b.getDistance()) {
+                                        return 0;
                                     }
-                                    if (a.distance > b.distance) {
+                                    // nulls sort after anything else
+                                    else if (a.getDistance() === null) {
                                         return 1;
                                     }
-                                    return 0;
+                                    else if (b.getDistance() === null) {
+                                        return -1;
+                                    }
+                                    // otherwise, if we're ascending, lowest sorts first
+                                    else {
+                                        return a < b ? -1 : 1;
+                                    }
                                 }
-
                                 // Checks if friends recipient of relationship if in object then appends to list
                                 function checkIfIn(object) {
                                     let num = 1;
@@ -1091,7 +1098,12 @@ app.get("/friendFinder", function (req, res) {
                                         const mid = (results[i].longitude - req.session.longitude) * Math.PI / 180;
                                         const R = 6371;
                                         let distance = Math.acos(Math.sin(first) * Math.sin(second) + Math.cos(first) * Math.cos(second) * Math.cos(mid)) * R;
-                                        const place = new Place(results[i].ID, distance);
+                                        let place;
+                                        if (results[i].longitude == 0 && results[i].latitude == 0) {
+                                            place = new Place(results[i].ID, null);
+                                        } else {
+                                            place = new Place(results[i].ID, distance);
+                                        }
                                         places[i] = place;
                                     }
                                 }
@@ -1160,7 +1172,11 @@ app.get("/friendFinder", function (req, res) {
                                     // Inputs distance of each friend using Place object variables and methods    
                                     for (let k = 0; k < places.length; k++) {
                                         if (places[k].getId() == newResults[i].ID) {
-                                            users += (places[k].getDistance()).toFixed(1) + 'km away';
+                                            if (places[k].getDistance() == null) {
+                                                users += "No location.";
+                                            } else {
+                                                users += (places[k].getDistance()).toFixed(1) + 'km away';
+                                            }
                                         }
                                     }
                                     users += '</p>' +

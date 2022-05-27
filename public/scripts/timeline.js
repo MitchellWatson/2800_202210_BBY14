@@ -37,7 +37,7 @@ document.getElementById("new").addEventListener("click", function (e) {
         var full = "" + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
         let date = document.getElementById("dateInput");
         let posts = document.getElementById("descInput");
-        let queryString = "posts=" + posts.value + "&postDate=" + date.value + "&postTime=" + full;
+        let queryString = "posts=" + posts.value.trim() + "&postDate=" + date.value + "&postTime=" + full;
         ajaxPOST("/addTimeline", function (data) {
             if (data) {
                 let dataParsed = JSON.parse(data);

@@ -59,7 +59,7 @@ window.onclick = function(event) {
         let where = document.getElementById("placeInput");
         let reason = document.getElementById("reasonInput");
 
-        let queryString = "requestee=" + person.value + "&date=" + date.value + "&place=" + where.value + "&reason=" + reason.value;
+        let queryString = "requestee=" + person.value + "&date=" + date.value + "&place=" + where.value.trim() + "&reason=" + reason.value.trim();
         ajaxPOST("/addRequest", function (data) {
             if (data) {
                 let dataParsed = JSON.parse(data);

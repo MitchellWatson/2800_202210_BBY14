@@ -45,7 +45,7 @@ for (let i = 0; i < buttonUpdate.length; i++) {
     let last = document.getElementById("lastNameInput" + id);
     let admin = document.getElementById("adminInput" + id);
     console.log(admin);
-    let queryString = "email=" + email.value + "&password=" + password.value + "&first_name=" + first.value + "&last_name=" + last.value + "&is_admin=" + admin.value + "&id=" + id;
+    let queryString = "email=" + email.value.trim() + "&password=" + password.value.trim() + "&first_name=" + first.value.trim() + "&last_name=" + last.value.trim() + "&is_admin=" + admin.value + "&id=" + id;
     ajaxPOST("/updateAdmin", function (data) {
         if (data) {
             let dataParsed = JSON.parse(data);

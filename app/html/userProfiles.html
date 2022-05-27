@@ -48,7 +48,7 @@
                     <h2>Profile Information</h2>
                     <input id="firstNameInput" type="text" required="required" placeholder="First name"><br />
                     <input id="lastNameInput" type="text" required="required" placeholder="Last name"><br />
-                    <input id="ageInput" type="number" required="required" value="" placeholder="Age"><br />
+                    <input id="ageInput" type="number" required="required" onkeydown="if(event.key==='.'){event.preventDefault();}" value="" min="60" placeholder="Age"><br />
                     <!-- <textarea rows="4" id="bioInput" value="" type="text" required="required"
                           maxlength="100" placeholder="Tell us about yourself!"></textarea><br /> -->
                     <div id="bio"></div>
