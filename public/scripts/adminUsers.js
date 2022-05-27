@@ -6,12 +6,10 @@ function ajaxPOST(url, callback, data) {
             return encodeURIComponent(k) + '=' + encodeURIComponent(data[k])
         }
     ).join('&');
-
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
             callback(this.responseText);
-
         } else {
             console.log(this.status);
         }
@@ -29,7 +27,6 @@ document.getElementById("edit").addEventListener("click", function () {
         inputs[i].readOnly = false;
     }
 })
-
 
 let buttonUpdate = document.getElementsByClassName("submit");
 
@@ -68,21 +65,18 @@ for (let i = 0; i < buttonDelete.length; i++) {
     buttonDelete[i].addEventListener("click", deleted);
 }
 
-    function deleted() {
-    // e.preventDefault();
+function deleted() {
     let id = this.target;
     console.log(id);
     let queryString = "id=" + id;
     ajaxPOST("/deleteAdmin", function (data) {
         if (data) {
             let dataParsed = JSON.parse(data);
-
             if (dataParsed.status == "fail") {
                 document.getElementById("errorMsg").innerHTML = dataParsed.msg;
             } else {
                 window.location.replace("/admin-users");
             }
         }
-
     }, queryString);
 }

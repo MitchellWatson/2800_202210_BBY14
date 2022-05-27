@@ -1439,7 +1439,7 @@ app.get("/chatGlobalSelect", function (req, res) {
     }
 });
 
-// code for one-to-one chat; work in progress
+// code for one-to-one chat;
 io.on('connection', socket => {
     socket.on('joinRoom', ({ chatUser }) => {
         const user = newUser(socket.id, chatUser);
@@ -1506,11 +1506,3 @@ app.get("/gabChat", function (req, res) {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT);
-
-// //For Milestone hand-ins:
-// let port = 8000;
-// app.listen(port, function () {
-// });
-
-//For Heroku deployment
-// app.listen(process.env.PORT || 3000);

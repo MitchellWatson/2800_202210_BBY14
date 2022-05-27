@@ -1,3 +1,9 @@
+/** This file contains the client-side Javascript for the featured game which is a simple trivia gam
+ *      designed for seniors.
+ * 
+ * @author Mitchell Watson
+ * 
+ */
 "use strict";
 const num = document.getElementById('score')
 const result = document.getElementById('status')

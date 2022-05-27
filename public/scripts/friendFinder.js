@@ -1,5 +1,5 @@
-"use strict";
 
+"use strict";
 function ajaxPOST(url, callback, data) {
     let params = typeof data == 'string' ? data : Object.keys(data).map(
         function (k) {

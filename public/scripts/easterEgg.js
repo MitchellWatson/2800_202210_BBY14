@@ -1,5 +1,17 @@
+/** This file contains the client-side Javascript for the modal functionality that upon activation 
+ *      populates the user's screen with a random quote from the array of quotes generated from below.
+ *          Quotes are designed with the persona of the senior in mind. 
+ * 
+ * @author Basillio Kim
+ * 
+ */
+
+// Getting the button from the html page. 
 const button = document.getElementById("secret-click");
+// Getting the div to be populated with quotes from the html page. 
 const toasts = document.getElementById('quotes')
+
+//Keeping count of the number of clicks.
 let count = 0;
 const messages = [
     'Age is just a number for those who know how to make the most of their lives', 
@@ -11,8 +23,11 @@ const messages = [
     'With old age comes wisdom… and discounts!'
 ]
 
+//Array containing the different types of colours for the modal windows. 
 const types = ['purple', 'green', 'red']
 
+/** Event listener for clicks and increments the number of clicks by one.
+ */
 button.addEventListener('click', () => {
     count += 1;
     if (count < 3) {
@@ -22,6 +37,10 @@ button.addEventListener('click', () => {
     }
 })
 
+/** Function to create a notfification or modal window upon activation. 
+ * @param {*} message as the text to populate the modal window from the messages array.
+ * @param {*} type as the color to make the modal window. 
+ */
 function createNotification(message = null, type = null) {
 
     const notif = document.createElement('div')
@@ -42,6 +61,10 @@ function createNotification(message = null, type = null) {
     
 }
 
+/**
+ * 
+ * @returns 
+ */
 function getMessage() {
     return messages[Math.floor(Math.random() * messages.length)]
 }

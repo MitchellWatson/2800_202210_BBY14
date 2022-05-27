@@ -1,10 +1,21 @@
+/**
+ * Global live chat room.
+ * Block of code adapted from Youtube tutorials.
+ * 
+ * @author Web Dev Simplified
+ * @see https://www.youtube.com/watch?v=ZKEqqIO7n-k
+ * @see https://www.youtube.com/watch?v=rxzOqP9YwmM
+ * @author Traversy Media
+ * @see https://www.youtube.com/watch?v=jD7FnbI76Hg
+ */
+
 const chatForm = document.getElementById('chat-form');
 const chatMessages = document.querySelector('.chat-messages');
 const roomName = "Your chat";
 const userList = document.getElementById('users');
 
 // Get username and room from URL
-const { username, room } = Qs.parse(location.search, {
+const { username, room } = qs.parse(location.search, {
   ignoreQueryPrefix: true,
 });
 
