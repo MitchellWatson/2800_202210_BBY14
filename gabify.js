@@ -66,13 +66,17 @@ app.use(bodyparser.urlencoded({
     extended: true
 }))
 
-// --- Local hosting ---
+/**
+ * Local Hosting
+ */
 // const dbHost = "127.0.0.1";
 // const dbUser = "root";
 // const dbPassword = "";
 // const dbName = "comp2800";
 
-// --- Heroku hosting ---
+/**
+ * Heroku Hosting
+ */
 const dbHost = "us-cdbr-east-05.cleardb.net";
 const dbUser = "b959a83957277c";
 const dbPassword = "5e9f74c2";
@@ -632,7 +636,7 @@ app.get("/contact", async function (req, res) {
                             users += '</div>'
                             users +=
                                 '<div class="button">' +
-                                '<a href= "/gabChat" target="' + finalUsers[i].ID + '" class="option add"><span class="material-symbols-outlined">sms</span>Chat</a>' +
+                                '<a href= "/gabChat" target="' + finalUsers[i].ID + '" class="option add">Chat</a>' +
                                 '</div>' +
                                 '</div>';
                             usersProfiles.innerHTML += users;
