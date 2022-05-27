@@ -12,6 +12,7 @@ img {
     width: 150px;
     height: 150px;
     border-radius: 10px;
+    margin: 1em;
 }
 
 .card {
@@ -24,8 +25,8 @@ img {
     text-align: left;
     margin-bottom: 2vh;
     display: grid;
-    grid-template-rows: 20% 15% 25% 20% 10% 10%;
-    grid-template-columns: 40% 60%;
+    grid-template-rows: 20% 20% 20% 20% 10% 10%;
+    grid-template-columns: 50% 50%;
     font-size: 3vh;
     padding-bottom: 0.5em;
 }
@@ -52,11 +53,13 @@ img {
 .card .bio {
     grid-column: 1 / span 2;
     grid-row: 3;
+    padding-top: 1em;
 }
 
 .card .hobbies {
     grid-column: 1 / span 2;
     grid-row: 4;
+    padding-top: 1em;
 }
 
 .card .distance {
@@ -78,7 +81,7 @@ img {
     grid-column: 2;
     grid-row: 6;
     vertical-align: bottom;
-    text-align: center;
+    text-align: right;
 }
 
 .head {
