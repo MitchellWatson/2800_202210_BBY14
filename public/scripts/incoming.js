@@ -13,7 +13,6 @@ function ajaxPOST(url, callback, data) {
             callback(this.responseText);
 
         } else {
-            console.log(this.status);
         }
     }
     xhr.open("POST", url);
@@ -53,7 +52,6 @@ for (let i = 0; i < accepts.length; i++) {
 
 function updateAccept() {
     let id = this.target;
-    console.log("This is the id " + id)
     let queryString = "accepted=" + 1 + "&viewed=" + 1 + "&reqNum=" + id;
     ajaxPOST("/updateIncoming", function (data) {
         if (data) {

@@ -12,7 +12,6 @@ function ajaxPOST(url, callback, data) {
             callback(this.responseText);
 
         } else {
-            console.log(this.status);
         }
     }
     xhr.open("POST", url);
@@ -87,7 +86,6 @@ function uploadImages(e) {
         body: formData,
     };
     fetch("/upload-images", options).then(function (res) {
-        console.log(res);
     }).catch(function (err) {
         ("Error:", err)
     });

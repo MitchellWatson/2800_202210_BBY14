@@ -33,7 +33,6 @@ socket.on("roomUsersG", ({ room, users }) => {
 
 // Message from server
 socket.on("messageG", (message) => {
-    console.log(message);
     outputMessage(message);
 
     // Scroll down

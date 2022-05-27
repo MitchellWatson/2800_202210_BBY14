@@ -11,7 +11,6 @@ function ajaxPOST(url, callback, data) {
             callback(this.responseText);
 
         } else {
-            console.log(this.status);
         }
     }
     xhr.open("POST", url);

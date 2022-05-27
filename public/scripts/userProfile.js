@@ -10,9 +10,7 @@ function ajaxPOST(url, callback, data) {
     xhr.onload = function () {
         if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
             callback(this.responseText);
-
         } else {
-            console.log(this.status);
         }
     }
     xhr.open("POST", url);
@@ -32,7 +30,6 @@ var quote = document.getElementById("quote").innerHTML = 'Location has been suce
 
 btn.addEventListener("click", function () {
     if (navigator.geolocation) {
-        console.log("here2")
         navigator.geolocation.getCurrentPosition(showPosition);
     }
 

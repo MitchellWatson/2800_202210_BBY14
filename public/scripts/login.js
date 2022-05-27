@@ -10,7 +10,6 @@ ready(function () {
                 callback(this.responseText);
 
             } else {
-                console.log(this.status);
             }
         }
         xhr.open("GET", url);
@@ -23,13 +22,11 @@ ready(function () {
                 return encodeURIComponent(k) + '=' + encodeURIComponent(data[k])
             }
         ).join('&');
-        console.log("params in ajaxPOST", params);
         const xhr = new XMLHttpRequest();
         xhr.onload = function () {
             if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
                 callback(this.responseText);
             } else {
-                console.log(this.status);
             }
         }
         xhr.open("POST", url);
@@ -53,12 +50,8 @@ ready(function () {
 
     let result = localStorage.getItem("result");
     let success = localStorage.getItem("success");
-    console.log(result)
-    console.log(success)
     window.addEventListener("load", function () {
-        console.log("here")
         if (result == 1 && success == 1) {
-            console.log("here2")
             popUp.style.display = "block";
             document.getElementById("quote").innerHTML = 'Account successfully registered. <span class="material-symbols-outlined">done</span>';
         }
@@ -79,7 +72,6 @@ ready(function () {
         ajaxPOST("/login", function (data) {
             if (data) {
                 let dataParsed = JSON.parse(data);
-                console.log(dataParsed);
                 if (dataParsed.status == "fail") {
                     document.getElementById("incorrect").innerHTML = dataParsed.msg;
                 } else {
@@ -93,9 +85,7 @@ ready(function () {
 function ready(callback) {
     if (document.readyState != "loading") {
         callback();
-        console.log("ready state is 'complete'");
     } else {
         document.addEventListener("DOMContentLoaded", callback);
-        console.log("Listener was invoked");
     }
 }

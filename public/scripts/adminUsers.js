@@ -11,7 +11,6 @@ function ajaxPOST(url, callback, data) {
         if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
             callback(this.responseText);
         } else {
-            console.log(this.status);
         }
     }
     xhr.open("POST", url);
@@ -37,13 +36,11 @@ for (let i = 0; i < buttonUpdate.length; i++) {
 function update() {
     // e.preventDefault();
     let id = this.target;
-    console.log(id);
     let email = document.getElementById("emailInput" + id);
     let password = document.getElementById("passwordInput" + id);
     let first = document.getElementById("firstNameInput" + id);
     let last = document.getElementById("lastNameInput" + id);
     let admin = document.getElementById("adminInput" + id);
-    console.log(admin);
     let queryString = "email=" + email.value.trim() + "&password=" + password.value.trim() + "&first_name=" + first.value.trim() + "&last_name=" + last.value.trim() + "&is_admin=" + admin.value + "&id=" + id;
     ajaxPOST("/updateAdmin", function (data) {
         if (data) {
@@ -68,7 +65,6 @@ for (let i = 0; i < buttonDelete.length; i++) {
 
 function deleted() {
     let id = this.target;
-    console.log(id);
     let queryString = "id=" + id;
     ajaxPOST("/deleteAdmin", function (data) {
         if (data) {
