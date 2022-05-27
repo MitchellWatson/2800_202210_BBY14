@@ -1,6 +1,6 @@
-## I.   PROJECT TITLE
+# I.    PROJECT TITLE
 ------------------------------------------
-GABIFY
+## GABIFY
 
 
 # II.   PROJECT DESCRIPTION
