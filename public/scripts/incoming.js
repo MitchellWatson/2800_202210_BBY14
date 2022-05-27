@@ -1,3 +1,8 @@
+/** This file holds the code for incoming requests.
+ * @author Mitchell Watson
+ * 
+ */
+
 "use strict";
 
 function ajaxPOST(url, callback, data) {
@@ -13,7 +18,6 @@ function ajaxPOST(url, callback, data) {
             callback(this.responseText);
 
         } else {
-            console.log(this.status);
         }
     }
     xhr.open("POST", url);
@@ -28,6 +32,7 @@ for (let i = 0; i < declines.length; i++) {
     declines[i].addEventListener("click", updateDecline);
 }
 
+//Function that delete
 function updateDecline() {
     let id = this.target;
     let queryString = "accepted=" + 0 + "&viewed=" + 1 + "&reqNum=" + id;
@@ -53,7 +58,6 @@ for (let i = 0; i < accepts.length; i++) {
 
 function updateAccept() {
     let id = this.target;
-    console.log("This is the id " + id)
     let queryString = "accepted=" + 1 + "&viewed=" + 1 + "&reqNum=" + id;
     ajaxPOST("/updateIncoming", function (data) {
         if (data) {

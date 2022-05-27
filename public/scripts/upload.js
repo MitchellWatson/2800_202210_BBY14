@@ -16,7 +16,6 @@ function uploadImages(e) {
     };
     fetch("/upload-images", options
     ).then(function (res) {
-        console.log(res);
     }).catch(function (err) {
         ("Error:", err)
     });

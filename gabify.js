@@ -187,7 +187,6 @@ app.get("/timeline", function (req, res) {
             "SELECT * FROM posts ORDER BY postDate DESC",
             function (error, results, fields) {
                 if (error) {
-                    console.log(error);
                 }
 
                 // Gets all posts posted by user
@@ -264,7 +263,6 @@ app.get("/request", function (req, res) {
         connection.query('SELECT * FROM bby14_users;',
             function (error, results, fields) {
                 if (error) {
-                    console.log(error);
                 }
 
                 // Appends all users to list
@@ -277,7 +275,6 @@ app.get("/request", function (req, res) {
                     "SELECT * FROM friends;",
                     function (error, results, fields) {
                         if (error) {
-                            console.log(error);
                         }
 
                         // Checks and append if friends are with user
@@ -374,7 +371,6 @@ app.get("/schedule", function (req, res) {
         connection.query('SELECT * FROM bby14_users;',
             function (error, results, fields) {
                 if (error) {
-                    console.log(error);
                 }
 
                 // Filters and appends users to list
@@ -387,7 +383,6 @@ app.get("/schedule", function (req, res) {
                     "SELECT * FROM meet ORDER BY date ASC;",
                     function (error, results, fields) {
                         if (error) {
-                            console.log(error);
                         }
 
                         // Gets all meets that include the user and is today's date or later
@@ -465,7 +460,6 @@ app.get("/incoming", function (req, res) {
         connection.query('SELECT * FROM bby14_users;',
             function (error, results, fields) {
                 if (error) {
-                    console.log(error);
                 }
 
                 // Append users to list
@@ -478,7 +472,6 @@ app.get("/incoming", function (req, res) {
                     "SELECT * FROM meet ORDER BY date ASC;",
                     function (error, results, fields) {
                         if (error) {
-                            console.log(error);
                         }
 
                         // Appends meet requests to list
@@ -558,7 +551,6 @@ app.get("/contact", async function (req, res) {
         connection.query('SELECT * FROM bby14_users;',
             function (error, results, fields) {
                 if (error) {
-                    console.log(error);
                 }
 
                 // Appends users to list
@@ -571,7 +563,6 @@ app.get("/contact", async function (req, res) {
                     "SELECT * FROM friends;",
                     function (error, results, fields) {
                         if (error) {
-                            console.log(error);
                         }
 
                         // Appends all friends that include user to list
@@ -731,7 +722,6 @@ app.post('/addRequest', function (req, res) {
         [req.session.identity, req.body.requestee, req.body.place, req.body.date, req.body.reason, 0, 0, req.body.id],
         function (error, results, fields) {
             if (error) {
-                console.log(error);
                 res.send({
                     status: "fail",
                     msg: "Recorded not updated."
@@ -755,7 +745,6 @@ app.post('/create', function (req, res) {
         [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, req.body.latitude, req.body.longitude, null, null, null, 0],
         function (error, results, fields) {
             if (error) {
-                console.log(error);
                 res.send({
                     status: "fail",
                     msg: "Recorded failed."
@@ -779,7 +768,6 @@ app.post('/addTimeline', function (req, res) {
         [req.session.identity, req.body.unknown, req.body.posts, req.body.postDate, req.body.postTime],
         function (error, results, fields) {
             if (error) {
-                console.log(error);
             }
             res.send({
                 status: "success",
@@ -799,7 +787,6 @@ app.post('/updateIncoming', function (req, res) {
         [parseInt(req.body.accepted), parseInt(req.body.viewed), parseInt(req.body.reqNum)],
         function (error, results, fields) {
             if (error) {
-                console.log(error);
             }
             res.send({
                 status: "success",
@@ -818,7 +805,6 @@ app.post('/updateLocation', function (req, res) {
         [req.body.latitude, req.body.longitude, req.session.identity],
         function (error, results, fields) {
             if (error) {
-                console.log(error);
             }
             res.send({
                 status: "success",
@@ -837,7 +823,6 @@ app.post('/updateUser', function (req, res) {
         [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.age, req.body.bio, req.body.hobbies, req.session.identity],
         function (error, results, fields) {
             if (error) {
-                console.log(error);
             }
             res.send({
                 status: "success",
@@ -889,7 +874,6 @@ app.post('/updateTimeline', function (req, res) {
         [req.body.posts, req.session.identity, req.body.postNum],
         function (error, results, fields) {
             if (error) {
-                console.log(error);
             }
             res.send({
                 status: "success",
@@ -909,7 +893,6 @@ app.post('/updateAdmin', function (req, res) {
         [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.is_admin, req.body.id],
         function (error, results, fields) {
             if (error) {
-                console.log(error);
             }
             res.send({
                 status: "success",
@@ -928,7 +911,6 @@ app.post('/deleteAdmin', function (req, res) {
         [req.body.id],
         function (error, results, fields) {
             if (error) {
-                console.log(error);
             }
             res.send({
                 status: "success",
@@ -951,7 +933,6 @@ app.get("/admin-users", function (req, res) {
             "SELECT * FROM bby14_users",
             function (error, results, fields) {
                 if (error) {
-                    console.log(error);
                 }
 
                 // Creates div html element fron dynamic user card insertion
@@ -1029,7 +1010,6 @@ app.get("/friendFinder", function (req, res) {
                     req.session.identity,
                     function (error, results, fields) {
                         if (error) {
-                            console.log(error);
                         }
 
                         // Appends friend to list if same ID
@@ -1045,7 +1025,6 @@ app.get("/friendFinder", function (req, res) {
                             "SELECT * FROM bby14_users;",
                             function (error, results, fields) {
                                 if (error) {
-                                    console.log(error);
                                 }
 
                                 // Place class to hold distance from logged in user to other friends
@@ -1228,7 +1207,6 @@ app.post('/updateFriends', function (req, res) {
         [req.session.identity, req.body.id],
         function (error, results, fields) {
             if (error) {
-                console.log(error);
             }
             res.send({
                 status: "success",

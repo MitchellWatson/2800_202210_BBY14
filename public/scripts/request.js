@@ -13,7 +13,6 @@ function ajaxPOST(url, callback, data) {
             callback(this.responseText);
 
         } else {
-            console.log(this.status);
         }
     }
     xhr.open("POST", url);
@@ -39,9 +38,7 @@ let request = localStorage.getItem("request");
 let passed = localStorage.getItem("passed");
 
 window.addEventListener("load", function () {
-    console.log("here")
     if (request == 1 && passed == 1) {
-        console.log("here2")
         popUp.style.display = "block";
         document.getElementById("quote").innerHTML = 'Meet-up request was succesfully sent. <span class="material-symbols-outlined">done</span>';
     } else if (request == 1 && passed == 0) {
@@ -62,7 +59,6 @@ document.getElementById("request").addEventListener("click", function () {
         if (data) {
             let dataParsed = JSON.parse(data);
             if (dataParsed.status == "fail") {
-                console.log("here3")
                 localStorage.setItem("request", 1)
                 localStorage.setItem("passed", 0)
                 window.location.replace("/request");
