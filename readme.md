@@ -311,7 +311,7 @@ Setup: Login with provided credentials in assignment 05c & 05d by BBY-Team 14 or
 
 ## VII.  CREDITS, REFERENCES, & LICENSES
 **[Google Material Icons](https://fonts.google.com/icons)**  
-**[Calculating distance](https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula)**
+**[Calculating distance](https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula)**  
 **[Trivia game](https://www.youtube.com/watch?v=riDzcEQbX6k)**  
 **[socket.io tutorial](https://www.youtube.com/watch?v=ZKEqqIO7n-k)**  
 **[Chat tutorial](https://www.youtube.com/watch?v=rxzOqP9YwmM)**  
