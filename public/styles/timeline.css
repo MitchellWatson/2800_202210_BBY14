@@ -131,12 +131,13 @@ h2 {
 }
 
 @media only screen and (min-width: 430px) {
-    #new{
+    #new {
         width: 435px;
         margin-left: auto;
         margin-right: auto;
     }
-    .card2{
+
+    .card2 {
         width: 473px;
         margin: auto;
     }

@@ -1,9 +1,8 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400&display=swap');
- 
+
 /* Universal Selector applies a box sizing to set it to board a box so that if we add any padding/border to element, width doesnt change */
 * {
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
 
@@ -47,13 +46,13 @@
 }
 
 .quote.purple {
-color: rebeccapurple;
+    color: rebeccapurple;
 }
 
 .quote.green {
-color: green;
-    }
+    color: green;
+}
 
 .quote.red {
-color: red;
-        }
+    color: red;
+}

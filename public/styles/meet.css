@@ -29,7 +29,7 @@
     text-align: left;
     margin-bottom: 2vh;
     overflow-wrap: break-word;
-    display:flex;
+    display: flex;
     font-size: 3vh;
     justify-content: center;
 }
@@ -108,13 +108,12 @@
 }
 
 @media only screen and (min-width: 1025px) {
-.card {
-    /* min-width: 700px;
-    max-width: 700px; */
-    width: 750px;
-    margin: auto;
-}
-.content{
-    grid-gap: 50px;
-}
+    .card {
+        width: 750px;
+        margin: auto;
+    }
+
+    .content {
+        grid-gap: 50px;
+    }
 }
