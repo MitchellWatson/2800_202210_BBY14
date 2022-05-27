@@ -28,22 +28,21 @@ for (let i = 0; i < declines.length; i++) {
     declines[i].addEventListener("click", updateDecline);
 }
 
-function updateDecline () {
-        // e.preventDefault();
-        let id = this.target;
-        let queryString = "accepted=" + 0 + "&viewed=" + 1 + "&reqNum=" + id;
-        ajaxPOST("/updateIncoming", function (data) {
-            if (data) {
-                let dataParsed = JSON.parse(data);
-    
-                if (dataParsed.status == "fail") {
-                    document.getElementById("errorMsg").innerHTML = dataParsed.msg;
-                } else {
-                    window.location.replace("/incoming");
-                }
+function updateDecline() {
+    let id = this.target;
+    let queryString = "accepted=" + 0 + "&viewed=" + 1 + "&reqNum=" + id;
+    ajaxPOST("/updateIncoming", function (data) {
+        if (data) {
+            let dataParsed = JSON.parse(data);
+
+            if (dataParsed.status == "fail") {
+                document.getElementById("errorMsg").innerHTML = dataParsed.msg;
+            } else {
+                window.location.replace("/incoming");
             }
-    
-        }, queryString);
+        }
+
+    }, queryString);
 }
 
 let accepts = document.getElementsByClassName("accept");
@@ -52,8 +51,7 @@ for (let i = 0; i < accepts.length; i++) {
     accepts[i].addEventListener("click", updateAccept);
 }
 
-function updateAccept () {
-    // e.preventDefault();
+function updateAccept() {
     let id = this.target;
     console.log("This is the id " + id)
     let queryString = "accepted=" + 1 + "&viewed=" + 1 + "&reqNum=" + id;

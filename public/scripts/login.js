@@ -1,9 +1,8 @@
-// Code to do client side is adapted from a COMP 1537 assignment.
+// Code to do client side is adapted from a COMP 1537 assignment
+
 "use strict";
 
 ready(function () {
-    console.log("Client script loaded.");
-
     function ajaxGET(url, callback) {
         const xhr = new XMLHttpRequest();
         xhr.onload = function () {
@@ -17,7 +16,7 @@ ready(function () {
         xhr.open("GET", url);
         xhr.send();
     }
-
+    
     function ajaxPOST(url, callback, data) {
         let params = typeof data == 'string' ? data : Object.keys(data).map(
             function (k) {
@@ -25,7 +24,6 @@ ready(function () {
             }
         ).join('&');
         console.log("params in ajaxPOST", params);
-
         const xhr = new XMLHttpRequest();
         xhr.onload = function () {
             if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
@@ -40,19 +38,18 @@ ready(function () {
         xhr.send(params);
     }
 
-var popUp = document.getElementById("popUp");
+    var popUp = document.getElementById("popUp");
+    var span = document.getElementsByClassName("close")[0];
 
-var span = document.getElementsByClassName("close")[0];
+    span.onclick = function () {
+        popUp.style.display = "none";
+    }
 
-span.onclick = function() {
-    popUp.style.display = "none";
-}
-
-window.onclick = function(event) {
-  if (event.target == popUp) {
-    popUp.style.display = "none";
-  }
-}
+    window.onclick = function (event) {
+        if (event.target == popUp) {
+            popUp.style.display = "none";
+        }
+    }
 
     let result = localStorage.getItem("result");
     let success = localStorage.getItem("success");
@@ -101,5 +98,4 @@ function ready(callback) {
         document.addEventListener("DOMContentLoaded", callback);
         console.log("Listener was invoked");
     }
-  }
-  
+}

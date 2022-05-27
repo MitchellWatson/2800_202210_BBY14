@@ -1,3 +1,14 @@
+/**
+ * Global live chat room.
+ * Block of code adapted from Youtube tutorials.
+ * 
+ * @author Web Dev Simplified
+ * @see https://www.youtube.com/watch?v=ZKEqqIO7n-k
+ * @see https://www.youtube.com/watch?v=rxzOqP9YwmM
+ * @author Traversy Media
+ * @see https://www.youtube.com/watch?v=jD7FnbI76Hg
+ */
+
 :root {
 	--dark-color-a: #000000;
 	--dark-color-b: #272728;
