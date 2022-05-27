@@ -1,15 +1,12 @@
-# I.    PROJECT TITLE
-------------------------------------------
-## GABIFY
+## I.    PROJECT TITLE
+** GABIFY **
 
 
-# II.   PROJECT DESCRIPTION
-------------------------------------------
+## II.   PROJECT DESCRIPTION
 Gabify is a chat application to help seniors socialize and stay mentally active with content for users to promote nostalgia and reminisce about their past.
 
 
-# III.  TECHNOLOGIES USED
-------------------------------------------
+## III.  TECHNOLOGIES USED
 
 1. FRONTEND
     * html              5.2
@@ -38,7 +35,7 @@ Gabify is a chat application to help seniors socialize and stay mentally active 
     * visual studio code
 
 # IV.   LISTING OF FILE CONTENTS OF FOLDER
-------------------------------------------
+```
 .
 ├── Procfile
 ├── app
@@ -125,16 +122,13 @@ Gabify is a chat application to help seniors socialize and stay mentally active 
 │       ├── userProfile.css
 │       └── userSettings.css
 └── readme.md
+```
 
-# V.    HOW TO INSTALL OR RUN THE PROJECT
-------------------------------------------
-# VI.   HOW TO USE THE PRODUCT (FEATURES)
-------------------------------------------
-# VII.  CREDITS, REFERENCES, & LICENSES
-------------------------------------------
-# VIII. CONTACT INFORMATION
-------------------------------------------
-[Basillio Kim]      [bkim128@my.bcit.ca]
-[Mitchell Watson]   [mwatson75@my.bcit.ca]
-[Jackie Ma]         [jma149@my.bcit.ca]
-[Ryan Chau]         [rchau15@my.bcit.ca]
+## V.    HOW TO INSTALL OR RUN THE PROJECT
+## VI.   HOW TO USE THE PRODUCT (FEATURES)
+## VII.  CREDITS, REFERENCES, & LICENSES
+## VIII. CONTACT INFORMATION
+Basillio Kim      bkim128@my.bcit.ca _
+Mitchell Watson   mwatson75@my.bcit.ca _
+Jackie Ma         jma149@my.bcit.ca _
+Ryan Chau         rchau15@my.bcit.ca
