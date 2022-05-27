@@ -69,18 +69,18 @@ app.use(bodyparser.urlencoded({
 /**
  * Local Hosting
  */
-const dbHost = "127.0.0.1";
-const dbUser = "root";
-const dbPassword = "";
-const dbName = "comp2800";
+// const dbHost = "127.0.0.1";
+// const dbUser = "root";
+// const dbPassword = "";
+// const dbName = "comp2800";
 
 /**
  * Heroku Hosting
  */
-// const dbHost = "us-cdbr-east-05.cleardb.net";
-// const dbUser = "b959a83957277c";
-// const dbPassword = "5e9f74c2";
-// const dbName = "heroku_2e384c4e07a3778";
+const dbHost = "us-cdbr-east-05.cleardb.net";
+const dbUser = "b959a83957277c";
+const dbPassword = "5e9f74c2";
+const dbName = "heroku_2e384c4e07a3778";
 
 const connection = mysql.createPool({
     host: dbHost,
