@@ -310,11 +310,12 @@ Setup: Login with provided credentials in assignment 05c & 05d by BBY-Team 14 or
 6. To delete user, go to specified user and click `Delete`.
 
 ## VII.  CREDITS, REFERENCES, & LICENSES
-**[Calculating distance between user coordinates]**(https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula)
-**[Trivia Game]**(https://www.youtube.com/watch?v=riDzcEQbX6k)
-**[Chat Tutorial]**(https://www.youtube.com/watch?v=ZKEqqIO7n-k)
-**[Chat Tutorial]**(https://www.youtube.com/watch?v=rxzOqP9YwmM)
-**[Chat Tutorial]**(https://www.youtube.com/watch?v=jD7FnbI76Hg)
+**[Google Material Icons](https://fonts.google.com/icons)**
+**[Calculating distance between user coordinates](https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula)**
+**[Trivia Game](https://www.youtube.com/watch?v=riDzcEQbX6k)**  
+**[Chat Tutorial](https://www.youtube.com/watch?v=ZKEqqIO7n-k)**  
+**[Chat Tutorial](https://www.youtube.com/watch?v=rxzOqP9YwmM)**  
+**[Chat Tutorial](https://www.youtube.com/watch?v=jD7FnbI76Hg)**
 
 ## VIII. CONTACT INFORMATION
 [Basillio Kim](mailto:bkim128@my.bcit.ca)  
