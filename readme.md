@@ -1,5 +1,5 @@
 ## I.    PROJECT TITLE
-** GABIFY **
+**GABIFY**
 
 
 ## II.   PROJECT DESCRIPTION
@@ -159,7 +159,11 @@ Gabify is a chat application to help seniors socialize and stay mentally active 
     7. Run `npm run start` in terminal of project root folder
     9. Open `localhost:8000` in browser
     10. Login with provided credentials in assignment 05c & 05d by **BBY-Team 14**
+
 ## VI.   HOW TO USE THE PRODUCT (FEATURES)
+    1. Login with provided credentials in assignment 05c & 05d by **BBY-Team 14**
+    2. 
+    
 ## VII.  CREDITS, REFERENCES, & LICENSES
 ## VIII. CONTACT INFORMATION
 Basillio Kim      bkim128@my.bcit.ca  
