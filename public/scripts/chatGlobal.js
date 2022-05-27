@@ -16,7 +16,10 @@ const roomName = document.getElementById("room-name");
 const userList = document.getElementById("users");
 
 
-const username = "delta";
+// Get username and room from URL
+const { username, room } = Qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+});
 
 const socket = io();
 
@@ -80,12 +83,15 @@ function outputRoomName(room) {
     roomName.innerText = room;
 }
 
+let count = 1;
+
 // Add users to DOM
 function outputUsers(users) {
     userList.innerHTML = "";
     users.forEach((user) => {
         const li = document.createElement("li");
-        li.innerText = user.username;
+        // li.innerText = user.username;
+        li.innerText = "senior" + count++;
         userList.appendChild(li);
     });
 }
