@@ -29,9 +29,11 @@ Gabify is a chat application to help seniors socialize and stay mentally active 
 
 3. DATABASE
     * mysql             8.0.29
-    * cleardb
+    * cleardb           
 
 4. OTHER SOFTWARE
+    * npm
+    * github
     * visual studio code
 
 # IV.   LISTING OF FILE CONTENTS OF FOLDER
@@ -125,10 +127,42 @@ Gabify is a chat application to help seniors socialize and stay mentally active 
 ```
 
 ## V.    HOW TO INSTALL OR RUN THE PROJECT
+1. LANGUAGES
+    * html
+    * css
+    * javascript
+    * mysql
+
+2. API & FRAMEWORKS
+    * node.js
+    * express
+    * express-session
+    * body-parser
+    * jsdom
+    * moment
+    * multer
+    * mysql
+    * mysql2
+    * nodemon
+    * socket.io
+
+3. API KEY REQUIREMENT
+    * NA
+
+4. INSTALLATION
+    1. Clone [main repository](https://github.com/MitchellWatson/COMP2800_202210_BBY14.git)
+    2. Install Node.js
+    3. Install MySQL
+    4. Run `source <./database.sql>;` in MySQL where `<./database.sql>` is the absolute path of the file
+    5. Start your MySQL server
+    6. Run `npm install` in terminal of project root folder
+    7. Run `npm run start` in terminal of project root folder
+    9. Open `localhost:8000` in browser
+    10. Login with provided credentials in assignment 05c & 05d by **BBY-Team 14**
 ## VI.   HOW TO USE THE PRODUCT (FEATURES)
 ## VII.  CREDITS, REFERENCES, & LICENSES
 ## VIII. CONTACT INFORMATION
 Basillio Kim      bkim128@my.bcit.ca  
 Mitchell Watson   mwatson75@my.bcit.ca  
-Jackie Ma         jma149@my.bcit.ca\
+Jackie Ma         jma149@my.bcit.ca  
 Ryan Chau         rchau15@my.bcit.ca
