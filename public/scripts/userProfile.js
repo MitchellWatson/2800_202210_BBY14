@@ -39,6 +39,7 @@ var quote = document.getElementById("quote").innerHTML = 'Location has been suce
         navigator.geolocation.getCurrentPosition(showPosition);
     }
     
+// Function to get location and update to database
 function showPosition(position) {
   latitude = position.coords.latitude;
   longitude = position.coords.longitude;
@@ -67,6 +68,7 @@ window.onclick = function(event) {
   }
 }
 
+// Alerts user when save profile
 let saved = localStorage.getItem("saved");
   document.addEventListener("DOMContentLoaded", function() {
     var quote = document.getElementById("quote").innerHTML = 'Profile information succesfully saved.<span class="material-symbols-outlined">done</span>';
@@ -87,7 +89,7 @@ window.onclick = function(event) {
     popUp.style.display = "none";
   }
 }
-
+// Update users information to the database
 document.getElementById("submit").addEventListener("click", function (e) {
     
     e.preventDefault();

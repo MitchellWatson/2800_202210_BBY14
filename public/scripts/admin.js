@@ -7,7 +7,11 @@
 var popUp = document.getElementById("popUp");
 var span = document.getElementsByClassName("close")[0];
 
+<<<<<<< HEAD
 //Messages used in the popup
+=======
+// Messages for users
+>>>>>>> 6ac7e957b8d017287331d23384382768370d7a99
 const messages = [
     'Age is just a number for those who know how to make the most of their lives', 
     'Anyone who keeps learning stays young',
@@ -18,7 +22,11 @@ const messages = [
     'With old age comes wisdom… and discounts!'
 ]
 
+<<<<<<< HEAD
 //Selection of random message
+=======
+// Randomly chooses a message to display
+>>>>>>> 6ac7e957b8d017287331d23384382768370d7a99
 let chosen = messages[Math.floor(Math.random() * messages.length)]
 
 //Writing of message to the div

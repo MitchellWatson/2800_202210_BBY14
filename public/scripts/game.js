@@ -26,6 +26,7 @@ next.addEventListener('click', () => {
   setNextQuestion()
 })
 
+// Start game
 function startGame() {
   score = 0;
   num.innerHTML = "Score: " + score
@@ -35,12 +36,12 @@ function startGame() {
   question.classList.remove('hidden')
   setNextQuestion()
 }
-
+// Shows the next question randomly
 function setNextQuestion() {
   resetState()
   showQuestion(shuffle[index])
 }
-
+// Displays Question and answers
 function showQuestion(question) {
   questionElement.innerText = question.question
   question.answers.forEach(answer => {
@@ -63,7 +64,7 @@ function resetState() {
     answerElement.removeChild(answerElement.firstChild)
   }
 }
-
+// Allert users if wrong or right when answering the game
 function selectAnswer(e) {
   const selectedButton = e.target
   const correct = selectedButton.dataset.correct
@@ -102,6 +103,7 @@ function clearStatusClass(element) {
   element.classList.remove('incorrect')
 }
 
+// List of questions and answers
 const questions = [
   {
     question: 'What year did Evlis Presley release his great hit \'Hound Dog\'?',
