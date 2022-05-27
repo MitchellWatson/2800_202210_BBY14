@@ -61,20 +61,20 @@ KEY (postNum),
 FOREIGN KEY(userID) REFERENCES bby14_users(ID));
 
 INSERT INTO bby14_users (first_name, last_name, email, password, latitude, longitude, age, bio, hobbies, is_admin) VALUES (
-    "Alpha", "Admin", "alpha@my.bcit.ca", "admin", 50, -123, 50, "Alpha bio.", "Walking, Hiking, Nature", true);
+    "Alpha", "Admin", "alpha@my.bcit.ca", "admin", 50, -121.8, 50, "Hello all. I like to enjoy life to its fullest.", "Walking, Hiking, Nature", true);
 
 INSERT INTO bby14_users (first_name, last_name, email, password, latitude, longitude, age, bio, hobbies, is_admin) VALUES (
-    "Bravo", "User", "bravo@my.bcit.ca", "user", 50, -122, 50, "Bravo bio.", "Knitting, Bingo, Cooking", false);
+    "Bravo", "User", "bravo@my.bcit.ca", "user", 50, -122, 50, "Im old but not that old.", "Knitting, Bingo, Cooking", false);
 
-INSERT INTO bby14_users (first_name, last_name, email, password, latitude, longitude, age, bio, is_admin) VALUES (
-    "Charlie", "Admin", "charlie@my.bcit.ca", "admin", 50, -124, 50, "Charlie bio.", true);
+INSERT INTO bby14_users (first_name, last_name, email, password, latitude, longitude, age, bio, hobbies, is_admin) VALUES (
+    "Charlie", "Admin", "charlie@my.bcit.ca", "admin", 50, -122.1, 50, "I see the good in life and want to talk to others.", "Poker, Alcohol", true);
 
-INSERT INTO bby14_users (first_name, last_name, email, password, latitude, longitude, age, bio, is_admin) VALUES (
-    "Delta", "User", "delta@my.bcit.ca", "user", 100, -52, 50, "Delta bio.", false);
+INSERT INTO bby14_users (first_name, last_name, email, password, latitude, longitude, age, bio, hobbies, is_admin) VALUES (
+    "Delta", "User", "delta@my.bcit.ca", "user", 100, -122.4, 50, "Me and my wife would like to find another walking partner", "Walking, Hiking, Outdoors", false);
     
-INSERT INTO bby14_users (first_name, last_name, email, password, latitude, longitude, age, bio, is_admin) VALUES (
-    "Echo", "User", "echo@my.bcit.ca", "user", 50, -125, 50, "Echo bio.", false);
+INSERT INTO bby14_users (first_name, last_name, email, password, latitude, longitude, age, bio, hobbies, is_admin) VALUES (
+    "Echo", "User", "echo@my.bcit.ca", "user", 50, -122.3, 50, "Just enjoying the ride", "Fishing, Outdoors", false);
 
-INSERT INTO posts (userID, postNum, posts, postDate, postTime) VALUES (4, 3, "This is a test post3", '2022-05-20', "12:30:00");    
-INSERT INTO posts (userID, postNum, posts, postDate, postTime) VALUES (4, 1, "This is a test post1", '2022-05-20', "12:40:00");
-INSERT INTO posts (userID, postNum, posts, postDate, postTime) VALUES (4, 2, "This is a test post2", '2022-05-20', "12:50:00");
+INSERT INTO posts (userID, postNum, posts, postDate, postTime) VALUES (4, 3, "Went to mall today. Had fun.", '2022-05-21', "12:30:00");    
+INSERT INTO posts (userID, postNum, posts, postDate, postTime) VALUES (4, 1, "Enjoyed watching the birds", '2022-05-20', "12:40:00");
+INSERT INTO posts (userID, postNum, posts, postDate, postTime) VALUES (4, 2, "Went to park", '2022-05-19', "12:50:00");

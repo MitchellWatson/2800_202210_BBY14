@@ -1281,7 +1281,6 @@ app.post("/login", function (req, res) {
             req.session.save(function (err) {
                 // session saved. for analytics we could record this in db
             })
-            console.log(req.session.identity);
             res.send({ status: "success", msg: "Logged in." });
         }
     })
@@ -1342,16 +1341,13 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
     }
 
     // Check for if file is there
-    if (!req.files[0].filename) {
-        console.log("No file upload");
-    } else {
+    if (req.files[0].filename) {
         let imgsrc = "avatar_" + req.session.identity + "." + req.files[0].originalname.split(".").pop();
 
         // Deletes then reinserts new image into user photos table
         let updateData = `DELETE FROM userphotos WHERE userID = ${req.session.identity}; INSERT INTO userphotos (userID, imageID) VALUES (?, ?);`
         connection.query(updateData, [req.session.identity, imgsrc], function (err, result) {
             if (err) throw err
-            console.log("file uploaded")
         })
     }
 });
@@ -1509,7 +1505,7 @@ app.get("/gabChat", function (req, res) {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT);
 
 // //For Milestone hand-ins:
 // let port = 8000;
