@@ -3,17 +3,13 @@
  * @author Basil Kim
  */
 
-//Getting divs to populate message
+// Getting divs to populate message
 var popUp = document.getElementById("popUp");
 var span = document.getElementsByClassName("close")[0];
 
-<<<<<<< HEAD
-//Messages used in the popup
-=======
 // Messages for users
->>>>>>> 6ac7e957b8d017287331d23384382768370d7a99
 const messages = [
-    'Age is just a number for those who know how to make the most of their lives', 
+    'Age is just a number for those who know how to make the most of their lives',
     'Anyone who keeps learning stays young',
     'Enjoy your day, you deserve it',
     'The spirit never ages. It stays forever young',
@@ -22,37 +18,33 @@ const messages = [
     'With old age comes wisdom… and discounts!'
 ]
 
-<<<<<<< HEAD
-//Selection of random message
-=======
 // Randomly chooses a message to display
->>>>>>> 6ac7e957b8d017287331d23384382768370d7a99
 let chosen = messages[Math.floor(Math.random() * messages.length)]
 
-//Writing of message to the div
+// Writing of message to the div
 var quote = document.getElementById("quote").innerHTML = chosen;
 
-//Storing the value in localStorage
+// Storing the value in localStorage
 let once = localStorage.getItem("value");
 localStorage.setItem("saved", 1);
 
-//Event listener for the loading of the message
-  document.addEventListener("DOMContentLoaded", function() {
-      if (once == 0) {
+// Event listener for the loading of the message
+document.addEventListener("DOMContentLoaded", function () {
+    if (once == 0) {
         once++;
         localStorage.setItem("value", once);
         popUp.style.display = "block";
-      }
-     })
+    }
+})
 
-//Onclick activation of pop-up feature
-span.onclick = function() {
+// Onclick activation of pop-up feature
+span.onclick = function () {
     popUp.style.display = "none";
 }
 
-//Onclick activation of pop-up feature
-window.onclick = function(event) {
-  if (event.target == popUp) {
-    popUp.style.display = "none";
-  }
+// Onclick activation of pop-up feature
+window.onclick = function (event) {
+    if (event.target == popUp) {
+        popUp.style.display = "none";
+    }
 }

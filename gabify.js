@@ -1,13 +1,15 @@
 /** The following code contains server-side used to read and write changes into the database 
-*      as well as changes to the front-end using Javascript and the DOM. 
+*   as well as changes to the front-end using Javascript and the DOM.
+*
 * @author   Mitchell Watson
 * @author   Jackie Ma
 * @author   Basillio Kim
 * @author   Ryan Chau
 */
+
 "use strict";
 
-//List of all modules and dependencies installed through node.jsconst express = require("express");
+//List of all modules and dependencies installed through node.js const express = require("express");
 const express = require("express");
 const session = require("express-session");
 const fs = require("fs");
@@ -44,14 +46,14 @@ const {
     getRoomUsers
 } = require('./helpers/users');
 
-//Static paths used through Express.js
+//Static paths used through express.js
 app.use("/html", express.static("./app/html"));
 app.use("/avatar", express.static("./app/avatar"));
 app.use("/images", express.static("./public/images"));
 app.use("/styles", express.static("./public/styles"));
 app.use("/scripts", express.static("./public/scripts"));
 
-//Initialization of the session.
+//Initialization of the session
 app.use(session(
     {
         secret: "$zw+qzKh+&?b9}-v",
@@ -90,8 +92,8 @@ const connection = mysql.createPool({
     multipleStatements: "true"
 });
 
-// Session redirect.
-// If logged in, depending on user type, will divert to main pahe
+// Session redirect
+// If logged in, depending on user type, will redirect to main page
 // Of not logged in, will divert to login page
 app.get("/", function (req, res) {
     if (req.session.loggedIn) {
@@ -102,7 +104,7 @@ app.get("/", function (req, res) {
     }
 });
 
-// Session redirect.
+// Session redirect
 // Will redirect to register page
 app.get("/register", function (req, res) {
     let profile = fs.readFileSync("./app/html/register.html", "utf8");
@@ -110,7 +112,7 @@ app.get("/register", function (req, res) {
     res.send(profileDOM.serialize());
 });
 
-// Session redirect.
+// Session redirect
 // Will check if logged in, then rediect to game page
 app.get("/game", function (req, res) {
     if (req.session.loggedIn) {
@@ -131,7 +133,7 @@ app.get("/game", function (req, res) {
     }
 });
 
-// Session redirect.
+// Session redirect
 // If logged in, will redirect to help page, if not, back to login
 app.get("/help", function (req, res) {
     if (req.session.loggedIn) {
@@ -152,7 +154,7 @@ app.get("/help", function (req, res) {
     }
 });
 
-// Session redirect.
+// Session redirect
 // If logged in, will redirect to meet-ups menu page, if not, back to login
 app.get("/meet", function (req, res) {
     if (req.session.loggedIn) {
@@ -173,7 +175,7 @@ app.get("/meet", function (req, res) {
     }
 });
 
-// Session redirect.
+// Session redirect
 // If logged in, will redirect to timeline page, if not, back to login
 app.get("/timeline", function (req, res) {
     if (req.session.loggedIn) {
@@ -211,6 +213,7 @@ app.get("/timeline", function (req, res) {
                         users = '<h2>' + dobFormat + '</h2>';
                         usersProfiles.innerHTML += users;
                     }
+                    
                     // Appends all posts into cards for html
                     users =
                         '<div class="card">' +
@@ -249,7 +252,7 @@ app.get("/timeline", function (req, res) {
 })
 
 
-// Session redirect.
+// Session redirect
 // If logged in, will redirect to request page in meet-up, if not, back to login
 app.get("/request", function (req, res) {
     if (req.session.loggedIn) {
@@ -276,6 +279,7 @@ app.get("/request", function (req, res) {
                         if (error) {
                             console.log(error);
                         }
+
                         // Checks and append if friends are with user
                         let listFriends = [];
                         for (let i = 0; i < results.length; i++) {
@@ -358,7 +362,7 @@ app.get("/request", function (req, res) {
     }
 });
 
-// Session redirect.
+// Session redirect
 // If logged in, will redirect to schedule page in meet-up, if not, back to login
 app.get("/schedule", function (req, res) {
     if (req.session.loggedIn) {
@@ -449,7 +453,7 @@ app.get("/schedule", function (req, res) {
     }
 });
 
-// Session redirect.
+// Session redirect
 // If logged in, will redirect to incoming page in meet-up, if not, back to login
 app.get("/incoming", function (req, res) {
     if (req.session.loggedIn) {
@@ -542,7 +546,7 @@ app.get("/incoming", function (req, res) {
     }
 });
 
-// Session redirect.
+// Session redirect
 // If logged in, will redirect to contact page, if not, back to login
 app.get("/contact", async function (req, res) {
     if (req.session.loggedIn) {
@@ -620,7 +624,6 @@ app.get("/contact", async function (req, res) {
                                 '</div>' +
                                 '<div class="img">' +
                                 '<img src="./avatar/avatar_' + finalUsers[i].ID + '.jpg">' +
-
                                 '</div>' +
                                 '<div class="bio">' +
                                 '<p class="head">Bio</p>' +
@@ -667,10 +670,11 @@ app.get("/contact", async function (req, res) {
     }
 });
 
-// Session redirect.
+// Session redirect
 // If logged in, will redirect to user profile page, if not, back to login
 app.get("/userProfiles", function (req, res) {
     if (req.session.loggedIn) {
+
         // Will fetch skeleton nav and footer and assign page title
         let profile = fs.readFileSync("./app/html/userProfiles.html", "utf8");
         let profileDOM = new JSDOM(profile);
@@ -717,7 +721,7 @@ app.get("/userProfiles", function (req, res) {
     }
 });
 
-// Database insert.
+// Database insert
 // Gets meet-up request from client side
 app.post('/addRequest', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
@@ -741,7 +745,7 @@ app.post('/addRequest', function (req, res) {
         });
 });
 
-// Database insert.
+// Database insert
 // Gets account creation registration from client side
 app.post('/create', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
@@ -765,7 +769,7 @@ app.post('/create', function (req, res) {
         });
 });
 
-// Database insert.
+// Database insert
 // Gets journal info from client side
 app.post('/addTimeline', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
@@ -785,7 +789,7 @@ app.post('/addTimeline', function (req, res) {
         });
 });
 
-// Database update.
+// Database update
 // Gets meet-up request answer from client side
 app.post('/updateIncoming', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
@@ -804,7 +808,7 @@ app.post('/updateIncoming', function (req, res) {
         });
 });
 
-// Database update.
+// Database update
 // Gets location reset from client side profile
 app.post('/updateLocation', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
@@ -823,7 +827,7 @@ app.post('/updateLocation', function (req, res) {
         });
 });
 
-// Database update.
+// Database update
 // Gets profile input info from client side
 app.post('/updateUser', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
@@ -843,12 +847,13 @@ app.post('/updateUser', function (req, res) {
             // Selects user row from newly updated table
             const loginInfo = `USE ${dbName}; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
             connection.query(loginInfo, function (error, results, fields) {
+                
                 /* If there is an error, alert user of error
                 *  If the length of results array is 0, then there was no matches in database
                 *  If no error, then it is valid login and save info for session
                 */
                 if (error) {
-                    // change this to notify user of error
+                    // Change this to notify user of error
                 } else if (results[1].length == 0) {
                     res.send({ status: "fail", msg: "Incorrect email or password!" });
                 } else {
@@ -866,15 +871,15 @@ app.post('/updateUser', function (req, res) {
                     req.session.bio = validUserInfo.bio;
                     req.session.hobbies = validUserInfo.hobbies;
                     req.session.userType = validUserInfo.is_admin;
+                    // Session saved for analytics
                     req.session.save(function (err) {
-                        // session saved. for analytics we could record this in db
                     });
                 }
             });
         });
 });
 
-// Database update.
+// Database update
 // Gets new posts description from client side
 app.post('/updateTimeline', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
@@ -894,7 +899,7 @@ app.post('/updateTimeline', function (req, res) {
         });
 });
 
-// Database update.
+// Database update
 // Gets admin users info from client side
 app.post('/updateAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
@@ -914,7 +919,7 @@ app.post('/updateAdmin', function (req, res) {
         });
 });
 
-// Database delete.
+// Database delete
 // Gets account creation registration from client side
 app.post('/deleteAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
@@ -934,7 +939,7 @@ app.post('/deleteAdmin', function (req, res) {
 });
 
 
-// Session redirect.
+// Session redirect
 // Redirects user to admin user list if logged in, to login if not
 app.get("/admin-users", function (req, res) {
     if (req.session.loggedIn) {
@@ -1000,7 +1005,7 @@ app.get("/admin-users", function (req, res) {
     }
 })
 
-// Session redirect.
+// Session redirect
 // Redirects user to friend finder page if logged in, to login if not
 app.get("/friendFinder", function (req, res) {
     if (req.session.loggedIn) {
@@ -1213,7 +1218,7 @@ app.get("/friendFinder", function (req, res) {
     }
 })
 
-// Database insert.
+// Database insert
 // Insert new friends relationship into friend table
 app.post('/updateFriends', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
@@ -1233,11 +1238,12 @@ app.post('/updateFriends', function (req, res) {
         });
 });
 
-// Session redirect.
+// Session redirect
 // If logged in, ad if user will redirect to user main page, if not user, to admin main page
 app.get("/main", function (req, res) {
     if (req.session.loggedIn) {
         if (req.session.userType) {
+
             // Will fetch skeleton nav and footer and assign page title
             let profile = fs.readFileSync("./app/html/admin.html", "utf8");
             let profileDOM = new JSDOM(profile);
@@ -1249,6 +1255,7 @@ app.get("/main", function (req, res) {
             profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
             res.send(profileDOM.serialize());
         } else {
+
             // Will fetch skeleton nav and footer and assign page title
             let profile = fs.readFileSync("./app/html/main.html", "utf8");
             let profileDOM = new JSDOM(profile);
@@ -1267,15 +1274,17 @@ app.get("/main", function (req, res) {
 
 app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
+
     // Checks if user typed in matching email and password
     const loginInfo = `USE ${dbName}; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
     connection.query(loginInfo, function (error, results, fields) {
+
         /* If there is an error, alert user of error
         *  If the length of results array is 0, then there was no matches in database
         *  If no error, then it is valid login and save info for session
         */
         if (error) {
-            // change this to notify user of error
+            // Change this to notify user of error
         } else if (results[1].length == 0) {
             res.send({ status: "fail", msg: "Incorrect email or password!" });
         } else {
@@ -1293,7 +1302,6 @@ app.post("/login", function (req, res) {
             req.session.hobbies = validUserInfo.hobbies;
             req.session.userType = validUserInfo.is_admin;
             chatUser = req.session.first_name;
-
             req.session.save(function (err) {
                 // session saved. for analytics we could record this in db
             })
@@ -1318,6 +1326,10 @@ app.get("/logout", function (req, res) {
 // Code to upload an image.
 // Adapted from Mutler and COMP 2537 example.
 // start of upload-app.js
+/**
+ * Block of code to upload an image
+ * Adapted from Mutler and COMP 2537 example
+ */
 const storage = multer.diskStorage({
     destination: function (req, file, callback) {
         callback(null, "./app/avatar/")
@@ -1347,7 +1359,7 @@ const uploadPostImages = multer({
     storage: postStorage
 });
 
-// Database insert.
+// Database insert
 // Using Multer, images are stored in the database under the BLOB data type
 app.post('/upload-images', upload.array("files"), function (req, res) {
 
@@ -1380,6 +1392,7 @@ app.post('/upload-images', upload.array("files"), function (req, res) {
  * @see https://www.youtube.com/watch?v=jD7FnbI76Hg
  */
 
+// Chat bot name
 const botName = 'Gabify Bot';
 
 // Run when client connects
@@ -1506,7 +1519,7 @@ io.on('connection', socket => {
     });
 });
 
-// Session redirect.
+// Session redirect
 // If logged in, will redirect to private chat, if not, back to login
 app.get("/gabChat", function (req, res) {
     if (req.session.loggedIn) {

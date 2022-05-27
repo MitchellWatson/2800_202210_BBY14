@@ -1,4 +1,3 @@
-
 "use strict";
 function ajaxPOST(url, callback, data) {
     let params = typeof data == 'string' ? data : Object.keys(data).map(
@@ -6,7 +5,6 @@ function ajaxPOST(url, callback, data) {
             return encodeURIComponent(k) + '=' + encodeURIComponent(data[k])
         }
     ).join('&');
-
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
@@ -29,7 +27,7 @@ for (let i = 0; i < buttonUpdate.length; i++) {
     buttonUpdate[i].addEventListener("click", update);
 }
 
-    function update() {
+function update() {
     // e.preventDefault();
     let id = this.target;
     let queryString = "id=" + id;
@@ -43,6 +41,5 @@ for (let i = 0; i < buttonUpdate.length; i++) {
                 window.location.replace("/friendFinder");
             }
         }
-
     }, queryString);
 }

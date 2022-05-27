@@ -4,7 +4,9 @@
  * @author Mitchell Watson
  * 
  */
+
 "use strict";
+
 const num = document.getElementById('score');
 const result = document.getElementById('status');
 
@@ -23,21 +25,21 @@ startBtn.addEventListener('click', start);
 next.addEventListener('click', () => {
     increment = true;
     index++;
-  setQuestion();
+    setQuestion();
 })
 
 // Start game
 function start() {
-  score = 0;
-  num.innerHTML = "Score: " + score;
-  startBtn.classList.add('hidden');
-  shuffle = questions.sort(() => Math.random() - 0.5);
-  index = 0;
-  question.classList.remove('hidden');
-  setQuestion();
+    score = 0;
+    num.innerHTML = "Score: " + score;
+    startBtn.classList.add('hidden');
+    shuffle = questions.sort(() => Math.random() - 0.5);
+    index = 0;
+    question.classList.remove('hidden');
+    setQuestion();
 }
 
-// Allert users if wrong or right when answering the game
+// Alert users if wrong or right when answering the game
 function select(e) {
   const button = e.target;
   const correct = button.dataset.correct;
@@ -64,47 +66,47 @@ function select(e) {
 
 // Shows the next question randomly
 function setQuestion() {
-  reset();
-  show(shuffle[index]);
+    reset();
+    show(shuffle[index]);
 }
 
 // Resets question for next round
 function reset() {
-  result.innerText = "";
-  clearButton(document.body);
-  next.classList.add('hidden');
-  while (answerButton.firstChild) {
-    answerButton.removeChild(answerButton.firstChild);
-  }
+    result.innerText = "";
+    clearButton(document.body);
+    next.classList.add('hidden');
+    while (answerButton.firstChild) {
+        answerButton.removeChild(answerButton.firstChild);
+    }
 }
 
-// Displays Question and answers
+// Displays question and answers
 function show(questionArray) {
-  questionButton.innerText = questionArray.question;
-  questionArray.answers.forEach(answer => {
-    const selected = document.createElement('button');
-    selected.innerText = answer.text;
-    selected.classList.add('btn');
-    if (answer.correct) {
-      selected.dataset.correct = answer.correct;
-    }
-    selected.addEventListener('click', select);
-    answerButton.appendChild(selected);
-  })
+    questionButton.innerText = questionArray.question;
+    questionArray.answers.forEach(answer => {
+        const selected = document.createElement('button');
+        selected.innerText = answer.text;
+        selected.classList.add('btn');
+        if (answer.correct) {
+            selected.dataset.correct = answer.correct;
+        }
+        selected.addEventListener('click', select);
+        answerButton.appendChild(selected);
+    })
 }
 
 function setButton(button, success) {
-  clearButton(button);
-  if (success) {
-    button.classList.add('success');
-  } else {
-    button.classList.add('incorrect');
-  }
+    clearButton(button);
+    if (success) {
+        button.classList.add('success');
+    } else {
+        button.classList.add('incorrect');
+    }
 }
 
 function clearButton(button) {
-  button.classList.remove('success');
-  button.classList.remove('incorrect');
+    button.classList.remove('success');
+    button.classList.remove('incorrect');
 }
 
 // List of questions and answers

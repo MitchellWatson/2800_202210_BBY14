@@ -34,8 +34,7 @@ let buttonUpdate = document.getElementsByClassName("submit");
 for (let i = 0; i < buttonUpdate.length; i++) {
     buttonUpdate[i].addEventListener("click", update);
 }
-
-    function update() {
+function update() {
     // e.preventDefault();
     let id = this.target;
     console.log(id);

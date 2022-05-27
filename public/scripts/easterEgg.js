@@ -16,7 +16,7 @@ let count = 0;
 
 // Quotes for users
 const messages = [
-    'Age is just a number for those who know how to make the most of their lives', 
+    'Age is just a number for those who know how to make the most of their lives',
     'Anyone who keeps learning stays young',
     'Enjoy your day, you deserve it',
     'The spirit never ages. It stays forever young',
@@ -33,20 +33,13 @@ const types = ['purple', 'green', 'red']
 button.addEventListener('click', () => {
     count += 1;
     if (count < 3) {
-    createNotification()
+        createNotification()
     } else {
         count = 0;
     }
 })
 
-<<<<<<< HEAD
-/** Function to create a notfification or modal window upon activation. 
- * @param {*} message as the text to populate the modal window from the messages array.
- * @param {*} type as the color to make the modal window. 
- */
-=======
 // Notification for easteregg when clicked on
->>>>>>> 6ac7e957b8d017287331d23384382768370d7a99
 function createNotification(message = null, type = null) {
 
     const notif = document.createElement('div')
@@ -56,7 +49,7 @@ function createNotification(message = null, type = null) {
     notif.innerText = message ? message : getMessage()
 
     toasts.appendChild(notif)
-    
+
 
 
     setTimeout(() => {
@@ -64,7 +57,7 @@ function createNotification(message = null, type = null) {
     }, 3000)
 
 
-    
+
 }
 
 /**

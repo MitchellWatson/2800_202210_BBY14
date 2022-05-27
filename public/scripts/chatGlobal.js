@@ -15,7 +15,6 @@ const chatMessages = document.querySelector(".chat-messages");
 const roomName = document.getElementById("room-name");
 const userList = document.getElementById("users");
 
-
 // Get username and room from URL
 const { username, room } = Qs.parse(location.search, {
     ignoreQueryPrefix: true,
@@ -48,6 +47,7 @@ chatForm.addEventListener("submit", (e) => {
     // Get message text
     let msg = e.target.elements.msg.value;
 
+    // Trim message
     msg = msg.trim();
 
     if (!msg) {
@@ -83,6 +83,7 @@ function outputRoomName(room) {
     roomName.innerText = room;
 }
 
+// Initial number of users in chat
 let count = 1;
 
 // Add users to DOM
@@ -90,7 +91,6 @@ function outputUsers(users) {
     userList.innerHTML = "";
     users.forEach((user) => {
         const li = document.createElement("li");
-        // li.innerText = user.username;
         li.innerText = "senior" + count++;
         userList.appendChild(li);
     });
