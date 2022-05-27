@@ -41,14 +41,12 @@ Gabify is a chat application to help seniors socialize and stay mentally active 
 ------------------------------------------
 .
 ├── Procfile
-├── README.txt
 ├── app
 │   ├── avatar
 │   │   ├── avatar_1.jpg
 │   │   ├── avatar_2.jpg
 │   │   ├── avatar_3.jpg
-│   │   ├── avatar_4.jpg
-│   │   └── placeholder.jpg
+│   │   └── avatar_4.jpg
 │   ├── data
 │   │   └── database.sql
 │   ├── html
@@ -83,49 +81,50 @@ Gabify is a chat application to help seniors socialize and stay mentally active 
 │   └── users.js
 ├── package-lock.json
 ├── package.json
-└── public
-    ├── images
-    │   ├── favicon.ico
-    │   └── gabify.png
-    ├── scripts
-    │   ├── admin.js
-    │   ├── adminUsers.js
-    │   ├── chatGlobal.js
-    │   ├── easterEgg.js
-    │   ├── friendFinder.js
-    │   ├── gabChat.js
-    │   ├── game.js
-    │   ├── help.js
-    │   ├── incoming.js
-    │   ├── login.js
-    │   ├── main.js
-    │   ├── register.js
-    │   ├── request.js
-    │   ├── skeleton.js
-    │   ├── timeline.js
-    │   ├── upload.js
-    │   └── userProfile.js
-    └── styles
-        ├── adminUsers.css
-        ├── chatGlobalRoom.css
-        ├── chatGlobalSelect.css
-        ├── contact.css
-        ├── easterEgg.css
-        ├── friendFinder.css
-        ├── gabChat.css
-        ├── game.css
-        ├── help.css
-        ├── incoming.css
-        ├── login.css
-        ├── main.css
-        ├── meet.css
-        ├── register.css
-        ├── request.css
-        ├── skeleton.css
-        ├── timeline.css
-        ├── userCRUD.css
-        ├── userProfile.css
-        └── userSettings.css
+├── public
+│   ├── images
+│   │   ├── favicon.ico
+│   │   └── gabify.png
+│   ├── scripts
+│   │   ├── admin.js
+│   │   ├── adminUsers.js
+│   │   ├── chatGlobal.js
+│   │   ├── easterEgg.js
+│   │   ├── friendFinder.js
+│   │   ├── gabChat.js
+│   │   ├── game.js
+│   │   ├── help.js
+│   │   ├── incoming.js
+│   │   ├── login.js
+│   │   ├── main.js
+│   │   ├── register.js
+│   │   ├── request.js
+│   │   ├── skeleton.js
+│   │   ├── timeline.js
+│   │   ├── upload.js
+│   │   └── userProfile.js
+│   └── styles
+│       ├── adminUsers.css
+│       ├── chatGlobalRoom.css
+│       ├── chatGlobalSelect.css
+│       ├── contact.css
+│       ├── easterEgg.css
+│       ├── friendFinder.css
+│       ├── gabChat.css
+│       ├── game.css
+│       ├── help.css
+│       ├── incoming.css
+│       ├── login.css
+│       ├── main.css
+│       ├── meet.css
+│       ├── register.css
+│       ├── request.css
+│       ├── skeleton.css
+│       ├── timeline.css
+│       ├── userCRUD.css
+│       ├── userProfile.css
+│       └── userSettings.css
+└── readme.md
 
 # V.    HOW TO INSTALL OR RUN THE PROJECT
 ------------------------------------------
