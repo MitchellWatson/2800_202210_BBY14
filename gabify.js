@@ -1,5 +1,5 @@
 /** The following code contains server-side used to read and write changes into the database 
- *      as well as changes to the front-end using Javascript and the DOM. 
+*      as well as changes to the front-end using Javascript and the DOM. 
 * @author   Mitchell Watson
 * @author   Jackie Ma
 * @author   Basillio Kim
@@ -66,17 +66,17 @@ app.use(bodyparser.urlencoded({
     extended: true
 }))
 
-// local db
-const dbHost = "127.0.0.1";
-const dbUser = "root";
-const dbPassword = "passwordSQL";
-const dbName = "comp2800";
+// --- Local hosting ---
+// const dbHost = "127.0.0.1";
+// const dbUser = "root";
+// const dbPassword = "";
+// const dbName = "comp2800";
 
 // --- Heroku hosting ---
-// const dbHost = "us-cdbr-east-05.cleardb.net";
-// const dbUser = "b959a83957277c";
-// const dbPassword = "5e9f74c2";
-// const dbName = "heroku_2e384c4e07a3778";
+const dbHost = "us-cdbr-east-05.cleardb.net";
+const dbUser = "b959a83957277c";
+const dbPassword = "5e9f74c2";
+const dbName = "heroku_2e384c4e07a3778";
 
 const connection = mysql.createPool({
     host: dbHost,
