@@ -24,6 +24,8 @@ function ajaxPOST(url, callback, data) {
 
 let latitude = 0
 let longitude = 0;
+
+// Get location of user
 document.getElementById("location").addEventListener("click", function () {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition);
@@ -72,6 +74,7 @@ let success = localStorage.getItem("success");
       }
      })
 
+// Register users and update to database
 document.getElementById("submit").addEventListener("click", function (e) {
     
     e.preventDefault();

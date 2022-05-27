@@ -2,6 +2,7 @@ var popUp = document.getElementById("popUp");
 
 var span = document.getElementsByClassName("close")[0];
 
+// Messages for users
 const messages = [
     'Age is just a number for those who know how to make the most of their lives', 
     'Anyone who keeps learning stays young',
@@ -12,6 +13,7 @@ const messages = [
     'With old age comes wisdom… and discounts!'
 ]
 
+// Randomly chooses a message to display
 let chosen = messages[Math.floor(Math.random() * messages.length)]
 
 var quote = document.getElementById("quote").innerHTML = chosen;

@@ -1,6 +1,7 @@
 const upLoadForm = document.getElementById("upload-images-form");
 upLoadForm.addEventListener("submit", uploadImages);
 
+// Upload image
 function uploadImages(e) {
     e.preventDefault();
 

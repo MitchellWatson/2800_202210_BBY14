@@ -1,6 +1,8 @@
 const button = document.getElementById("secret-click");
 const toasts = document.getElementById('quotes')
 let count = 0;
+
+// Quotes for users
 const messages = [
     'Age is just a number for those who know how to make the most of their lives', 
     'Anyone who keeps learning stays young',
@@ -22,6 +24,7 @@ button.addEventListener('click', () => {
     }
 })
 
+// Notification for easteregg when clicked on
 function createNotification(message = null, type = null) {
 
     const notif = document.createElement('div')

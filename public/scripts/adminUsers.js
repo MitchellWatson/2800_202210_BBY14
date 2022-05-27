@@ -33,6 +33,7 @@ document.getElementById("edit").addEventListener("click", function () {
 
 let buttonUpdate = document.getElementsByClassName("submit");
 
+// Allows admins to update users information
 for (let i = 0; i < buttonUpdate.length; i++) {
     buttonUpdate[i].addEventListener("click", update);
 }
@@ -64,6 +65,7 @@ for (let i = 0; i < buttonUpdate.length; i++) {
 
 let buttonDelete = document.getElementsByClassName("delete");
 
+// Allows admins to delete users
 for (let i = 0; i < buttonDelete.length; i++) {
     buttonDelete[i].addEventListener("click", deleted);
 }

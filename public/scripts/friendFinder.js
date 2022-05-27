@@ -24,6 +24,7 @@ function ajaxPOST(url, callback, data) {
 
 let buttonUpdate = document.getElementsByClassName("add");
 
+// Send other users friend requests
 for (let i = 0; i < buttonUpdate.length; i++) {
     buttonUpdate[i].addEventListener("click", update);
 }
