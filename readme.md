@@ -128,7 +128,7 @@ Gabify is a chat application to help seniors socialize and stay mentally active 
 ## VI.   HOW TO USE THE PRODUCT (FEATURES)
 ## VII.  CREDITS, REFERENCES, & LICENSES
 ## VIII. CONTACT INFORMATION
-Basillio Kim      bkim128@my.bcit.ca _
-Mitchell Watson   mwatson75@my.bcit.ca _
-Jackie Ma         jma149@my.bcit.ca _
+Basillio Kim      bkim128@my.bcit.ca  
+Mitchell Watson   mwatson75@my.bcit.ca  
+Jackie Ma         jma149@my.bcit.ca\
 Ryan Chau         rchau15@my.bcit.ca
