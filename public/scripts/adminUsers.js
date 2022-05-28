@@ -1,19 +1,25 @@
+/** This file contains the client-side javascript code for the admin page.
+ * @author Mitchell Watson
+ */
+
 "use strict";
 
+/** Sends an asynchronous http POST request to load data from the server.
+ * @param {*} url as the url string.
+ * @param {*} callback as the callback function
+ * @param {*} data as the information to be sent
+ */
 function ajaxPOST(url, callback, data) {
     let params = typeof data == 'string' ? data : Object.keys(data).map(
         function (k) {
             return encodeURIComponent(k) + '=' + encodeURIComponent(data[k])
         }
     ).join('&');
-
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
         if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
             callback(this.responseText);
-
         } else {
-            console.log(this.status);
         }
     }
     xhr.open("POST", url);
@@ -22,26 +28,30 @@ function ajaxPOST(url, callback, data) {
     xhr.send(params);
 }
 
+let inputs = document.getElementsByClassName('inputs');
 
-
+//Event listener for the edit button
+document.getElementById("edit").addEventListener("click", function () {
+    for (let i = 0; i < inputs.length; i++) {
+        inputs[i].readOnly = false;
+    }
+})
 
 let buttonUpdate = document.getElementsByClassName("submit");
 
+// Allows admins to update users information
 for (let i = 0; i < buttonUpdate.length; i++) {
     buttonUpdate[i].addEventListener("click", update);
 }
-
-    function update() {
+function update() {
     // e.preventDefault();
     let id = this.target;
-    console.log(id);
     let email = document.getElementById("emailInput" + id);
     let password = document.getElementById("passwordInput" + id);
     let first = document.getElementById("firstNameInput" + id);
     let last = document.getElementById("lastNameInput" + id);
     let admin = document.getElementById("adminInput" + id);
-    console.log(admin);
-    let queryString = "email=" + email.value + "&password=" + password.value + "&first_name=" + first.value + "&last_name=" + last.value + "&is_admin=" + admin.value + "&id=" + id;
+    let queryString = "email=" + email.value.trim() + "&password=" + password.value.trim() + "&first_name=" + first.value.trim() + "&last_name=" + last.value.trim() + "&is_admin=" + admin.value + "&id=" + id;
     ajaxPOST("/updateAdmin", function (data) {
         if (data) {
             let dataParsed = JSON.parse(data);
@@ -49,7 +59,6 @@ for (let i = 0; i < buttonUpdate.length; i++) {
             if (dataParsed.status == "fail") {
                 document.getElementById("errorMsg").innerHTML = dataParsed.msg;
             } else {
-                localStorage.setItem("email", email.value);
                 window.location.replace("/admin-users");
             }
         }
@@ -59,25 +68,23 @@ for (let i = 0; i < buttonUpdate.length; i++) {
 
 let buttonDelete = document.getElementsByClassName("delete");
 
+// Allows admins to delete users
 for (let i = 0; i < buttonDelete.length; i++) {
     buttonDelete[i].addEventListener("click", deleted);
 }
 
-    function deleted() {
-    // e.preventDefault();
+// Function that deletes the target from the back-end.
+function deleted() {
     let id = this.target;
-    console.log(id);
     let queryString = "id=" + id;
     ajaxPOST("/deleteAdmin", function (data) {
         if (data) {
             let dataParsed = JSON.parse(data);
-
             if (dataParsed.status == "fail") {
                 document.getElementById("errorMsg").innerHTML = dataParsed.msg;
             } else {
                 window.location.replace("/admin-users");
             }
         }
-
     }, queryString);
 }

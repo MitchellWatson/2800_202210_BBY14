@@ -1,104 +1,30 @@
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600&display=swap');
-body {
-    display: grid;
-    height: 80vh;
-    /* grid-template-columns: 1fr;
-    grid-template-rows: 15% 10% 60% 15%; */
-    text-align: center;
-    font-family: 'Quicksand', sans-serif;
-    background-color: rgb(224, 224, 224);
-}
-
-#header {
-    display: grid;
-    grid-column: 1;
-    grid-row: 1;
-    grid-template-columns: 25% 50% 25%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background-color: rgb(255, 255, 255);
-    text-align: center;
-    font-family: 'Quicksand', sans-serif;
-    z-index: 100;
-    border: 2px rgb(255, 255, 255) solid;
-    border-radius: 5px;
-    align-items: center;
-    font-size: 2.5vh;
-}
-
-#header span {
-    font-size: 3.5vh;
-}
-
-#header a {
-    color: rgb(58, 58, 255);
-    padding: 5%;
-    margin: 2%;
-}
-
-#header a:hover {
-    background-color: rgb(216, 237, 255);
-    border-radius: 10px;
-}
-
-#welcome {
-    font-family: 'Quicksand', sans-serif;
-    font-size: 4vh;
-    margin: 0;
-    align-items: center;
-}
-
-.footer {
-    display: grid;
-    grid-column: 1;
-    grid-row: 3;
-    grid-template-columns: 1fr 1fr;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    position: fixed;
-    background-color: rgb(255, 255, 255);
-    border: 2px rgb(255, 255, 255) solid;
-    border-radius: 5px;
-    font-size: 2.5vh;
-}
-
 .option {
-    background-color: rgb(22, 154, 255);
+    background-color: rgb(100, 0, 207);
     border: 2px none;
     border-radius: 5px;
     color: rgb(255, 255, 255);
     padding: 10px;
     margin: 2vh;
     font-size: 3vh;
+
 }
 
-.footer span {
-    font-size: 4vh;
-}
 
-.footer a {
-    color: rgb(58, 58, 255);
-    padding: 3%;
-}
 
-.footer a:hover {
-    background-color: rgb(216, 237, 255);
-    border-radius: 10px;
+#create1,
+#edit {
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
 }
-
 
 .content {
     display: grid;
     grid-column: 1;
     grid-row: 2;
     grid-template-columns: 1fr;
-    grid-gap: 1em;
     margin: 0.5em;
-    padding-top: 6vmax;
-    padding-bottom: 10vh;
+    padding-bottom: 85px;
 }
 
 .card {
@@ -107,18 +33,20 @@ body {
     width: 100%;
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
-    height: 85vh;
+    height: fit-content;
     text-align: left;
     margin-bottom: 2vh;
     overflow-wrap: break-word;
     display: grid;
-    grid-template-rows: 90% 10%;
     font-size: 3vh;
+    text-align: left;
 }
 
-.card .options {
-    grid-row: 2;
+#options {
+    margin: 1em;
+    margin-left: 0;
 }
+
 
 .card p {
     margin: 0;
@@ -134,10 +62,8 @@ body {
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
-    font-family: 'Quicksand', sans-serif;
     font-size: 3vh;
 }
-
 
 .card span {
     position: relative;
@@ -148,11 +74,6 @@ body {
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.5);
 }
 
-.card .can {
-    border-radius: 10px;
-    position: relative;
-    grid-row: 1;
-}
 
 .avatar {
     filter: brightness(60%);
@@ -166,26 +87,15 @@ body {
     filter: brightness(100%);
 }
 
-a {
-    text-decoration: none;
-    color: black;
+#create {
+    align-items: center;
 }
 
-#footerPlaceholder {
-    grid-row: 3;
+@media only screen and (min-width: 600px) {
+    .card {
+        width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 25px;
+    }
 }
-
-/* @media only screen and (min-width: 1025px) {
-    .content {
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: 1fr;
-        grid-gap: 1em;
-        margin: 0.5em;
-        height: 100%;
-        margin: 2em;
-    }
-    .card{
-        height: 85%;
-    }
-} */

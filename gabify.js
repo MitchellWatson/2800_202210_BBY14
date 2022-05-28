@@ -1,5 +1,15 @@
-// Code to do server side is adapted from a COMP 1537 assignment.
+/** The following code contains server-side used to read and write changes into the database 
+*   as well as changes to the front-end using Javascript and the DOM.
+*
+* @author   Mitchell Watson
+* @author   Jackie Ma
+* @author   Basillio Kim
+* @author   Ryan Chau
+*/
+
 "use strict";
+
+//List of all modules and dependencies installed through node.js const express = require("express");
 const express = require("express");
 const session = require("express-session");
 const fs = require("fs");
@@ -9,18 +19,41 @@ app.use(express.urlencoded({ extended: true }));
 const mysql = require('mysql2');
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
-
+const socketio = require('socket.io');
 const bodyparser = require('body-parser');
 const path = require('path');
 const { connect } = require("http2");
 const multer = require('multer');
+const { Blob } = require("buffer");
+const http = require('http');
+const server = http.createServer(app);
+const io = socketio(server);
+const formatMessage = require('./helpers/formatDate')
+let chatUser;
 
+// Custom imported modules used as helper methods for the chat features. 
+const {
+    getActiveUser,
+    exitRoom,
+    newUser,
+    getIndividualRoomUsers
+} = require('./helpers/userHelper');
+
+const {
+    userJoin,
+    getCurrentUser,
+    userLeave,
+    getRoomUsers
+} = require('./helpers/users');
+
+//Static paths used through express.js
 app.use("/html", express.static("./app/html"));
 app.use("/avatar", express.static("./app/avatar"));
 app.use("/images", express.static("./public/images"));
 app.use("/styles", express.static("./public/styles"));
 app.use("/scripts", express.static("./public/scripts"));
 
+//Initialization of the session
 app.use(session(
     {
         secret: "$zw+qzKh+&?b9}-v",
@@ -35,16 +68,33 @@ app.use(bodyparser.urlencoded({
     extended: true
 }))
 
+/**
+ * Local Hosting
+ */
+// const dbHost = "127.0.0.1";
+// const dbUser = "root";
+// const dbPassword = "passwordSQL";
+// const dbName = "comp2800";
 
-const connection = mysql.createConnection({
-    host: "127.0.0.1",
-    user: "root",
-    password: "passwordSQL",
-    database: "comp2800",
+/**
+ * Heroku Hosting
+ */
+const dbHost = "us-cdbr-east-05.cleardb.net";
+const dbUser = "b959a83957277c";
+const dbPassword = "5e9f74c2";
+const dbName = "heroku_2e384c4e07a3778";
+
+const connection = mysql.createPool({
+    host: dbHost,
+    user: dbUser,
+    password: dbPassword,
+    database: dbName,
     multipleStatements: "true"
 });
 
-
+// Session redirect
+// If logged in, depending on user type, will redirect to main page
+// Of not logged in, will divert to login page
 app.get("/", function (req, res) {
     if (req.session.loggedIn) {
         res.redirect("/main");
@@ -54,439 +104,846 @@ app.get("/", function (req, res) {
     }
 });
 
+// Session redirect
+// Will redirect to register page
 app.get("/register", function (req, res) {
-    if (req.session.loggedIn) {
-        let profile = fs.readFileSync("./app/html/register.html", "utf8");
-        let profileDOM = new JSDOM(profile);
-        res.send(profileDOM.serialize());
-    } 
-     else {
-        let doc = fs.readFileSync("./app/html/login.html", "utf8");
-        res.send(doc);
-    }
+    let profile = fs.readFileSync("./app/html/register.html", "utf8");
+    let profileDOM = new JSDOM(profile);
+    res.send(profileDOM.serialize());
 });
 
+// Session redirect
+// Will check if logged in, then rediect to game page
 app.get("/game", function (req, res) {
     if (req.session.loggedIn) {
+        // Will fetch skeleton nav and footer and assign page title
         let profile = fs.readFileSync("./app/html/game.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
         let navBarDOM = new JSDOM(navBar);
         let string = `Game`;
         let t = navBarDOM.window.document.createTextNode(string);
         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
         res.send(profileDOM.serialize());
-    } 
-     else {
+    }
+    else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
     }
 });
 
+// Session redirect
+// If logged in, will redirect to help page, if not, back to login
+app.get("/help", function (req, res) {
+    if (req.session.loggedIn) {
+        // Will fetch skeleton nav and footer and assign page title
+        let profile = fs.readFileSync("./app/html/help.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+        let navBarDOM = new JSDOM(navBar);
+        let string = `Help`;
+        let t = navBarDOM.window.document.createTextNode(string);
+        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+        res.send(profileDOM.serialize());
+    }
+    else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
+
+// Session redirect
+// If logged in, will redirect to meet-ups menu page, if not, back to login
 app.get("/meet", function (req, res) {
     if (req.session.loggedIn) {
+        // Will fetch skeleton nav and footer and assign page title
         let profile = fs.readFileSync("./app/html/meet.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
         let navBarDOM = new JSDOM(navBar);
-        let string = `Meet-up`;
+        let string = `Meet-Up`;
         let t = navBarDOM.window.document.createTextNode(string);
         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
         profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
         res.send(profileDOM.serialize());
-    } 
-     else {
+    }
+    else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
     }
 });
 
-app.get("/user", function (req, res) {
+// Session redirect
+// If logged in, will redirect to timeline page, if not, back to login
+app.get("/timeline", function (req, res) {
     if (req.session.loggedIn) {
-        let profile = fs.readFileSync("./app/html/userProfiles.html", "utf8");
+        let profile = fs.readFileSync("./app/html/timeline.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
-        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-        let navBarDOM = new JSDOM(navBar);
-        let string = `Profile`;
-        let t = navBarDOM.window.document.createTextNode(string);
-        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+        // Queries for all posts in descending order by date
+        connection.query(
+            "SELECT * FROM posts ORDER BY postDate DESC",
+            function (error, results, fields) {
+                if (error) {
+                }
 
-        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-        res.send(profileDOM.serialize());
-    } 
-     else {
+                // Gets all posts posted by user
+                let newResults = [];
+                for (let i = 0; i < results.length; i++) {
+                    if (results[i].userID == req.session.identity) {
+                        newResults[newResults.length] = results[i];
+                    }
+                }
+
+                // Create dynamic html insert div
+                const usersProfiles = profileDOM.window.document.createElement("div");
+                let users;
+                var old = "";
+
+                // Takes date posted and reformats into readble text
+                for (let i = 0; i < newResults.length; i++) {
+                    let dob = newResults[i].postDate
+                    var dobArr = dob.toDateString().split(' ');
+                    var dobFormat = dobArr[1] + ' ' + dobArr[2] + ', ' + dobArr[3];
+                    if (dobFormat.localeCompare(old) != 0) {
+                        old = dobFormat;
+                        users = '<h2>' + dobFormat + '</h2>';
+                        usersProfiles.innerHTML += users;
+                    }
+                    
+                    // Appends all posts into cards for html
+                    users =
+                        '<div class="card">' +
+                        '<div class="can">' +
+                        '<p style="text-decoration: underline;" value="' + newResults[i].postNum + '" id="numInput' + newResults[i].userID + '" >Memory #' + (newResults.length - i) + '</p>' +
+                        '<p style="text-decoration: underline;">Description</p>' +
+                        '<input type="text" id="descInput' + newResults[i].postNum + '" placeholder="e.g. John" value="' + newResults[i].posts + '"></input>' +
+                        '<p>Posted at: ' + newResults[i].postTime + '</p>' +
+                        '</div>' +
+                        '<div id="options">' +
+                        '<a target="' + newResults[i].postNum + '" class="option update">Update</a>' +
+                        '</div>' +
+                        '</div>';
+                    usersProfiles.innerHTML += users;
+                }
+                if (newResults.length == 0) {
+                    users = '<p>No memories. Start making some today!</p>';
+                    usersProfiles.innerHTML += users;
+                }
+                profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+
+                // Will fetch skeleton nav and footer and assign page title
+                let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+                let navBarDOM = new JSDOM(navBar);
+                let string = `Journal`;
+                let t = navBarDOM.window.document.createTextNode(string);
+                navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+                profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+                res.send(profileDOM.serialize());
+            }
+        );
+    } else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+})
+
+
+// Session redirect
+// If logged in, will redirect to request page in meet-up, if not, back to login
+app.get("/request", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/request.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+        let listUsers = [];
+
+        // Selects all users from database
+        connection.query('SELECT * FROM bby14_users;',
+            function (error, results, fields) {
+                if (error) {
+                }
+
+                // Appends all users to list
+                for (let i = 0; i < results.length; i++) {
+                    listUsers[listUsers.length] = results[i];
+                }
+
+                // Selects all friend relationships from database
+                connection.query(
+                    "SELECT * FROM friends;",
+                    function (error, results, fields) {
+                        if (error) {
+                        }
+
+                        // Checks and append if friends are with user
+                        let listFriends = [];
+                        for (let i = 0; i < results.length; i++) {
+                            if (results[i].user == req.session.identity) {
+                                listFriends[listFriends.length] = results[i];
+                            }
+                        }
+
+                        // Checks if friends have both friended each other
+                        let friends = [];
+                        for (let i = 0; i < listFriends.length; i++) {
+                            for (let k = 0; k < results.length; k++) {
+                                if (listFriends[i].friend == results[k].user & results[k].friend == listFriends[i].user) {
+                                    friends[friends.length] = listFriends[i];
+                                }
+                            }
+                        }
+
+                        // Filters out null list appendices
+                        friends = friends.filter(function (e) {
+                            return e != null;
+                        })
+
+                        // References list of users and list of friends
+                        let finalUsers = [];
+                        for (let i = 0; i < friends.length; i++) {
+                            for (let k = 0; k < listUsers.length; k++) {
+                                if (friends[i].friend == listUsers[k].ID) {
+                                    finalUsers[finalUsers.length] = listUsers[k];
+                                }
+                            }
+                        }
+
+                        // Creates html div to append request menu to
+                        const usersProfiles = profileDOM.window.document.createElement("div");
+                        let users;
+                        users =
+                            '<div id="drop">' +
+                            '<div class="card2">' +
+                            '<div class="can">' +
+                            '<p style="text-decoration: underline;">Choose Friend</p>' +
+                            '<select type="date" id="personInput" placeholder="Select Friend">';
+
+                        // Gives option to meet for each friend    
+                        for (let i = 0; i < finalUsers.length; i++) {
+                            users += '<option value="' + finalUsers[i].ID + '">' + finalUsers[i].first_name + ' ' + finalUsers[i].last_name + '</option>';
+                        }
+                        users +=
+                            '</select>' +
+                            '<p style="text-decoration: underline;">When</p>' +
+                            '<input type="datetime-local" id="dateInput">' +
+                            '<p style="text-decoration: underline;">Where</p>' +
+                            '<input type="text" id="placeInput" placeholder="Address or Location">' +
+                            '<p style="text-decoration: underline;">Occasion</p>' +
+                            '<input type="text" id="reasonInput" placeholder="Reason for outing">' +
+                            '<a href=""><button id="request" class="option">Request</button></a>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>';
+
+                        // Appends menu users card to html id    
+                        usersProfiles.innerHTML += users;
+                        profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+
+                        // Will fetch skeleton nav and footer and assign page title
+                        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+                        let navBarDOM = new JSDOM(navBar);
+                        let string = `Request`;
+                        let t = navBarDOM.window.document.createTextNode(string);
+                        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+                        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+                        res.send(profileDOM.serialize());
+                    }
+                );
+            });
+    }
+    else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
     }
 });
 
-app.get("/contact", function (req, res) {
+// Session redirect
+// If logged in, will redirect to schedule page in meet-up, if not, back to login
+app.get("/schedule", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/schedule.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+        let listUsers = [];
+
+        // Gets list of users from database
+        connection.query('SELECT * FROM bby14_users;',
+            function (error, results, fields) {
+                if (error) {
+                }
+
+                // Filters and appends users to list
+                for (let i = 0; i < results.length; i++) {
+                    listUsers[listUsers.length] = results[i];
+                }
+
+                // Gets meets from database in DESC order
+                connection.query(
+                    "SELECT * FROM meet ORDER BY date ASC;",
+                    function (error, results, fields) {
+                        if (error) {
+                        }
+
+                        // Gets all meets that include the user and is today's date or later
+                        let newResults = []
+                        for (let i = 0; i < results.length; i++) {
+                            if ((results[i].requestee == req.session.identity || results[i].requestor == req.session.identity) && results[i].viewed == 1 & results[i].accepted == 1) {
+                                    newResults[newResults.length] = results[i];
+                            }
+                        }
+
+                        // Creates div html element to dynamically populate meet cards
+                        const usersProfiles = profileDOM.window.document.createElement("div");
+                        let users;
+                        for (let i = 0; i < newResults.length; i++) {
+                            users =
+                                '<div class="card2">' +
+                                '<div class="can">' +
+                                '<h2>Meet-up</h2>' +
+                                '<p class="orange">Who</p>' +
+                                '<p>';
+                            for (let k = 0; k < listUsers.length; k++) {
+                                if (newResults[i].requestee == listUsers[k].ID && newResults[i].requestee != req.session.identity) {
+                                    users += listUsers[k].first_name + ' ' + listUsers[k].last_name;
+                                } else if (newResults[i].requestor == listUsers[k].ID && newResults[i].requestor != req.session.identity) {
+                                    users += listUsers[k].first_name + ' ' + listUsers[k].last_name;
+                                }
+                            }
+                            users +=
+                                '</p>' +
+                                '<p class="orange">When</p>' +
+                                '<p>' + newResults[i].date + '</p>' +
+                                '<p class="orange">Where</p>' +
+                                '<p>' + newResults[i].place + '</p>' +
+                                '<p class="orange">Occasion</p>' +
+                                '<p>' + newResults[i].reason + '</p>' +
+                                '</div>' +
+                                '</div>';
+                            usersProfiles.innerHTML += users;
+                        }
+
+                        // If results are none, populate with message
+                        if (newResults.length == 0) {
+                            users = 'No meet-ups scheduled.';
+                            usersProfiles.innerHTML += users;
+                        }
+                        profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+
+                        // Will fetch skeleton nav and footer and assign page title
+                        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+                        let navBarDOM = new JSDOM(navBar);
+                        let string = `Schedule`;
+                        let t = navBarDOM.window.document.createTextNode(string);
+                        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+                        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+                        res.send(profileDOM.serialize());
+                    }
+                );
+            });
+    }
+    else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
+
+// Session redirect
+// If logged in, will redirect to incoming page in meet-up, if not, back to login
+app.get("/incoming", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/incoming.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+        let listUsers = [];
+
+        // Select users from database
+        connection.query('SELECT * FROM bby14_users;',
+            function (error, results, fields) {
+                if (error) {
+                }
+
+                // Append users to list
+                for (let i = 0; i < results.length; i++) {
+                    listUsers[listUsers.length] = results[i];
+                }
+
+                // Select meet requests in date asc
+                connection.query(
+                    "SELECT * FROM meet ORDER BY date ASC;",
+                    function (error, results, fields) {
+                        if (error) {
+                        }
+
+                        // Appends meet requests to list
+                        let newResults = []
+                        for (let i = 0; i < results.length; i++) {
+                            if (results[i].requestee == req.session.identity && results[i].viewed == 0) {
+                                newResults[newResults.length] = results[i];
+                            }
+                        }
+
+                        // Create html div to append dynamic cards for user approval
+                        const usersProfiles = profileDOM.window.document.createElement("div");
+                        let users;
+                        for (let i = 0; i < newResults.length; i++) {
+                            users =
+                                '<div id="drop">' +
+                                '<div class="card2">' +
+                                '<div class="can">' +
+                                '<h2>Meet-up Request</h2>' +
+                                '<p class="orange">Who</p>' +
+                                '<p>';
+                            for (let k = 0; k < listUsers.length; k++) {
+                                if (newResults[i].requestor == listUsers[k].ID) {
+                                    users += listUsers[k].first_name + ' ' + listUsers[k].last_name;
+                                }
+                            }
+                            users +=
+                                '</p>' +
+                                '<p class="orange">When</p>' +
+                                '<p>' + newResults[i].date + '</p>' +
+                                '<p class="orange">Where</p>' +
+                                '<p>' + newResults[i].place + '</p>' +
+                                '<p class="orange">Occasion</p>' +
+                                '<p>' + newResults[i].reason + '</p><br>' +
+                                '<a class="accept option" target="' + newResults[i].reqNum + '">Accept</a>' +
+                                '<a class="decline option" target="' + newResults[i].reqNum + '">Decline</a>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>';
+                            usersProfiles.innerHTML += users;
+                        }
+
+                        // Appends message for new friend users
+                        if (newResults.length == 0) {
+                            users = 'No requests yet.';
+                            usersProfiles.innerHTML += users;
+                        }
+                        profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+
+                        // Will fetch skeleton nav and footer and assign page title
+                        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+                        let navBarDOM = new JSDOM(navBar);
+                        let string = `Incoming`;
+                        let t = navBarDOM.window.document.createTextNode(string);
+                        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+                        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+                        res.send(profileDOM.serialize());
+                    }
+                );
+            });
+    }
+    else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
+
+// Session redirect
+// If logged in, will redirect to contact page, if not, back to login
+app.get("/contact", async function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/contact.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
-        const mysql = require("mysql2");
-
-        const connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: "passwordSQL",
-            database: "comp2800",
-            multipleStatements: "true"
-        });
-        connection.connect();
-
         let listUsers = [];
 
+        // Selects all users from database
         connection.query('SELECT * FROM bby14_users;',
-        function (error, results, fields) {
-          if (error) {
-            console.log(error);
-          }
-
-          for (let i = 0; i < results.length; i++) {
-                listUsers[listUsers.length] = results[i];
-            }
-        });
-
-        connection.query(
-            "SELECT * FROM friends;",
             function (error, results, fields) {
                 if (error) {
-                    console.log(error);
                 }
-                console.log(req.session.identity);
-                let listFriends = [];
+
+                // Appends users to list
                 for (let i = 0; i < results.length; i++) {
-                    if (results[i].user == req.session.identity) {
-                        listFriends[listFriends.length] = results[i];
-                    }
+                    listUsers[listUsers.length] = results[i];
                 }
-                console.log(listFriends);
-                let friends = [];
-                for (let i = 0; i < listFriends.length; i++) {
-                    for (let k = 0; k < results.length; k++) {
-                        if (listFriends[i].friend == results[k].user & results[k].friend == listFriends[i].user) {
-                            friends[friends.length] = listFriends[i];
+
+                // Selects all friend request from database
+                connection.query(
+                    "SELECT * FROM friends;",
+                    function (error, results, fields) {
+                        if (error) {
                         }
-                    }
-                }
-                friends = friends.filter(function (e) {
-                    return e != null;
-                })
 
-                let finalUsers = [];
-
-                for (let i = 0; i < friends.length; i++) {
-                    for (let k = 0; k < listUsers.length; k++) {
-                        if (friends[i].friend == listUsers[k].ID) {
-                            finalUsers[finalUsers.length] = listUsers[k];
+                        // Appends all friends that include user to list
+                        let listFriends = [];
+                        for (let i = 0; i < results.length; i++) {
+                            if (results[i].user == req.session.identity) {
+                                listFriends[listFriends.length] = results[i];
+                            }
                         }
-                    }
-                }
 
-                const usersProfiles = profileDOM.window.document.createElement("div");
-                let users;
-                
-                for (let i = 0; i < finalUsers.length; i++) {
-                    users =
-                        '<div class="card">' +
-                        '<div class="name">' +
-                        '<p style="text-decoration: underline;">Name</p>' +
-                        '<p>' + finalUsers[i].first_name + ' ' + finalUsers[i].last_name + '</p>' +
-                        '</div>' +
-                        '<div class="age">' +
-                        '<p style="text-decoration: underline;">Age</p>' +
-                        '<p>' + finalUsers[i].age + '</p>' +
-                        '</div>' +
-                        '<div class="img">' +
-                        '<img src="/avatar/avatar_2.jpg">' +
-                        '</div>' +
-                        '<div class="bio">' +
-                        '<p style="text-decoration: underline;">Bio</p>' +
-                        '<p>' + finalUsers[i].bio + '</p>' +
-                        '</div>' +
-                        '<div class="hobbies">' +
-                        '<p style="text-decoration: underline;">Hobbies</p>';
-                        if (finalUsers[i].hobbies != null) {
-                            users += '<p>' + finalUsers[i].hobbies +'</p>';
-                        } else {
-                            users += '<p>No hobbies listed</p>'
+                        // Appends all friends that both users have added eachother
+                        let friends = [];
+                        for (let i = 0; i < listFriends.length; i++) {
+                            for (let k = 0; k < results.length; k++) {
+                                if (listFriends[i].friend == results[k].user & results[k].friend == listFriends[i].user) {
+                                    friends[friends.length] = listFriends[i];
+                                }
+                            }
                         }
-                        users += '</div>'
-                        users += 
-                        '<div class="button">' +
-                        '<a target="' + finalUsers[i].ID + '" class="option add"><span class="material-symbols-outlined">sms</span>Chat</a>' +
-                        '</div>' +
-                        '</div>';
-                        usersProfiles.innerHTML += users;
-                }
-                if (friends.length == 0) {
-                    users = 'No friends yet.';
-                    usersProfiles.innerHTML += users;
-                }
 
+                        // Filters null values in lists
+                        friends = friends.filter(function (e) {
+                            return e != null;
+                        })
 
-            profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+                        // Compares users from database and friend relationships into list
+                        let finalUsers = [];
+                        for (let i = 0; i < friends.length; i++) {
+                            for (let k = 0; k < listUsers.length; k++) {
+                                if (friends[i].friend == listUsers[k].ID) {
+                                    finalUsers[finalUsers.length] = listUsers[k];
+                                }
+                            }
+                        }
 
-            let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-            let navBarDOM = new JSDOM(navBar);
-            let string = `Contact`;
-            let t = navBarDOM.window.document.createTextNode(string);
-            navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+                        // Create div html to append dynamic friend cards
+                        const usersProfiles = profileDOM.window.document.createElement("div");
+                        let users;
+                        for (let i = 0; i < finalUsers.length; i++) {
+                            users =
+                                '<div name="username" id="username" class="' + req.session.first_name + '"></div>' +
+                                '<div class="card">' +
+                                '<div class="name">' +
+                                '<p class="head" >Name</p>' +
+                                '<p id="name">' + finalUsers[i].first_name + ' ' + finalUsers[i].last_name + '</p>' +
+                                '</div>' +
+                                '<div class="age">' +
+                                '<p class="head">Age</p>' +
+                                '<p>' + finalUsers[i].age + '</p>' +
+                                '</div>' +
+                                '<div class="img">' +
+                                '<img src="./avatar/avatar_' + finalUsers[i].ID + '.jpg">' +
+                                '</div>' +
+                                '<div class="bio">' +
+                                '<p class="head">Bio</p>' +
+                                '<p>' + finalUsers[i].bio + '</p>' +
+                                '</div>' +
+                                '<div class="hobbies">' +
+                                '<p class="head">Hobbies</p>';
+                            if (finalUsers[i].hobbies != null) {
+                                users += '<p>' + finalUsers[i].hobbies + '</p>';
+                            } else {
+                                users += '<p>No hobbies listed</p>'
+                            }
+                            users += '</div>'
+                            users +=
+                                '<div class="button">' +
+                                '<a href= "/gabChat" target="' + finalUsers[i].ID + '" class="option add">Chat</a>' +
+                                '</div>' +
+                                '</div>';
+                            usersProfiles.innerHTML += users;
+                        }
 
-            profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+                        // Appends message if no friends
+                        if (friends.length == 0) {
+                            users = 'No friends yet.';
+                            usersProfiles.innerHTML += users;
+                        }
+                        profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
 
-            res.send(profileDOM.serialize());
-        }
-      );
-    } 
-     else {
+                        // Will fetch skeleton nav and footer and assign page title
+                        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+                        let navBarDOM = new JSDOM(navBar);
+                        let string = `Contact`;
+                        let t = navBarDOM.window.document.createTextNode(string);
+                        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+                        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+                        res.send(profileDOM.serialize());
+                    }
+                );
+            });
+    }
+    else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
     }
 });
 
+// Session redirect
+// If logged in, will redirect to user profile page, if not, back to login
 app.get("/userProfiles", function (req, res) {
     if (req.session.loggedIn) {
 
-        
+        // Will fetch skeleton nav and footer and assign page title
         let profile = fs.readFileSync("./app/html/userProfiles.html", "utf8");
         let profileDOM = new JSDOM(profile);
-
         let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
         let navBarDOM = new JSDOM(navBar);
         let string = `Profile`;
         let t = navBarDOM.window.document.createTextNode(string);
         navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+
+        // Inserts user info from session into input files in profile
         profileDOM.window.document.querySelector("#emailInput").setAttribute('value', req.session.email);
         profileDOM.window.document.querySelector("#passwordInput").setAttribute('value', req.session.password);
         profileDOM.window.document.querySelector("#firstNameInput").setAttribute('value', req.session.first_name);
         profileDOM.window.document.querySelector("#lastNameInput").setAttribute('value', req.session.last_name);
-        profileDOM.window.document.querySelector("#ageInput").setAttribute('value', req.session.age);
-        profileDOM.window.document.querySelector("#bioInput").setAttribute('value', req.session.bio);
-        profileDOM.window.document.querySelector("#hobbiesInput").setAttribute('value', req.session.hobbies);
-        
-        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
 
-        const mysql3 = require("mysql2");
+        // Checks if age is not null and so wont input null
+        if (req.session.age != null) {
+            profileDOM.window.document.querySelector("#ageInput").setAttribute('value', req.session.age);
+        }
 
-            const database = mysql3.createConnection({
-                host: "127.0.0.1",
-                user: "root",
-                password: "passwordSQL",
-                database: "comp2800",
-                multipleStatements: "true"
-                });
-            database.connect();
+        // Checks if age is not null so woth input null
+        if (req.session.hobbies != null) {
+            profileDOM.window.document.querySelector("#hobbiesInput").setAttribute('value', req.session.hobbies);
+        }
 
-        
-        database.query(`USE comp2800; SELECT * FROM Posts WHERE userID = ${req.session.identity}`, function (error, results, fields) {
-            if (error) {
-              console.log(error);
-            }
-            const userPosts = profileDOM.window.document.createElement("div");
-            for(let i = 1; i < results.length; i++) {
-                let posts =
-                '<div class="card">' +
-                '<div class="can">' +
-                '<p style="text-decoration: underline;">' +
-                'Post' + results[i].postNum + '</p>' +
-                '<p>' + results[i].posts + '</p>' +
-                '<p>' + results[i].postDate + '</p>' +
-                '<p>' + results[i].postTime + '</p>' +
-                '</div>' +
-                '</div>';
-                userPosts.innerHTML += posts;
-                profileDOM.window.document.getElementById("timeline").appendChild(userPosts);
-            }
-       
-        });
+        // Textarea populating from user session info
+        const usersProfiles = profileDOM.window.document.createElement("div");
+        if (req.session.bio != null) {
+            usersProfiles.innerHTML = '<textarea rows="4" id="bioInput" value="" type="text" required="required" maxlength="100" placeholder="Tell us about yourself!">' + req.session.bio + '</textarea>';
+        } else {
+            usersProfiles.innerHTML = '<textarea rows="4" id="bioInput" value="" type="text" required="required" maxlength="100" placeholder="Tell us about yourself!"></textarea>';
+        }
+        profileDOM.window.document.getElementById("bio").appendChild(usersProfiles);
+
+        // Gets profile picture of user
+        let img = profileDOM.window.document.querySelector('#avatar');
+        img.src = './avatar/avatar_' + req.session.identity + '.jpg';
         res.send(profileDOM.serialize());
-    } 
-     else {
+    }
+    else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
     }
 });
 
+// Database insert
+// Gets meet-up request from client side
+app.post('/addRequest', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
 
+    // Adds row to meet table from user inputed request
+    connection.query('INSERT INTO meet VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [req.session.identity, req.body.requestee, req.body.place, req.body.date, req.body.reason, 0, 0, req.body.id],
+        function (error, results, fields) {
+            if (error) {
+                res.send({
+                    status: "fail",
+                    msg: "Recorded not updated."
+                });
+            } else {
+                res.send({
+                    status: "success",
+                    msg: "Recorded updated."
+                });
+            }
+        });
+});
+
+// Database insert
+// Gets account creation registration from client side
 app.post('/create', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
-  
-    let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: "passwordSQL",
-        database: "comp2800",
-        multipleStatements: "true"
-    });
-    connection.connect();
-    connection.query('INSERT INTO bby14_users VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, null, null, null, null, null, 0],
-      function (error, results, fields) {
-        if (error) {
-          console.log(error);
-        }
-        res.send({
-          status: "success",
-          msg: "Recorded updated."
-        });
-  
-      });
-    connection.end();
-  
-  });
 
+    // Adds row to users table from user registration
+    connection.query('INSERT INTO bby14_users VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [req.body.ID, req.body.first_name, req.body.last_name, req.body.email, req.body.password, req.body.latitude, req.body.longitude, null, null, null, 0],
+        function (error, results, fields) {
+            if (error) {
+                res.send({
+                    status: "fail",
+                    msg: "Recorded failed."
+                });
+            } else {
+                res.send({
+                    status: "success",
+                    msg: "Recorded updated."
+                });
+            }
+        });
+});
+
+// Database insert
+// Gets journal info from client side
+app.post('/addTimeline', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+
+    // Adds timeline client side inputed info into posts table
+    connection.query('INSERT INTO posts VALUES (?, ?, ?, ?, ?)',
+        [req.session.identity, req.body.unknown, req.body.posts, req.body.postDate, req.body.postTime],
+        function (error, results, fields) {
+            if (error) {
+            }
+            res.send({
+                status: "success",
+                msg: "Recorded updated."
+            });
+
+        });
+});
+
+// Database update
+// Gets meet-up request answer from client side
+app.post('/updateIncoming', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+
+    // Updates row to meet table with acceptation selection
+    connection.query('UPDATE meet SET accepted = ?, viewed = ? WHERE reqNum = ?',
+        [parseInt(req.body.accepted), parseInt(req.body.viewed), parseInt(req.body.reqNum)],
+        function (error, results, fields) {
+            if (error) {
+            }
+            res.send({
+                status: "success",
+                msg: "Recorded updated."
+            });
+        });
+});
+
+// Database update
+// Gets location reset from client side profile
+app.post('/updateLocation', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+
+    // Updates row from users to input new location of user
+    connection.query('UPDATE bby14_users SET latitude = ?, longitude = ? WHERE ID = ?',
+        [req.body.latitude, req.body.longitude, req.session.identity],
+        function (error, results, fields) {
+            if (error) {
+            }
+            res.send({
+                status: "success",
+                msg: "Recorded updated."
+            });
+        });
+});
+
+// Database update
+// Gets profile input info from client side
 app.post('/updateUser', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
-  
-    let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: "passwordSQL",
-        database: "comp2800",
-        multipleStatements: "true"
-    });
-    connection.connect();
+
+    // Updates the user row in users with new client info
     connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, age = ?, bio = ?, hobbies = ? WHERE ID = ?',
-      [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.age, req.body.bio, req.body.hobbies, req.session.identity],
-      function (error, results, fields) {
-        if (error) {
-          console.log(error);
-        }
-        res.send({
-          status: "success",
-          msg: "Recorded updated."
+        [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.age, req.body.bio, req.body.hobbies, req.session.identity],
+        function (error, results, fields) {
+            if (error) {
+            }
+            res.send({
+                status: "success",
+                msg: "Recorded updated."
+            });
+
+            // Selects user row from newly updated table
+            const loginInfo = `USE ${dbName}; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
+            connection.query(loginInfo, function (error, results, fields) {
+                
+                /* If there is an error, alert user of error
+                *  If the length of results array is 0, then there was no matches in database
+                *  If no error, then it is valid login and save info for session
+                */
+                if (error) {
+                    // Change this to notify user of error
+                } else if (results[1].length == 0) {
+                    res.send({ status: "fail", msg: "Incorrect email or password!" });
+                } else {
+                    // Renews session variables for future use
+                    let validUserInfo = results[1][0];
+                    req.session.loggedIn = true;
+                    req.session.email = validUserInfo.email;
+                    req.session.first_name = validUserInfo.first_name;
+                    req.session.last_name = validUserInfo.last_name;
+                    req.session.password = validUserInfo.password;
+                    req.session.identity = validUserInfo.ID;
+                    req.session.longitude = validUserInfo.longitude;
+                    req.session.latitude = validUserInfo.latitude;
+                    req.session.age = validUserInfo.age;
+                    req.session.bio = validUserInfo.bio;
+                    req.session.hobbies = validUserInfo.hobbies;
+                    req.session.userType = validUserInfo.is_admin;
+                    // Session saved for analytics
+                    req.session.save(function (err) {
+                    });
+                }
+            });
         });
-  
-      });
-
-      const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
-      connection.query(loginInfo, function (error, results, fields) {
-          /* If there is an error, alert user of error
-          *  If the length of results array is 0, then there was no matches in database
-          *  If no error, then it is valid login and save info for session
-          */
-          if (error) {
-              // change this to notify user of error
-          } else if (results[1].length == 0) {
-              res.send({ status: "fail", msg: "Incorrect email or password!" });
-          } else {
-              let validUserInfo = results[1][0];
-              req.session.loggedIn = true;
-              req.session.email = validUserInfo.email;
-              req.session.first_name = validUserInfo.first_name;
-              req.session.last_name = validUserInfo.last_name;
-              req.session.password = validUserInfo.password;
-              req.session.identity = validUserInfo.ID;
-              req.session.longitude = validUserInfo.longitude;
-              req.session.latitude = validUserInfo.latitude;
-              req.session.age = validUserInfo.age;
-              req.session.bio = validUserInfo.bio;
-              req.session.hobbies = validUserInfo.hobbies;
-              req.session.userType = validUserInfo.is_admin;
-
-              req.session.save(function (err) {
-                  // session saved. for analytics we could record this in db
-              })
-          }
-      })
-    connection.end();
-
 });
 
+// Database update
+// Gets new posts description from client side
+app.post('/updateTimeline', function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+
+    // Updates row containing old post and inserts new description
+    connection.query(`UPDATE posts SET posts = ? WHERE userID = ? AND postNum = ?`,
+        [req.body.posts, req.session.identity, req.body.postNum],
+        function (error, results, fields) {
+            if (error) {
+            }
+            res.send({
+                status: "success",
+                msg: "Recorded updated."
+            });
+
+        });
+});
+
+// Database update
+// Gets admin users info from client side
 app.post('/updateAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
-  
-    let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: "passwordSQL",
-        database: "comp2800",
-        multipleStatements: "true"
-    });
-    connection.connect();
-    connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, is_admin = ? WHERE ID = ?',
-      [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.is_admin, req.body.id],
-      function (error, results, fields) {
-        if (error) {
-          console.log(error);
-        }
-        res.send({
-          status: "success",
-          msg: "Recorded updated."
-        });
-  
-      });
-    connection.end();
 
+    // Updates user info by taking from input via admin
+    connection.query('UPDATE bby14_users SET email = ? , password = ?, first_name = ?, last_name = ?, is_admin = ? WHERE ID = ?',
+        [req.body.email, req.body.password, req.body.first_name, req.body.last_name, req.body.is_admin, req.body.id],
+        function (error, results, fields) {
+            if (error) {
+            }
+            res.send({
+                status: "success",
+                msg: "Recorded updated."
+            });
+
+        });
 });
 
+// Database delete
+// Gets account creation registration from client side
 app.post('/deleteAdmin', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
-  
-    let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: "passwordSQL",
-        database: "comp2800",
-        multipleStatements: "true"
-    });
-    connection.connect();
-    connection.query('DELETE FROM bby14_users WHERE ID = ?',
-      [req.body.id],
-      function (error, results, fields) {
-        if (error) {
-          console.log(error);
-        }
-        res.send({
-          status: "success",
-          msg: "Recorded updated."
-        });
-  
-      });
-    connection.end();
 
+    connection.query('DELETE FROM bby14_users WHERE ID = ?',
+        [req.body.id],
+        function (error, results, fields) {
+            if (error) {
+            }
+            res.send({
+                status: "success",
+                msg: "Recorded updated."
+            });
+
+        });
 });
 
+
+// Session redirect
+// Redirects user to admin user list if logged in, to login if not
 app.get("/admin-users", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/adminUsers.html", "utf8");
         let profileDOM = new JSDOM(profile);
 
-        const mysql = require("mysql2");
-
-        const connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: "passwordSQL",
-            database: "comp2800",
-            multipleStatements: "true"
-        });
-        connection.connect();
-
+        // Selects all users from database
         connection.query(
             "SELECT * FROM bby14_users",
             function (error, results, fields) {
                 if (error) {
-                    console.log(error);
                 }
 
+                // Creates div html element fron dynamic user card insertion
                 const usersProfiles = profileDOM.window.document.createElement("div");
                 const createButton = profileDOM.window.document.createElement("div");
-                let create = "<a href='/register'><button class='option'>Create User</button></a>";
+                let create = "<a href='/register'><button class='option' id='create1'>Create User</button></a><br><a><button id='edit' class='option'>Edit Users</button></a>";
                 profileDOM.window.document.getElementById("create").appendChild(createButton);
-
                 usersProfiles.innerHTML += create;
                 let users;
-                
+
+                // Populates cards using user info
                 for (let i = 0; i < results.length; i++) {
                     users =
                         '<div class="card">' +
@@ -494,271 +951,297 @@ app.get("/admin-users", function (req, res) {
                         '<p style="text-decoration: underline;">ID</p>' +
                         '<p>' + results[i].ID + '</p>' +
                         '<p style="text-decoration: underline;">First Name</p>' +
-                        '<input type="text" id="firstNameInput' + results[i].ID + '" placeholder="e.g. John" value="' + results[i].first_name + '"></input>' +
+                        '<input class="inputs" type="text" id="firstNameInput' + results[i].ID + '" placeholder="e.g. John" value="' + results[i].first_name + '" readonly>' +
                         '<p style="text-decoration: underline;">Last Name</p>' +
-                        '<input type="text" id="lastNameInput' + results[i].ID + '" placeholder="e.g. Smith" value="' + results[i].last_name + '"></input>' +
+                        '<input class="inputs" type="text" id="lastNameInput' + results[i].ID + '" placeholder="e.g. Smith" value="' + results[i].last_name + '" readonly>' +
                         '<p style="text-decoration: underline;">Email</p>' +
-                        '<input type="text" id="emailInput' + results[i].ID + '" placeholder="e.g. bob@gmail.com" value="' + results[i].email + '"></input>' +
+                        '<input class="inputs" type="text" id="emailInput' + results[i].ID + '" placeholder="e.g. bob@gmail.com" value="' + results[i].email + '" readonly>' +
                         '<p style="text-decoration: underline;">Password</p>' +
-                        '<input type="text" id="passwordInput' + results[i].ID + '" placeholder="" value="' + results[i].password + '"></input>' +
+                        '<input class="inputs" type="text" id="passwordInput' + results[i].ID + '" placeholder="" value="' + results[i].password + '" readonly>' +
                         '<p style="text-decoration: underline;">Admin</p>' +
-                        '<input type="number" id="adminInput' + results[i].ID + '" placeholder="0 for user/1 for admin" min="0" max="1" value="' + results[i].is_admin + '"></input>' +
+                        '<input class="inputs" type="number" id="adminInput' + results[i].ID + '" placeholder="0 for user/1 for admin" min="0" max="1" value="' + results[i].is_admin + '" readonly>' +
                         '</div>' +
                         '<div id="options">' +
                         '<a target="' + results[i].ID + '" class="option submit">Save</a>' +
                         '<a target="' + results[i].ID + '" class="option delete">Delete</a>' +
                         '</div>' +
                         '</div>';
-                        usersProfiles.innerHTML += users;
+                    usersProfiles.innerHTML += users;
                 }
+                profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
 
-
-            profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
-
-            let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-            let navBarDOM = new JSDOM(navBar);
-            let string = `Users`;
-            let t = navBarDOM.window.document.createTextNode(string);
-            navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
-            profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
-
-            res.send(profileDOM.serialize());
-        }
-      );
+                // Will fetch skeleton nav and footer and assign page title
+                let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+                let navBarDOM = new JSDOM(navBar);
+                let string = `Users`;
+                let t = navBarDOM.window.document.createTextNode(string);
+                navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+                profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+                res.send(profileDOM.serialize());
+            }
+        );
     } else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
     }
-  })
+})
 
-  app.get("/friendFinder", function (req, res) {
+// Session redirect
+// Redirects user to friend finder page if logged in, to login if not
+app.get("/friendFinder", function (req, res) {
     if (req.session.loggedIn) {
         let profile = fs.readFileSync("./app/html/friendFinder.html", "utf8");
         let profileDOM = new JSDOM(profile);
+        let userProfilePics = [];
 
-        const mysql = require("mysql2");
-
-        const connection = mysql.createConnection({
-            host: "127.0.0.1",
-            user: "root",
-            password: "passwordSQL",
-            database: "comp2800",
-            multipleStatements: "true"
-        });
-        connection.connect();
-
-        let listFriends = [];
-
-        connection.query('SELECT * FROM friends;',
-        function (error, results, fields) {
-          if (error) {
-            console.log(error);
-          }
-
-          for (let i = 0; i < results.length; i++) {
-            if (results[i].user == req.session.identity) {
-                listFriends[listFriends.length] = results[i];
-            }
-        }
-        });
-
-        connection.query(
-            "SELECT * FROM bby14_users;",
+        // Selects all photos from database
+        connection.query('SELECT * FROM userphotos;',
             function (error, results, fields) {
-                if (error) {
-                    console.log(error);
-                }
+                if (error)
+                    throw error;
 
-                class Place {
-                    constructor(ID, distance){
-                        this.ID = ID;
-                        this.distance = distance;
-                    }
-
-                    getId() {
-                        return this.ID;
-                    }
-
-                    getDistance() {
-                        return this.distance;
-                    }
-                }
-
-                let places = [];
-
-                function compare(a, b) {
-                    if (a.distance < b.distance) {
-                        return -1;
-                    }
-                    if (a.distance > b.distance) {
-                        return 1;
-                    }
-                    return 0;
-                }
-
-                function checkIfIn(object) {
-                    let num = 1;
-                    for (let i = 0; i < listFriends.length; i++) {
-                        if (object.ID == listFriends[i].friend) {
-                            num = 0;
-                        }
-                    }
-                    return num;
-                }
-
+                // Appends photos to list
                 for (let i = 0; i < results.length; i++) {
-                    if (results[i].ID != req.session.identity && checkIfIn(results[i])) {
-                        const first = req.session.latitude * Math.PI/180; 
-                        const second = results[i].latitude * Math.PI/180;
-                        const mid = (results[i].longitude - req.session.longitude) * Math.PI/180;
-                        const R = 6371;
-                        let distance = Math.acos( Math.sin(first)*Math.sin(second) + Math.cos(first)*Math.cos(second) * Math.cos(mid) ) * R;
-                        const place = new Place(results[i].ID, distance);
-                        places[i] = place;
-                    }
-                }
-                places.sort(compare);
-                places = places.filter(function (e) {
-                    return e != null;
-                })
-                let newResults = [];
-
-                for (let f = 0; f < places.length; f++) {
-                    for (let k = 0; k < results.length; k++) {
-                        if (places[f].getId() == results[k].ID) {
-                            newResults[newResults.length] = results[k];
-                        }
-                    }
+                    userProfilePics[i] = results[i];
                 }
 
-                const usersProfiles = profileDOM.window.document.createElement("div");
-                let users;
-                
-                for (let i = 0; i < newResults.length; i++) {
-                    users =
-                        '<div class="card">' +
-                        '<div class="name">' +
-                        '<p style="text-decoration: underline;">Name</p>' +
-                        '<p>' + newResults[i].first_name + ' ' + newResults[i].last_name + '</p>' +
-                        '</div>' +
-                        '<div class="age">' +
-                        '<p style="text-decoration: underline;">Age</p>' +
-                        '<p>' + newResults[i].age + '</p>' +
-                        '</div>' +
-                        '<div class="img">' +
-                        '<img src="/avatar/avatar_2.jpg">' +
-                        '</div>' +
-                        '<div class="bio">' +
-                        '<p style="text-decoration: underline;">Bio</p>' +
-                        '<p>' + newResults[i].bio + '</p>' +
-                        '</div>' +
-                        '<div class="hobbies">' +
-                        '<p style="text-decoration: underline;">Hobbies</p>';
-                        if (newResults[i].hobbies != null) {
-                            users += '<p>' + newResults[i].hobbies +'</p>';
-                        } else {
-                            users += '<p>No hobbies listed</p>'
+                // Selects all friends where user is in relationship
+                connection.query('SELECT * FROM friends WHERE user = ?;',
+                    req.session.identity,
+                    function (error, results, fields) {
+                        if (error) {
                         }
-                        users += '</div>'
-                    users += '<div class="distance">' +
-                        '<p style="text-decoration: underline;">Distance</p>' +
-                        '<p>';
-                        for (let k = 0; k < places.length; k++) {
-                            if (places[k].getId() == newResults[i].ID) {
-                                users += (places[k].getDistance()).toFixed(1) + 'km away';
+
+                        // Appends friend to list if same ID
+                        let listFriends = [];
+                        for (let i = 0; i < results.length; i++) {
+                            if (results[i].user == req.session.identity) {
+                                listFriends[listFriends.length] = results[i];
                             }
                         }
-                        users += '</p>' +
-                        '</div>' +
-                        '<div class="button">' +
-                        '<a target="' + newResults[i].ID + '" class="option add">Add Friend</a>' +
-                        '</div>' +
-                        '</div>';
-                        usersProfiles.innerHTML += users;
-                }
-                if (places.length == 0) {
-                    users = 'No users to be added.';
-                    usersProfiles.innerHTML += users;
-                }
 
+                        // Selects all users from database
+                        connection.query(
+                            "SELECT * FROM bby14_users;",
+                            function (error, results, fields) {
+                                if (error) {
+                                }
 
-            profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+                                // Place class to hold distance from logged in user to other friends
+                                class Place {
+                                    constructor(ID, distance) {
+                                        this.ID = ID;
+                                        this.distance = distance;
+                                    }
 
-            let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
-            let navBarDOM = new JSDOM(navBar);
-            let string = `Nearby`;
-            let t = navBarDOM.window.document.createTextNode(string);
-            navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+                                    getId() {
+                                        return this.ID;
+                                    }
 
-            profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+                                    getDistance() {
+                                        return this.distance;
+                                    }
+                                }
 
-            res.send(profileDOM.serialize());
-        }
-      );
+                                // Compare function to sort by distance from friends list
+                                function compare(a, b) {
+                                    // equal items sort equally
+                                    if (a.getDistance() === b.getDistance()) {
+                                        return 0;
+                                    }
+                                    // nulls sort after anything else
+                                    else if (a.getDistance() === null) {
+                                        return 1;
+                                    }
+                                    else if (b.getDistance() === null) {
+                                        return -1;
+                                    }
+                                    // otherwise, if we're ascending, lowest sorts first
+                                    else {
+                                        return a < b ? -1 : 1;
+                                    }
+                                }
+                                // Checks if friends recipient of relationship if in object then appends to list
+                                function checkIfIn(object) {
+                                    let num = 1;
+                                    for (let i = 0; i < listFriends.length; i++) {
+                                        if (object.ID == listFriends[i].friend) {
+                                            num = 0;
+                                        }
+                                    }
+                                    return num;
+                                }
+
+                                // Calculates distance between users using trigonometry
+                                // Then stores in Place object for holding
+                                let places = [];
+                                for (let i = 0; i < results.length; i++) {
+                                    if (results[i].ID != req.session.identity && checkIfIn(results[i])) {
+                                        const first = req.session.latitude * Math.PI / 180;
+                                        const second = results[i].latitude * Math.PI / 180;
+                                        const mid = (results[i].longitude - req.session.longitude) * Math.PI / 180;
+                                        const R = 6371;
+                                        let distance = Math.acos(Math.sin(first) * Math.sin(second) + Math.cos(first) * Math.cos(second) * Math.cos(mid)) * R;
+                                        let place;
+                                        if (results[i].longitude == 0 && results[i].latitude == 0) {
+                                            place = new Place(results[i].ID, null);
+                                        } else {
+                                            place = new Place(results[i].ID, distance);
+                                        }
+                                        places[i] = place;
+                                    }
+                                }
+                                
+                                // Sort and filter list of friends and distances
+                                places.sort(compare);
+                                places = places.filter(function (e) {
+                                    return e != null;
+                                })
+
+                                // Appends final friend results to list if ID's match
+                                let newResults = [];
+                                for (let f = 0; f < places.length; f++) {
+                                    for (let k = 0; k < results.length; k++) {
+                                        if (places[f].getId() == results[k].ID) {
+                                            newResults[newResults.length] = results[k];
+                                        }
+                                    }
+                                }
+
+                                // Creates div html element for dynamic card insertion
+                                const usersProfiles = profileDOM.window.document.createElement("div");
+                                let users;
+
+                                // Goes through all nearby, unfriended users
+                                for (let i = 0; i < newResults.length; i++) {
+                                    let age = (newResults[i].age ? '<p>' + newResults[i].age + '</p>' : '<p>Age not listed</p>');
+                                    users =
+                                        '<div class="card">' +
+                                        '<div class="name">' +
+                                        '<p class="head" >Name</p>' +
+                                        '<p>' + newResults[i].first_name + ' ' + newResults[i].last_name + '</p>' +
+                                        '</div>' +
+                                        '<div class="age">' +
+                                        '<p class="head" >Age</p>' +
+                                        age +
+                                        '</div>' +
+                                        '<div class="img">' +
+                                        '<img src="./avatar/avatar_' + newResults[i].ID + '.jpg">' +
+                                        '</div>' +
+                                        '<div class="bio">' +
+                                        '<p class="head" >Bio</p>';
+
+                                    // Checks if bio is null then displays message depending on result    
+                                    if (newResults[i].bio != null) {
+                                        users += '<p>' + newResults[i].bio + '</p>';
+                                    } else {
+                                        users += '<p>No bio listed</p>';
+                                    }
+                                    users +=
+                                        '</div>' +
+                                        '<div class="hobbies">' +
+                                        '<p class="head" >Hobbies</p>';
+
+                                    // Checks if bio is null then displays message depending on result    
+                                    if (newResults[i].hobbies != null) {
+                                        users += '<p>' + newResults[i].hobbies + '</p>';
+                                    } else {
+                                        users += '<p>No hobbies listed</p>'
+                                    }
+                                    users += '</div>'
+                                    users += '<div class="distance">' +
+                                        '<p class="head" >Distance</p>' +
+                                        '<p>';
+
+                                    // Inputs distance of each friend using Place object variables and methods    
+                                    for (let k = 0; k < places.length; k++) {
+                                        if (places[k].getId() == newResults[i].ID) {
+                                            if (places[k].getDistance() == null) {
+                                                users += "No location.";
+                                            } else {
+                                                users += (places[k].getDistance()).toFixed(1) + 'km away';
+                                            }
+                                        }
+                                    }
+                                    users += '</p>' +
+                                        '</div>' +
+                                        '<div class="button">' +
+                                        '<a target="' + newResults[i].ID + '" class="option add">Add Friend</a>' +
+                                        '</div>' +
+                                        '</div>';
+                                    usersProfiles.innerHTML += users;
+                                }
+
+                                // If friend options are 0 then replace with message
+                                if (places.length == 0) {
+                                    users = '<p id="alone">No users to be added.</p>';
+                                    usersProfiles.innerHTML += users;
+                                }
+                                profileDOM.window.document.getElementById("user_table").appendChild(usersProfiles);
+
+                                // Will fetch skeleton nav and footer and assign page title
+                                let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+                                let navBarDOM = new JSDOM(navBar);
+                                let string = `Nearby`;
+                                let t = navBarDOM.window.document.createTextNode(string);
+                                navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+                                profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+                                res.send(profileDOM.serialize());
+                            }
+                        );
+                    });
+            });
     } else {
         let doc = fs.readFileSync("./app/html/login.html", "utf8");
         res.send(doc);
     }
-  })
+})
 
-  app.post('/updateFriends', function (req, res) {
+// Database insert
+// Insert new friends relationship into friend table
+app.post('/updateFriends', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
-  
-    let connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: "passwordSQL",
-        database: "comp2800",
-        multipleStatements: "true"
-    });
-    connection.connect();
-    connection.query('INSERT INTO Friends VALUES (?, ?)',
-      [req.session.identity, req.body.id],
-      function (error, results, fields) {
-        if (error) {
-          console.log(error);
-        }
-        res.send({
-          status: "success",
-          msg: "Recorded updated."
-        });
-  
-      });
-    connection.end();
 
+    // Insert both current user and selected friend from client side
+    connection.query('INSERT INTO Friends VALUES (?, ?)',
+        [req.session.identity, req.body.id],
+        function (error, results, fields) {
+            if (error) {
+            }
+            res.send({
+                status: "success",
+                msg: "Recorded updated."
+            });
+
+        });
 });
 
-
-
+// Session redirect
+// If logged in, ad if user will redirect to user main page, if not user, to admin main page
 app.get("/main", function (req, res) {
-    
-    if (req.session.loggedIn ) {
+    if (req.session.loggedIn) {
         if (req.session.userType) {
-            
+
+            // Will fetch skeleton nav and footer and assign page title
             let profile = fs.readFileSync("./app/html/admin.html", "utf8");
             let profileDOM = new JSDOM(profile);
-
             let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
             let navBarDOM = new JSDOM(navBar);
             let string = `Admin`;
             let t = navBarDOM.window.document.createTextNode(string);
             navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
             profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
             res.send(profileDOM.serialize());
-
         } else {
+
+            // Will fetch skeleton nav and footer and assign page title
             let profile = fs.readFileSync("./app/html/main.html", "utf8");
             let profileDOM = new JSDOM(profile);
-
             let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
             let navBarDOM = new JSDOM(navBar);
             let string = `Home`;
-
             let t = navBarDOM.window.document.createTextNode(string);
             navBarDOM.window.document.querySelector("#welcome").appendChild(t);
-
             profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
             res.send(profileDOM.serialize());
         }
@@ -767,41 +1250,23 @@ app.get("/main", function (req, res) {
     }
 });
 
-
-
-// host: "127.0.0.1",
-// user: "root",
-// password: "",
-// database: "comp2800",
-// multipleStatements: "true"
-
-
 app.post("/login", function (req, res) {
     res.setHeader("Content-Type", "application/json");
-    const mysql = require("mysql2");
-    const connection = mysql.createConnection({
-        host: "127.0.0.1",
-        user: "root",
-        password: "passwordSQL",
-        database: "comp2800",
-        multipleStatements: "true"
-    });
 
-    connection.connect();
     // Checks if user typed in matching email and password
-    const loginInfo = `USE comp2800; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
+    const loginInfo = `USE ${dbName}; SELECT * FROM bby14_users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`;
     connection.query(loginInfo, function (error, results, fields) {
+
         /* If there is an error, alert user of error
         *  If the length of results array is 0, then there was no matches in database
         *  If no error, then it is valid login and save info for session
         */
         if (error) {
-            // change this to notify user of error
+            // Change this to notify user of error
         } else if (results[1].length == 0) {
             res.send({ status: "fail", msg: "Incorrect email or password!" });
         } else {
             let validUserInfo = results[1][0];
-            
             req.session.loggedIn = true;
             req.session.email = validUserInfo.email;
             req.session.first_name = validUserInfo.first_name;
@@ -814,15 +1279,16 @@ app.post("/login", function (req, res) {
             req.session.bio = validUserInfo.bio;
             req.session.hobbies = validUserInfo.hobbies;
             req.session.userType = validUserInfo.is_admin;
+            chatUser = req.session.first_name;
             req.session.save(function (err) {
                 // session saved. for analytics we could record this in db
             })
             res.send({ status: "success", msg: "Logged in." });
         }
     })
-  
 });
 
+// Logs user out of session and destroies their cookies
 app.get("/logout", function (req, res) {
     if (req.session) {
         req.session.destroy(function (error) {
@@ -835,120 +1301,215 @@ app.get("/logout", function (req, res) {
     }
 });
 
-
-app.get("/redirectToUsers", function (req, res) {
-    if (req.session.loggedIn) {
-        if(req.session.userType) {
-            connection.connect();
-             const getUsers = `USE comp2800; SELECT * FROM bby_users;`;
-            let doc = fs.readFileSync("./app/html/userProfiles.html", "utf8");
-            let adminDoc = new JSDOM(doc);
-
-            let cardDoc = fs.readFileSync("./app/html/profileCards.html", "utf8");
-            let cardDOM = new JSDOM(cardDoc);
-
-           
-            let numUsers = 9;
-
-
-            for(let x = 0; x < numUsers; x++) {
-                adminDoc.window.document.querySelector("#main").innerHTML 
-                    += cardDOM.window.document.querySelector(".card").innerHTML;
-            //     let usersList = adminDoc.window.document.querySelector("#main").innerHTML;
-            //     let userCards = cardDOM.window.document.querySelector(".card").innerHTML;
-            //    usersList.insertAdjacentElement("beforeend", userCards);
-            }
-            res.send(adminDoc.serialize());
-        }
-    } else {
-        let redirect = fs.readFileSync("./app/html/login.html", "utf8");
-        res.send(redirect);
-    }
-});
-
 // Code to upload an image.
 // Adapted from Mutler and COMP 2537 example.
 // start of upload-app.js
-
+/**
+ * Block of code to upload an image
+ * Adapted from Mutler and COMP 2537 example
+ */
 const storage = multer.diskStorage({
     destination: function (req, file, callback) {
         callback(null, "./app/avatar/")
     },
-    filename: function(req, file, callback) {
-        // // callback(null, "avatar_" + file.originalname.split('/').pop().trim());
+    filename: function (req, file, callback) {
         const sessionID = "" + req.session.identity;
-        // callback(null, "avatar_" + sessionID + "." + file.originalname.split(".").pop());
         callback(null, "avatar_" + sessionID + ".jpg");
     }
 });
 
+// Constant multer image upload variable
 const upload = multer({ storage: storage });
 
-
-
-
-//do we need this??
-app.get('/', function (req, res) {
-    let doc = fs.readFileSync('./app/html/index.html', "utf8");
-    res.send(doc);
-
+// Code to store images as posts for users. 
+const postStorage = multer.diskStorage({
+    destination: function (req, file, callback) {
+        callback(null, "./app/posts/")
+    },
+    filename: function (req, file, callback) {
+        let count = 0;
+        callback(null, "posts_" + count++ + ".jpg");
+    }
 });
 
+// Multer storing posted image
+const uploadPostImages = multer({
+    storage: postStorage
+});
 
-
+// Database insert
+// Using Multer, images are stored in the database under the BLOB data type
 app.post('/upload-images', upload.array("files"), function (req, res) {
 
-    for(let i = 0; i < req.files.length; i++) {
+    // Appends all filenames to original name
+    for (let i = 0; i < req.files.length; i++) {
         req.files[i].filename = req.files[i].originalname;
     }
 
-    connection.connect();
-    if (!req.files[0].filename) {
-        console.log("No file upload");
-    } else {
-        
+    // Check for if file is there
+    if (req.files[0].filename) {
         let imgsrc = "avatar_" + req.session.identity + "." + req.files[0].originalname.split(".").pop();
+
+        // Deletes then reinserts new image into user photos table
         let updateData = `DELETE FROM userphotos WHERE userID = ${req.session.identity}; INSERT INTO userphotos (userID, imageID) VALUES (?, ?);`
-        
-        console.log(imgsrc);
-        connection.query(updateData, [req.session.identity, imgsrc], function(err, result) {
-          
+        connection.query(updateData, [req.session.identity, imgsrc], function (err, result) {
             if (err) throw err
-            console.log("file uploaded")
         })
     }
-
 });
 
 
+/**
+ * Global live chat room.
+ * Block of code adapted from Youtube tutorials.
+ * 
+ * @author Web Dev Simplified
+ * @see https://www.youtube.com/watch?v=ZKEqqIO7n-k
+ * @see https://www.youtube.com/watch?v=rxzOqP9YwmM
+ * @author Traversy Media
+ * @see https://www.youtube.com/watch?v=jD7FnbI76Hg
+ */
 
-// end of upload-app.js
+// Chat bot name
+const botName = 'Gabify Bot';
 
+// Run when client connects
+io.on('connection', socket => {
+    socket.on('joinRoomG', ({ username, room }) => {
+        const user = userJoin(socket.id, username, room);
 
+        socket.join(user.room);
 
+        // Welcome current user
+        socket.emit('messageG', formatMessage(botName, 'Welcome to Gabify Chat!'));
 
+        // Broadcast when a user connects
+        socket.broadcast
+            .to(user.room)
+            .emit(
+                'messageG',
+                formatMessage(botName, `${chatUser} has joined the chat!`)
+            );
 
- 
+        // Send users and room info
+        io.to(user.room).emit('roomUsersG', {
+            room: user.room,
+            users: getRoomUsers(user.room)
+        });
+    });
 
+    // Listen for chatMessage
+    socket.on('chatMessageG', msg => {
+        const user = getCurrentUser(socket.id);
 
+        io.to(user.room).emit('messageG', formatMessage(chatUser, msg));
+    });
 
+    // Runs when client disconnects
+    socket.on('disconnect', () => {
+        const user = userLeave(socket.id);
 
+        if (user) {
+            io.to(user.room).emit(
+                'messageG',
+                formatMessage(botName, `${chatUser} has left the chat!`)
+            );
 
+            // Send users and room info
+            io.to(user.room).emit('roomUsersG', {
+                room: user.room,
+                users: getRoomUsers(user.room)
+            });
+        }
+    });
+    
+});
 
+// Session redirect.
+// If logged in, will redirect to global chat, if not, back to login
+app.get("/chatGlobalSelect", function (req, res) {
+    if (req.session.loggedIn) {
+        // Will fetch skeleton nav and footer and assign page title
+        let profile = fs.readFileSync("./app/html/chatGlobalSelect.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+        let navBar = fs.readFileSync("./app/html/nav.html", "utf8");
+        let navBarDOM = new JSDOM(navBar);
+        let string = `Chat`;
+        let t = navBarDOM.window.document.createTextNode(string);
+        navBarDOM.window.document.querySelector("#welcome").appendChild(t);
+        profileDOM.window.document.querySelector("#header").innerHTML = navBarDOM.window.document.querySelector("#header").innerHTML;
+        res.send(profileDOM.serialize());
+    }
+    else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
 
+// code for one-to-one chat;
+io.on('connection', socket => {
+    socket.on('joinRoom', ({ chatUser }) => {
+        const user = newUser(socket.id, chatUser);
 
+        socket.join(user.room);
 
+        // General welcome
+        socket.emit('message', formatMessage("GabChat", 'Chat messages will be erased upon log out'));
 
+        // Broadcast everytime users connects
+        socket.broadcast
+            .to(user.room)
+            .emit(
+                'message',
+                formatMessage("GabChat", 'Your friend has joined the room')
+            );
 
+        // Current active users and room name
+        io.to(user.room).emit('roomUsers', {
+            room: user.room,
+            users: getIndividualRoomUsers(user.room)
+        });
+    });
 
+    // Listen for client message
+    socket.on('chatMessage', msg => {
+        const user = getActiveUser(socket.id);
 
-// //For Milestone hand-ins:
-// let port = 8000;
-// app.listen(port, function () {
-// });
+        io.to(user.room).emit('message', formatMessage(chatUser, msg));
+    });
 
-//For Heroku deployment
-app.listen(process.env.PORT || 3000);
+    // Runs when client disconnects
+    socket.on('disconnect', () => {
+        const user = exitRoom(socket.id);
 
+        if (user) {
+            io.to(user.room).emit(
+                'message',
+                formatMessage("GabChat", `${chatUser} has left the room`)
+            );
 
+            // Current active users and room name
+            io.to(user.room).emit('roomUsers', {
+                room: user.room,
+                users: getIndividualRoomUsers(user.room)
+            });
+        }
+    });
+});
 
+// Session redirect
+// If logged in, will redirect to private chat, if not, back to login
+app.get("/gabChat", function (req, res) {
+    if (req.session.loggedIn) {
+        let profile = fs.readFileSync("./app/html/gabChat.html", "utf8");
+        let profileDOM = new JSDOM(profile);
+        res.send(profileDOM.serialize());
+    }
+    else {
+        let doc = fs.readFileSync("./app/html/login.html", "utf8");
+        res.send(doc);
+    }
+});
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT);
