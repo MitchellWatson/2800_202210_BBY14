@@ -2,7 +2,9 @@
 
 "use strict";
 
+// Ajaxs XML HTTP call to url given and callback method 
 ready(function () {
+    // Ajaxs get for getting data to http
     function ajaxGET(url, callback) {
         const xhr = new XMLHttpRequest();
         xhr.onload = function () {
@@ -16,6 +18,7 @@ ready(function () {
         xhr.send();
     }
     
+    // Ajax post for giving data 
     function ajaxPOST(url, callback, data) {
         let params = typeof data == 'string' ? data : Object.keys(data).map(
             function (k) {
@@ -35,21 +38,28 @@ ready(function () {
         xhr.send(params);
     }
 
+
+    // Pop up modal element getters
     var popUp = document.getElementById("popUp");
     var span = document.getElementsByClassName("close")[0];
 
+    // Close modal button 
     span.onclick = function () {
         popUp.style.display = "none";
     }
 
+    // Click off modal to close
     window.onclick = function (event) {
         if (event.target == popUp) {
             popUp.style.display = "none";
         }
     }
 
+    // Will fetch local storage for result and success
     let result = localStorage.getItem("result");
     let success = localStorage.getItem("success");
+
+    // On load will launch modal pop up
     window.addEventListener("load", function () {
         if (result == 1 && success == 1) {
             popUp.style.display = "block";
@@ -59,6 +69,7 @@ ready(function () {
         localStorage.setItem("result", 0)
     })
 
+    // Will submit input values upon submit button press
     document.querySelector("#submit").addEventListener("click", function (e) {
         localStorage.setItem("value", 0);
         e.preventDefault();
@@ -82,6 +93,7 @@ ready(function () {
     });
 });
 
+// Event callback listener for page loaded
 function ready(callback) {
     if (document.readyState != "loading") {
         callback();

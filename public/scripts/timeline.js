@@ -1,5 +1,6 @@
 "use strict";
 
+// Ajaxs call to send data to middleware
 function ajaxPOST(url, callback, data) {
     let params = typeof data == 'string' ? data : Object.keys(data).map(
         function (k) {
@@ -20,6 +21,7 @@ function ajaxPOST(url, callback, data) {
     xhr.send(params);
 }
 
+// Displays new memory to be created
 document.getElementById("new").addEventListener("click", function (e) {
     var drop = document.getElementById("drop");
     if (drop.style.display === "none") {
@@ -29,6 +31,7 @@ document.getElementById("new").addEventListener("click", function (e) {
     }
 })
 
+// Submits and takes input from memory upon click
 document.getElementById("done").addEventListener("click", function () {
     var time = new Date();
     var full = "" + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
@@ -48,12 +51,15 @@ document.getElementById("done").addEventListener("click", function () {
     location.reload();
 })
 
+// Get button element id for use
 let buttonUpdate = document.getElementsByClassName("update");
 
+// Adds event listner to all buttons
 for (let i = 0; i < buttonUpdate.length; i++) {
     buttonUpdate[i].addEventListener("click", update);
 }
 
+// Updates server using eventlistner and ajaxpost from timeline input
 function update() {
     let id = this.target;
     let posts = document.getElementById("descInput" + id);
@@ -68,30 +74,4 @@ function update() {
             }
         }
     }, queryString);
-}
-
-const upLoadForm = document.getElementById("upload-images-form");
-upLoadForm.addEventListener("submit", uploadImages);
-
-function uploadImages(e) {
-    e.preventDefault();
-    const imageUpload = document.querySelector('#image-upload');
-    const formData = new FormData();
-    for (let i = 0; i < imageUpload.files.length; i++) {
-        // put the images from the input into the form data
-        formData.append("files", imageUpload.files[i]);
-    }
-    const options = {
-        method: 'POST',
-        body: formData,
-    };
-    fetch("/upload-images", options).then(function (res) {
-    }).catch(function (err) {
-        ("Error:", err)
-    });
-    location.reload();
-}
-
-function postAlert() {
-    alert("Memory Added!");
 }

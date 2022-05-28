@@ -1,5 +1,6 @@
 "use strict";
 
+// Ajax post to give data to middle ware
 function ajaxPOST(url, callback, data) {
     let params = typeof data == 'string' ? data : Object.keys(data).map(
         function (k) {
@@ -21,22 +22,27 @@ function ajaxPOST(url, callback, data) {
     xhr.send(params);
 }
 
+// Pop up modal element getters
 var popUp = document.getElementById("popUp");
 var span = document.getElementsByClassName("close")[0];
 
+// Close modal button 
 span.onclick = function () {
     popUp.style.display = "none";
 }
 
+// Click off modal to close
 window.onclick = function (event) {
     if (event.target == popUp) {
         popUp.style.display = "none";
     }
 }
 
+// Will fetch local storage for result and success
 let request = localStorage.getItem("request");
 let passed = localStorage.getItem("passed");
 
+// On load will launch modal pop up
 window.addEventListener("load", function () {
     if (request == 1 && passed == 1) {
         popUp.style.display = "block";
@@ -49,12 +55,15 @@ window.addEventListener("load", function () {
     localStorage.setItem("passed", 0)
 })
 
+// Will submit input values upon request button press
 document.getElementById("request").addEventListener("click", function () {
     let person = document.getElementById("personInput");
     let date = document.getElementById("dateInput");
     let where = document.getElementById("placeInput");
     let reason = document.getElementById("reasonInput");
     let queryString = "requestee=" + person.value + "&date=" + date.value + "&place=" + where.value.trim() + "&reason=" + reason.value.trim();
+    
+    // Sets local storages for modal pop up and sends data
     ajaxPOST("/addRequest", function (data) {
         if (data) {
             let dataParsed = JSON.parse(data);

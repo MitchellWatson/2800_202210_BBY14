@@ -316,6 +316,7 @@ Setup: Login with provided credentials in assignment 05c & 05d by BBY-Team 14 or
 **[socket.io tutorial](https://www.youtube.com/watch?v=ZKEqqIO7n-k)**  
 **[Chat tutorial](https://www.youtube.com/watch?v=rxzOqP9YwmM)**  
 **[Chat tutorial](https://www.youtube.com/watch?v=jD7FnbI76Hg)**
+**[Modal Box](https://www.w3schools.com/howto/howto_css_modals.asp)**
 
 ## VIII. CONTACT INFORMATION
 [Basillio Kim](mailto:bkim128@my.bcit.ca)  
