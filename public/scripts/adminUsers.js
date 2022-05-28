@@ -2,7 +2,6 @@
  * @author Mitchell Watson
  */
 
-
 "use strict";
 
 /** Sends an asynchronous http POST request to load data from the server.
