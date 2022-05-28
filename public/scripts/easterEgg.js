@@ -41,23 +41,14 @@ button.addEventListener('click', () => {
 
 // Notification for easteregg when clicked on
 function createNotification(message = null, type = null) {
-
     const notif = document.createElement('div')
     notif.classList.add('quote')
     notif.classList.add(type ? type : getType())
-
     notif.innerText = message ? message : getMessage()
-
     toasts.appendChild(notif)
-
-
-
     setTimeout(() => {
         notif.remove()
     }, 3000)
-
-
-
 }
 
 /**

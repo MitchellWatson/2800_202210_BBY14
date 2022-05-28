@@ -10,7 +10,7 @@ body {
     font-family: 'Quicksand', sans-serif;
     background-color: rgb(228, 228, 228);
     height: 100vh;
-    
+
 }
 
 
@@ -114,12 +114,14 @@ a {
 }
 
 /* icon size */
-#header .icon, #footer .icon {
+#header .icon,
+#footer .icon {
     font-size: 2.5em;
 }
 
 /* label size */
-#header .label, #footer .label {
+#header .label,
+#footer .label {
     font-size: 1.25em;
 }
 
@@ -139,4 +141,5 @@ a {
 #contact {
     border-radius: 0 10px 0 0;
 }
+
 /******** border radius ********/
